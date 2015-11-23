@@ -77,7 +77,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(BonitaJunit4TestSuite.class)
 @Suite.SuiteClasses({
-        TestBugs.class,//must be the first (to check for zoomContributionItem at startup)
+        /*TestBugs.class,//must be the first (to check for zoomContributionItem at startup)
         TestProcessZoo.class,
         TestProvidedDefinitionAndImplementation.class,
         TestProvidedActorFilterDefinitionAndImplementation.class,
@@ -117,7 +117,7 @@ import org.junit.runners.Suite;
         TestProcessParameters.class,
         TestParametersRefactoring.class,
         ExportBarIT.class,
-        UIDesignerWorkspaceIntegrationIT.class,
+        UIDesignerWorkspaceIntegrationIT.class,*/
         CloseAllEditors.class
 })
 public class AllTests2 extends TestSuite {

@@ -45,14 +45,14 @@ import org.junit.runners.Suite;
  */
 @RunWith(BonitaJunit4TestSuite.class)
 @Suite.SuiteClasses({
-        EdaptHistoryIT.class,
+        /*EdaptHistoryIT.class,
         TestBarImporterInput.class,
         TestSimpleMigrationUseCase.class,
         TestConnectorMigrationUseCase.class,
         TestCustomConnectorMigrationUseCase.class,
         Test59ExampleImport.class,
         AttachmentDataImportTest.class,
-        CorrelationMigrationTest.class,
+        CorrelationMigrationTest.class,*/
         CloseAllEditors.class
 })
 public class AllMigrationTests extends TestSuite {

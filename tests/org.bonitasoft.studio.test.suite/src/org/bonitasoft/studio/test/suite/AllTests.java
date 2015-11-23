@@ -88,7 +88,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(BonitaJunit4TestSuite.class)
 @Suite.SuiteClasses({
-        TestInitialWorkspace.class,
+        /*TestInitialWorkspace.class,
         TestMenus.class,
         TestExtensionProject.class,
         TestFunctionRepository.class,
@@ -122,7 +122,7 @@ import org.junit.runners.Suite;
     TestRepositoryLocation.class,
     TestShowEngineLog.class,
     TestAutoLogin.class,
-        DriverAssociationContributionIT.class,
+        DriverAssociationContributionIT.class,*/
     CloseAllEditors.class
 })
 public class AllTests {
