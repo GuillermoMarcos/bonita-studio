@@ -70,7 +70,7 @@ import org.junit.runners.Suite;
 
 @RunWith(BonitaTestSuite.class)
 @Suite.SuiteClasses({
-        OpenNameAndVersionForDiagramDialogTest.class,
+        /*OpenNameAndVersionForDiagramDialogTest.class,
         TestBugsSWTBot.class,
         DiagramTests.class,
         TestRenameDiagram.class,
@@ -104,7 +104,7 @@ import org.junit.runners.Suite;
         TestDeleteTaskWithForm.class,
         TestDebugFeature.class,
         OpenNameAndVersionDiagramTest.class,
-        OpenNameAndVersionDiagramForDiagramTest.class,
+        OpenNameAndVersionDiagramForDiagramTest.class,*/
         //WORKAROUND: put at the end otherwise when doing a new run after, it fails
         ConnectorDefinitionTranslationsTest.class
 })

@@ -74,7 +74,8 @@ import org.junit.runners.Suite;
 
 @RunWith(BonitaTestSuite.class)
 @Suite.SuiteClasses({
-    TestBonitaGroovyEditorDialog.class,
+    ContractIT.class
+    /*TestBonitaGroovyEditorDialog.class,
     CopyPasteTests.class,
     DeleteCommandTest.class,
     TestBug1640.class,
@@ -116,7 +117,7 @@ import org.junit.runners.Suite;
     BarImportReportIT.class,
     CallActivityMappingIT.class,
         CreateDeployExportBusinessObjectIT.class,
-        ConvertActivityTypeWithBoundariesIT.class
+        ConvertActivityTypeWithBoundariesIT.class*/
 })
 public class AllSWTBotTests2 {
 
