@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SelectBusinessDataWizardPageTest {
+public class SelectDataWizardPageTest {
 
     @Rule
     public RealmWithDisplay realmWithDisplay = new RealmWithDisplay();
@@ -43,7 +43,7 @@ public class SelectBusinessDataWizardPageTest {
     public void should_isPageComplete_ReturnFalse_when_available_data_is_empty() {
         final List<Data> availableBusinessData = new ArrayList<Data>();
         final WritableValue selectedDataObservable = new WritableValue();
-        final SelectBusinessDataWizardPage page = new SelectBusinessDataWizardPage(availableBusinessData, selectedDataObservable, store);
+        final SelectDataWizardPage page = new SelectDataWizardPage(availableBusinessData, selectedDataObservable, store);
         assertThat(page.isPageComplete()).isFalse();
     }
 
@@ -53,7 +53,7 @@ public class SelectBusinessDataWizardPageTest {
         availableBusinessData.add(aBusinessData().build());
         final WritableValue selectedDataObservable = new WritableValue();
         selectedDataObservable.setValue(new Object());
-        final SelectBusinessDataWizardPage page = new SelectBusinessDataWizardPage(availableBusinessData, selectedDataObservable, store);
+        final SelectDataWizardPage page = new SelectDataWizardPage(availableBusinessData, selectedDataObservable, store);
         assertThat(page.isPageComplete()).isTrue();
     }
 
@@ -62,7 +62,7 @@ public class SelectBusinessDataWizardPageTest {
         final List<Data> availableBusinessData = new ArrayList<Data>();
         availableBusinessData.add(aBusinessData().build());
         final WritableValue selectedDataObservable = new WritableValue();
-        final SelectBusinessDataWizardPage page = new SelectBusinessDataWizardPage(availableBusinessData, selectedDataObservable, store);
+        final SelectDataWizardPage page = new SelectDataWizardPage(availableBusinessData, selectedDataObservable, store);
         assertThat(page.isPageComplete()).isFalse();
     }
 }

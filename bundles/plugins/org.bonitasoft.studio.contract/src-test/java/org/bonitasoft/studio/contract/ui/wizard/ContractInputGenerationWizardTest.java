@@ -101,7 +101,7 @@ public class ContractInputGenerationWizardTest {
                 expressionBuilder, preferenceStore, sharedImages, dialogFactory, new ContractInputGenerationWizardPagesFactory(), sourceViewerFactory);
         wizard.addPages();
 
-        assertThat(wizard.getPages()[0]).isInstanceOf(SelectBusinessDataWizardPage.class);
+        assertThat(wizard.getPages()[0]).isInstanceOf(SelectDataWizardPage.class);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ContractInputGenerationWizardTest {
                 expressionBuilder, preferenceStore, sharedImages, dialogFactory, new ContractInputGenerationWizardPagesFactory(), sourceViewerFactory);
         wizard.addPages();
 
-        assertThat(wizard.getPages()[0]).isInstanceOf(SelectBusinessDataWizardPage.class);
+        assertThat(wizard.getPages()[0]).isInstanceOf(SelectDataWizardPage.class);
     }
 
     @Test
