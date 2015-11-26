@@ -24,7 +24,6 @@ import java.util.List;
 import org.bonitasoft.studio.businessobject.core.repository.BusinessObjectModelRepositoryStore;
 import org.bonitasoft.studio.businessobject.ui.BusinessObjectDataStyledLabelProvider;
 import org.bonitasoft.studio.common.NamingUtils;
-import org.bonitasoft.studio.common.jface.ElementForIdLabelProvider;
 import org.bonitasoft.studio.common.widgets.CustomStackLayout;
 import org.bonitasoft.studio.contract.i18n.Messages;
 import org.bonitasoft.studio.model.process.BusinessObjectData;
@@ -32,6 +31,7 @@ import org.bonitasoft.studio.model.process.Contract;
 import org.bonitasoft.studio.model.process.ContractInput;
 import org.bonitasoft.studio.model.process.Data;
 import org.bonitasoft.studio.model.process.Document;
+import org.bonitasoft.studio.model.process.DocumentType;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.PojoObservables;
@@ -44,7 +44,11 @@ import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.SelectObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
+import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.MultiValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -57,6 +61,8 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -81,10 +87,13 @@ public class SelectDataWizardPage extends WizardPage {
     private final Contract contract;
     private String rootName;
     private SelectObservableValue selectionTypeObservable;
+    private final DataTypeSelectionOptions dataTypeSelectionOptions;
+    private CustomStackLayout stackLayout;
 
     public SelectDataWizardPage(final Contract contract, final List<Data> availableBusinessData, final List<Document> availableDocuments,
             final WritableValue selectedDataObservable,
             final WritableValue rootNameObservable,
+            final DataTypeSelectionOptions dataTypeSelectionOptions,
             final BusinessObjectModelRepositoryStore businessObjectStore) {
         super(SelectDataWizardPage.class.getName());
         setTitle(Messages.SelectBusinessDataWizardPageTitle);
@@ -95,6 +104,7 @@ public class SelectDataWizardPage extends WizardPage {
         this.businessObjectStore = businessObjectStore;
         this.rootNameObservable = rootNameObservable;
         this.contract = contract;
+        this.dataTypeSelectionOptions = dataTypeSelectionOptions;
     }
 
     /*
@@ -107,31 +117,39 @@ public class SelectDataWizardPage extends WizardPage {
         composite.setLayoutData(GridDataFactory.fillDefaults().create());
         composite.setLayout(GridLayoutFactory.fillDefaults().create());
         final DataBindingContext dbc = new DataBindingContext();
-        createRadioButtonComposite(composite);
+        createRadioButtonComposite(composite, dbc);
         final Composite stackedComposite = new Composite(composite, SWT.NONE);
-        final CustomStackLayout stackLayout = new CustomStackLayout(stackedComposite);
+        stackLayout = new CustomStackLayout(stackedComposite);
         stackedComposite.setLayout(stackLayout);
         stackedComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         createbusinessVariableTableViewerComposite(stackedComposite, dbc);
-        createDocumentTableViewerCOmposite(stackedComposite, dbc);
+        createDocumentTableViewerComposite(stackedComposite, dbc);
         createDocumentNameField(composite, dbc);
         bindRadioButtonsToComposite(dbc);
+        final MultiValidator multiValidator = new AvailableDataValidator(availableBusinessData, selectedDataObservable, availableDocuments,
+                businessObjectStore);
+        dbc.addValidationStatusProvider(multiValidator);
         WizardPageSupport.create(this, dbc);
         setControl(composite);
     }
 
-    public void createRadioButtonComposite(final Composite parent) {
+    public void createRadioButtonComposite(final Composite parent, final DataBindingContext dbc) {
         final Composite radioButtonComposite = new Composite(parent, SWT.NONE);
         radioButtonComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         radioButtonComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).margins(20, 20).create());
         businessVariableButton = new Button(radioButtonComposite, SWT.RADIO);
         businessVariableButton.setText(Messages.businessVariable);
+        if (availableBusinessData.isEmpty()) {
+            businessVariableButton.setEnabled(false);
+        }
         documentButton = new Button(radioButtonComposite, SWT.RADIO);
         documentButton.setText(Messages.document);
+        if (availableDocuments.isEmpty()) {
+            documentButton.setEnabled(false);
+        }
         selectionTypeObservable = new SelectObservableValue(Boolean.class);
         selectionTypeObservable.addOption(Boolean.TRUE, SWTObservables.observeSelection(businessVariableButton));
         selectionTypeObservable.addOption(Boolean.FALSE, SWTObservables.observeSelection(documentButton));
-        selectionTypeObservable.setValue(Boolean.TRUE);
     }
 
     public void createbusinessVariableTableViewerComposite(final Composite parent, final DataBindingContext dbc) {
@@ -152,12 +170,23 @@ public class SelectDataWizardPage extends WizardPage {
         businessDataTableViewer.setInput(new WritableList(availableBusinessData, ProcessPackage.Literals.BUSINESS_OBJECT_DATA));
         final IViewerObservableValue observeSingleSelection = ViewersObservables.observeSingleSelection(businessDataTableViewer);
         dbc.bindValue(observeSingleSelection, selectedDataObservable);
-        final MultiValidator multiValidator = new BusinessDataSelectedValidator(availableBusinessData, selectedDataObservable, selectionTypeObservable,
-                businessObjectStore);
-        dbc.addValidationStatusProvider(multiValidator);
+        businessVariableButton.addSelectionListener(createBusinessVariableSelectionAdapter());
     }
 
-    public void createDocumentTableViewerCOmposite(final Composite parent, final DataBindingContext dbc) {
+    protected SelectionAdapter createBusinessVariableSelectionAdapter() {
+        return new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                if (!availableBusinessData.isEmpty()) {
+                    dataTypeSelectionOptions.setBusinessDataTypeSelected(true);
+                    selectedDataObservable.setValue(availableBusinessData.get(0));
+                }
+            }
+        };
+    }
+
+    public void createDocumentTableViewerComposite(final Composite parent, final DataBindingContext dbc) {
         documentTableViewerComposite = new Composite(parent, SWT.NONE);
         documentTableViewerComposite.setLayout(GridLayoutFactory.fillDefaults().create());
         documentTableViewerComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
@@ -166,35 +195,101 @@ public class SelectDataWizardPage extends WizardPage {
         documentTableViewer.getTable().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).hint(200, 100).create());
         final ObservableListContentProvider contentProvider = new ObservableListContentProvider();
         documentTableViewer.setContentProvider(contentProvider);
-        documentTableViewer.setLabelProvider(new ElementForIdLabelProvider());
+        documentTableViewer.setLabelProvider(new DocumentStyledLabelProvider());
         documentTableViewer.setInput(new WritableList(availableDocuments, ProcessPackage.Literals.DOCUMENT));
         final IViewerObservableValue observeSingleSelection = ViewersObservables.observeSingleSelection(documentTableViewer);
-        dbc.bindValue(observeSingleSelection, selectedDataObservable);
-        final MultiValidator multiValidator = new DocumentSelectedValidator(selectedDataObservable, selectionTypeObservable, availableDocuments);
-        dbc.addValidationStatusProvider(multiValidator);
+        dbc.bindValue(observeSingleSelection, selectedDataObservable,
+                updateValueStrategy().withValidator(createDefaultValueAlreadyDefinedValidator()).create(), null);
+        documentButton.addSelectionListener(createDocumentSelectionAdapter());
+    }
+
+    protected SelectionAdapter createDocumentSelectionAdapter() {
+        return new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                if (!availableDocuments.isEmpty()) {
+                    dataTypeSelectionOptions.setBusinessDataTypeSelected(false);
+                    selectedDataObservable.setValue(availableDocuments.get(0));
+                }
+            }
+        };
+    }
+
+    protected IValidator createDefaultValueAlreadyDefinedValidator() {
+        return new IValidator() {
+
+            @Override
+            public IStatus validate(final Object value) {
+                if (value instanceof Document) {
+                    final Document document = (Document) value;
+                    if (document.getDocumentType().equals(DocumentType.NONE)) {
+                        return Status.OK_STATUS;
+                    } else {
+                        return ValidationStatus.warning(Messages.bind(Messages.defaultValueAlreadyDefinedWarning, document.getName()));
+                    }
+                }
+                return Status.OK_STATUS;
+            }
+        };
     }
 
     private void bindRadioButtonsToComposite(final DataBindingContext dbc) {
-        dbc.bindValue(SWTObservables.observeVisible(businessVariableTableViewerComposite), SWTObservables.observeSelection(businessVariableButton));
-        dbc.bindValue(SWTObservables.observeVisible(documentTableViewerComposite), SWTObservables.observeSelection(documentButton));
+        dbc.bindValue(PojoObservables.observeValue(stackLayout, "topControl"), selectionTypeObservable, neverUpdateValueStrategy().create(),
+                updateValueStrategy()
+                        .withConverter(dataTypeSelectionToCompositeConverter()).create());
+        dbc.bindValue(selectionTypeObservable, PojoObservables.observeValue(dataTypeSelectionOptions, "businessDataTypeSelected"));
+
+    }
+
+    private IConverter dataTypeSelectionToCompositeConverter() {
+
+        return new Converter(Boolean.class, Composite.class) {
+
+            @Override
+            public Object convert(final Object fromObject) {
+                return (Boolean) fromObject ? businessVariableTableViewerComposite : documentTableViewerComposite;
+            }
+        };
     }
 
     public void createDocumentNameField(final Composite parent, final DataBindingContext dbc) {
         final Composite documentInputNameComposite = new Composite(parent, SWT.NONE);
-        documentInputNameComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).create());
+        documentInputNameComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
         documentInputNameComposite.setLayoutData(GridDataFactory.fillDefaults().create());
         final Label documentInputNameLabel = new Label(documentInputNameComposite, SWT.NONE);
         documentInputNameLabel.setLayoutData(GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).create());
         documentInputNameLabel.setText(Messages.rootContractInputName);
         final Text documentInputNameText = new Text(documentInputNameComposite, SWT.BORDER);
         documentInputNameText.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+        final Label dataTypeLabel = new Label(documentInputNameComposite, SWT.NONE);
+
         final IObservableValue prefixObservable = PojoObservables.observeValue(this, "rootName");
         dbc.bindValue(prefixObservable,
                 EMFObservables.observeDetailValue(Realm.getDefault(), selectedDataObservable, ProcessPackage.Literals.ELEMENT__NAME),
-                neverUpdateValueStrategy().create(), updateValueStrategy().withConverter(documentToRootContractInputName()).create());
+                neverUpdateValueStrategy().create(),
+                updateValueStrategy().withConverter(documentToRootContractInputName()).create());
         dbc.bindValue(SWTObservables.observeText(documentInputNameText, SWT.Modify),
                 prefixObservable);
         dbc.bindValue(rootNameObservable, prefixObservable);
+        dbc.bindValue(SWTObservables.observeText(dataTypeLabel), selectionTypeObservable, neverUpdateValueStrategy().create(),
+                updateValueStrategy().withConverter(createSelectionTypeToLabelTextConverter()).create());
+    }
+
+    protected IConverter createSelectionTypeToLabelTextConverter() {
+
+        return new Converter(Boolean.class, String.class) {
+
+            @Override
+            public Object convert(final Object fromObject) {
+                final Boolean isBusinessDataType = (Boolean) fromObject;
+                if (isBusinessDataType) {
+                    return Messages.inputOfType;
+                } else {
+                    return Messages.fileInputType;
+                }
+            }
+        };
     }
 
     private IConverter documentToRootContractInputName() {
@@ -237,6 +332,12 @@ public class SelectDataWizardPage extends WizardPage {
      */
     @Override
     public boolean isPageComplete() {
+        if (availableBusinessData.isEmpty() && dataTypeSelectionOptions.isBusinessDataTypeSelected()) {
+            return false;
+        }
+        if (availableDocuments.isEmpty() && !dataTypeSelectionOptions.isBusinessDataTypeSelected()) {
+            return false;
+        }
         if (selectedDataObservable.getValue() instanceof BusinessObjectData) {
             return isNoBusinessDataSelected() ? false : super.isPageComplete();
         }

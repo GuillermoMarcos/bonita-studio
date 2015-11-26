@@ -220,18 +220,22 @@ public class ContractInputGenerationWizard extends Wizard {
         cc.append(SetCommand.create(editingDomain, document, ProcessPackage.Literals.DOCUMENT__DOCUMENT_TYPE, DocumentType.CONTRACT));
         cc.append(SetCommand.create(editingDomain, document, ProcessPackage.Literals.DOCUMENT__CONTRACT_INPUT, input));
         if (contractContainer instanceof Task) {
-            final Operation operation = ExpressionFactory.eINSTANCE.createOperation();
-            final Expression rightOperand = ExpressionHelper.createExpressionFromEObject(input);
-            final Expression leftOperand = ExpressionHelper.createExpressionFromDocument(document);
-            operation.setLeftOperand(leftOperand);
-            operation.setRightOperand(rightOperand);
-            final Operator operator = ExpressionFactory.eINSTANCE.createOperator();
-            operator.setType(ExpressionConstants.SET_DOCUMENT_OPERATOR);
-            operation.setOperator(operator);
-            cc.append(AddCommand.create(editingDomain, contractContainer, ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS, operation));
+            createDocumentUpdateOperation(document, input, cc);
         }
         editingDomain.getCommandStack().execute(cc);
         return true;
+    }
+
+    private void createDocumentUpdateOperation(final Document document, final ContractInput input, final CompoundCommand cc) {
+        final Operation operation = ExpressionFactory.eINSTANCE.createOperation();
+        final Expression rightOperand = ExpressionHelper.createExpressionFromEObject(input);
+        final Expression leftOperand = ExpressionHelper.createExpressionFromDocument(document);
+        operation.setLeftOperand(leftOperand);
+        operation.setRightOperand(rightOperand);
+        final Operator operator = ExpressionFactory.eINSTANCE.createOperator();
+        operator.setType(ExpressionConstants.SET_DOCUMENT_OPERATOR);
+        operation.setOperator(operator);
+        cc.append(AddCommand.create(editingDomain, contractContainer, ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS, operation));
     }
 
     protected RootContractInputGenerator getRootContractGenerator() {
