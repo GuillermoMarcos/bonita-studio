@@ -223,11 +223,8 @@ public class SelectDataWizardPage extends WizardPage {
             public IStatus validate(final Object value) {
                 if (value instanceof Document) {
                     final Document document = (Document) value;
-                    if (document.getDocumentType().equals(DocumentType.NONE)) {
-                        return Status.OK_STATUS;
-                    } else {
-                        return ValidationStatus.warning(Messages.bind(Messages.defaultValueAlreadyDefinedWarning, document.getName()));
-                    }
+                    return DocumentType.NONE.equals(document.getDocumentType()) ? Status.OK_STATUS
+                            : ValidationStatus.warning(Messages.bind(Messages.defaultValueAlreadyDefinedWarning, document.getName()));
                 }
                 return Status.OK_STATUS;
             }

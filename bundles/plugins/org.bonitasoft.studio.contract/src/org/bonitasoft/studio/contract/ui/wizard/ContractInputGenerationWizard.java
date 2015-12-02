@@ -174,10 +174,11 @@ public class ContractInputGenerationWizard extends Wizard {
      */
     @Override
     public boolean performFinish() {
-        if (selectedDataObservable.getValue() instanceof BusinessObjectData) {
+        Object selectedData = selectedDataObservable.getValue();
+        if (selectedData instanceof BusinessObjectData) {
             return perFormFinishForBusinessObjectData();
         }
-        if (selectedDataObservable.getValue() instanceof Document) {
+        if (selectedData instanceof Document) {
             return performFinishForDocument();
         }
         return true;

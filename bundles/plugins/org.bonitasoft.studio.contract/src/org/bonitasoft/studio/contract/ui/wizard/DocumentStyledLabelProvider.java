@@ -26,8 +26,9 @@ public class DocumentStyledLabelProvider extends DataStyledTreeLabelProvider {
 
     @Override
     public void update(final ViewerCell cell) {
-        if (cell.getElement() instanceof Document) {
-            final Document document = (Document) cell.getElement();
+        Object element = cell.getElement();
+        if (element instanceof Document) {
+            final Document document = (Document) element;
             final StyledString styledString = new StyledString();
             styledString.append(document.getName());
             final String decoration = " -- " + getTypeLabel(document);
