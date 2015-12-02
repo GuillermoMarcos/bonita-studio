@@ -229,11 +229,15 @@ public class ContractInputGenerationWizard extends Wizard {
     private void createDocumentUpdateOperation(final Document document, final ContractInput input, final CompoundCommand cc) {
         final Operation operation = ExpressionFactory.eINSTANCE.createOperation();
         final Expression rightOperand = ExpressionHelper.createExpressionFromEObject(input);
-        final Expression leftOperand = ExpressionHelper.createExpressionFromDocument(document);
+        final Expression leftOperand = ExpressionHelper.createDocumentReferenceExpression(document);
+        final Operator operator = ExpressionFactory.eINSTANCE.createOperator();
+        if (document.isMultiple()) {
+            operator.setType(ExpressionConstants.SET_LIST_DOCUMENT_OPERATOR);
+        } else {
+            operator.setType(ExpressionConstants.SET_DOCUMENT_OPERATOR);
+        }
         operation.setLeftOperand(leftOperand);
         operation.setRightOperand(rightOperand);
-        final Operator operator = ExpressionFactory.eINSTANCE.createOperator();
-        operator.setType(ExpressionConstants.SET_DOCUMENT_OPERATOR);
         operation.setOperator(operator);
         cc.append(AddCommand.create(editingDomain, contractContainer, ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS, operation));
     }
