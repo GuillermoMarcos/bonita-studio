@@ -174,7 +174,7 @@ public class ContractInputGenerationWizard extends Wizard {
      */
     @Override
     public boolean performFinish() {
-        Object selectedData = selectedDataObservable.getValue();
+        final Object selectedData = selectedDataObservable.getValue();
         if (selectedData instanceof BusinessObjectData) {
             return perFormFinishForBusinessObjectData();
         }
@@ -218,10 +218,11 @@ public class ContractInputGenerationWizard extends Wizard {
         input.setName((String) rootNameObservable.getValue());
         final CompoundCommand cc = new CompoundCommand();
         cc.append(AddCommand.create(editingDomain, contractContainer.getContract(), ProcessPackage.Literals.CONTRACT__INPUTS, input));
-        cc.append(SetCommand.create(editingDomain, document, ProcessPackage.Literals.DOCUMENT__DOCUMENT_TYPE, DocumentType.CONTRACT));
-        cc.append(SetCommand.create(editingDomain, document, ProcessPackage.Literals.DOCUMENT__CONTRACT_INPUT, input));
         if (contractContainer instanceof Task) {
             createDocumentUpdateOperation(document, input, cc);
+        } else {
+            cc.append(SetCommand.create(editingDomain, document, ProcessPackage.Literals.DOCUMENT__DOCUMENT_TYPE, DocumentType.CONTRACT));
+            cc.append(SetCommand.create(editingDomain, document, ProcessPackage.Literals.DOCUMENT__CONTRACT_INPUT, input));
         }
         editingDomain.getCommandStack().execute(cc);
         return true;
