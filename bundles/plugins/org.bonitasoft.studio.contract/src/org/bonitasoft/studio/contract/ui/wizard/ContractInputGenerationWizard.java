@@ -242,6 +242,12 @@ public class ContractInputGenerationWizard extends Wizard {
         operation.setRightOperand(rightOperand);
         operation.setOperator(operator);
         cc.append(AddCommand.create(editingDomain, contractContainer, ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS, operation));
+        openUpdateDocumentOperationWarning(document.getName());
+    }
+
+    protected void openUpdateDocumentOperationWarning(final String documentName) {
+        MessageDialog.openWarning(getShell(), Messages.openUpdateDocumentOperationWarningTitle,
+                Messages.bind(Messages.openUpdateDocumentOperationWarningMessages, documentName));
     }
 
     protected RootContractInputGenerator getRootContractGenerator() {

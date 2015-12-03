@@ -120,4 +120,6 @@ public class Messages extends NLS {
     public static String warningAddFromData_noDocumentAvailable;
     public static String defaultValueAlreadyDefinedWarning;
     public static String fileInputType;
+    public static String openUpdateDocumentOperationWarningTitle;
+    public static String openUpdateDocumentOperationWarningMessages;
 }
