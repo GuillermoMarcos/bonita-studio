@@ -75,13 +75,7 @@ import com.google.common.base.Function;
  */
 public class SelectDataWizardPage extends WizardPage {
 
-    /**
-     * 
-     */
     private static final String INPUT = "_input";
-    /**
-     * 
-     */
     private static final String DOC_INPUT = "_doc_input";
     List<Data> availableBusinessData;
     final WritableValue selectedDataObservable;
@@ -325,7 +319,7 @@ public class SelectDataWizardPage extends WizardPage {
      */
     @Override
     public boolean canFlipToNextPage() {
-        Object data = selectedDataObservable.getValue();
+        final Object data = selectedDataObservable.getValue();
         if (data == null || data instanceof Document) {
             return false;
         }
