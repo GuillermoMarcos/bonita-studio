@@ -271,7 +271,7 @@ public class ContractInputGenerationWizardTest {
     }
 
     @Test
-    public void should_add_FileInput_whenDataIsDocument_onFinish() {
+    public void should_add_DocumentUpdateOperation_whenDataIsDocument_onFinish() {
         final Task task = aTask().havingContract(aContract()).build();
         final Pool process = aPool().havingContract(aContract()).build();
         final Document document1 = ProcessFactory.eINSTANCE.createDocument();
@@ -294,11 +294,10 @@ public class ContractInputGenerationWizardTest {
         assertThat(task.getOperations().get(0).getLeftOperand().getName()).isEqualTo("myDocument");
         assertThat(task.getOperations().get(0).getRightOperand().getType()).isEqualTo(ExpressionConstants.CONTRACT_INPUT_TYPE);
         assertThat(task.getOperations().get(0).getRightOperand().getName()).isEqualTo("myDocument_doc_input");
-        assertThat(process.getDocuments().get(0).getDocumentType()).isEqualTo(DocumentType.CONTRACT);
     }
 
     @Test
-    public void should_add_DocumentUpdateOperation_whenDataIsDocument_onFinish() {
+    public void should_add_FileInput_whenDataIsDocument_onFinish() {
         final Pool process = aPool().havingContract(aContract()).build();
         process.getDocuments().add(ProcessFactory.eINSTANCE.createDocument());
         when(sourceViewerFactory.createSourceViewer(any(Composite.class), any(Boolean.class))).thenReturn(groovyViewer);

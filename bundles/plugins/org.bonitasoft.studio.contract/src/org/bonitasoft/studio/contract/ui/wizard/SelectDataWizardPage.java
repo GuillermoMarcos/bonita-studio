@@ -18,12 +18,14 @@ import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.bonitasoft.studio.common.jface.databinding.UpdateStrategyFactory.neverUpdateValueStrategy;
 import static org.bonitasoft.studio.common.jface.databinding.UpdateStrategyFactory.updateValueStrategy;
+import static org.bonitasoft.studio.common.jface.databinding.validator.ValidatorFactory.uniqueValidator;
 
 import java.util.List;
 
 import org.bonitasoft.studio.businessobject.core.repository.BusinessObjectModelRepositoryStore;
 import org.bonitasoft.studio.businessobject.ui.BusinessObjectDataStyledLabelProvider;
 import org.bonitasoft.studio.common.NamingUtils;
+import org.bonitasoft.studio.common.jface.databinding.validator.EmptyInputValidator;
 import org.bonitasoft.studio.common.widgets.CustomStackLayout;
 import org.bonitasoft.studio.contract.i18n.Messages;
 import org.bonitasoft.studio.model.process.BusinessObjectData;
@@ -34,6 +36,7 @@ import org.bonitasoft.studio.model.process.Document;
 import org.bonitasoft.studio.model.process.DocumentType;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
@@ -141,17 +144,17 @@ public class SelectDataWizardPage extends WizardPage {
         radioButtonComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).margins(20, 20).create());
         businessVariableButton = new Button(radioButtonComposite, SWT.RADIO);
         businessVariableButton.setText(Messages.businessVariable);
-        if (availableBusinessData.isEmpty()) {
-            businessVariableButton.setEnabled(false);
-        }
         documentButton = new Button(radioButtonComposite, SWT.RADIO);
         documentButton.setText(Messages.document);
-        if (availableDocuments.isEmpty()) {
-            documentButton.setEnabled(false);
-        }
         selectionTypeObservable = new SelectObservableValue(Boolean.class);
         selectionTypeObservable.addOption(Boolean.TRUE, SWTObservables.observeSelection(businessVariableButton));
         selectionTypeObservable.addOption(Boolean.FALSE, SWTObservables.observeSelection(documentButton));
+        if (availableBusinessData.isEmpty()) {
+            businessVariableButton.setEnabled(false);
+        }
+        if (availableDocuments.isEmpty()) {
+            documentButton.setEnabled(false);
+        }
     }
 
     public void createbusinessVariableTableViewerComposite(final Composite parent, final DataBindingContext dbc) {
@@ -267,11 +270,16 @@ public class SelectDataWizardPage extends WizardPage {
         dbc.bindValue(prefixObservable,
                 EMFObservables.observeDetailValue(Realm.getDefault(), selectedDataObservable, ProcessPackage.Literals.ELEMENT__NAME),
                 neverUpdateValueStrategy().create(),
-                updateValueStrategy().withConverter(documentToRootContractInputName()).create());
+                updateValueStrategy().withConverter(documentToRootContractInputName())
+                        .create());
+        final UpdateValueStrategy documentInputNameUpdateStrategy = updateValueStrategy().withValidator(
+                uniqueValidator().onProperty("name").in(contract.getInputs())).create();
+        documentInputNameUpdateStrategy.setBeforeSetValidator(new EmptyInputValidator(Messages.rootContractInputName));
         dbc.bindValue(SWTObservables.observeText(documentInputNameText, SWT.Modify),
-                prefixObservable);
+                prefixObservable, documentInputNameUpdateStrategy, null);
         dbc.bindValue(rootNameObservable, prefixObservable);
-        dbc.bindValue(SWTObservables.observeText(dataTypeLabel), selectionTypeObservable, neverUpdateValueStrategy().create(),
+        dbc.bindValue(SWTObservables.observeText(dataTypeLabel), selectionTypeObservable,
+                neverUpdateValueStrategy().create(),
                 updateValueStrategy().withConverter(createSelectionTypeToLabelTextConverter()).create());
     }
 
@@ -342,7 +350,7 @@ public class SelectDataWizardPage extends WizardPage {
             return isNoBusinessDataSelected() ? false : super.isPageComplete();
         }
         if (selectedDataObservable.getValue() instanceof Document) {
-            return true;
+            return super.isPageComplete();
         }
         return super.isPageComplete();
     }

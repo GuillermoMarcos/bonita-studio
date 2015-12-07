@@ -89,6 +89,7 @@ public class ContractInputGenerationWizard extends Wizard {
     private final ContractInputGenerationWizardPagesFactory contractInputWizardPagesFactory;
     private final GroovySourceViewerFactory sourceViewerFactory;
     private SelectDataWizardPage selectBusinessDataWizardPage;
+    private List<Document> availableDocuments;
 
     public ContractInputGenerationWizard(final ContractContainer contractContainer,
             final EditingDomain editingDomain,
@@ -130,7 +131,7 @@ public class ContractInputGenerationWizard extends Wizard {
                 selectedDataObservable.setValue(pool.getDocuments().get(0));
             }
         }
-        final List<Document> availableDocuments = ModelHelper.getParentPool(contractContainer).getDocuments();
+        availableDocuments = ModelHelper.getParentPool(contractContainer).getDocuments();
         selectBusinessDataWizardPage = contractInputWizardPagesFactory.createSelectBusinessDataWizardPage(contractContainer.getContract(),
                 availableBusinessData, availableDocuments,
                 selectedDataObservable,
@@ -162,7 +163,7 @@ public class ContractInputGenerationWizard extends Wizard {
      */
     @Override
     public boolean canFinish() {
-        if (availableBusinessData.isEmpty()) {
+        if (availableBusinessData.isEmpty() && availableDocuments.isEmpty()) {
             return false;
         }
         return super.canFinish();
@@ -242,12 +243,7 @@ public class ContractInputGenerationWizard extends Wizard {
         operation.setRightOperand(rightOperand);
         operation.setOperator(operator);
         cc.append(AddCommand.create(editingDomain, contractContainer, ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS, operation));
-        openUpdateDocumentOperationWarning(document.getName());
-    }
-
-    protected void openUpdateDocumentOperationWarning(final String documentName) {
-        MessageDialog.openWarning(getShell(), Messages.openUpdateDocumentOperationWarningTitle,
-                Messages.bind(Messages.openUpdateDocumentOperationWarningMessages, documentName));
+        infoDialogFactory.openUpdateDocumentOperationWarning(document.getName(), getShell());
     }
 
     protected RootContractInputGenerator getRootContractGenerator() {
