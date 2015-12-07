@@ -75,6 +75,14 @@ import com.google.common.base.Function;
  */
 public class SelectDataWizardPage extends WizardPage {
 
+    /**
+     * 
+     */
+    private static final String INPUT = "_input";
+    /**
+     * 
+     */
+    private static final String DOC_INPUT = "_doc_input";
     List<Data> availableBusinessData;
     final WritableValue selectedDataObservable;
     private final BusinessObjectModelRepositoryStore businessObjectStore;
@@ -294,7 +302,7 @@ public class SelectDataWizardPage extends WizardPage {
 
             @Override
             public Object convert(final Object fromObject) {
-                final String name = selectedDataObservable.getValue() instanceof Document ? fromObject + "_doc_input" : fromObject + "_input";
+                final String name = selectedDataObservable.getValue() instanceof Document ? fromObject + DOC_INPUT : fromObject + INPUT;
                 return NamingUtils.generateNewName(newHashSet(transform(contract.getInputs(), toContactInputName())), name, 0);
 
             }
@@ -317,7 +325,8 @@ public class SelectDataWizardPage extends WizardPage {
      */
     @Override
     public boolean canFlipToNextPage() {
-        if (selectedDataObservable.getValue() == null || selectedDataObservable.getValue() instanceof Document) {
+        Object data = selectedDataObservable.getValue();
+        if (data == null || data instanceof Document) {
             return false;
         }
         return super.canFlipToNextPage();
