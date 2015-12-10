@@ -24,6 +24,7 @@ import org.bonitasoft.studio.importer.bar.tests.TestSimpleMigrationUseCase;
 import org.bonitasoft.studio.importer.bar.tests.attachmentDataImport.AttachmentDataImportTest;
 import org.bonitasoft.studio.importer.bar.tests.connector.TestConnectorMigrationUseCase;
 import org.bonitasoft.studio.importer.bar.tests.connector.TestCustomConnectorMigrationUseCase;
+import org.bonitasoft.studio.importer.bar.tests.dataDependencies.DataDependenciesMigrationIT;
 import org.bonitasoft.studio.importer.bar.tests.examples.Test59ExampleImport;
 import org.bonitasoft.studio.importer.bar.tests.messagesImport.CorrelationMigrationTest;
 import org.bonitasoft.studio.migration.tests.EdaptHistoryIT;
@@ -53,6 +54,7 @@ import org.junit.runners.Suite;
         Test59ExampleImport.class,
         AttachmentDataImportTest.class,
         CorrelationMigrationTest.class,
+        DataDependenciesMigrationIT.class,
         CloseAllEditors.class
 })
 public class AllMigrationTests extends TestSuite {
