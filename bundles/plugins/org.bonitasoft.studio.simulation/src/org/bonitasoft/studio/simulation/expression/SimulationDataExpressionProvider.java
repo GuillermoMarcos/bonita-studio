@@ -25,8 +25,8 @@ import java.util.Set;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.simulation.SimulationData;
@@ -58,9 +58,9 @@ public class SimulationDataExpressionProvider implements IExpressionProvider {
 
     @Override
     public Set<Expression> getExpressions(EObject context) {
-        Set<Expression> result = new HashSet<Expression>() ;
-        List<SimulationData> simData = ModelHelper.getAccessibleSimulationData(context) ;
-        for(SimulationData d : simData){
+        final Set<Expression> result = new HashSet<Expression>() ;
+        final List<SimulationData> simData = ModelHelper.getAccessibleSimulationData(context) ;
+        for(final SimulationData d : simData){
             result.add(createExpression(d)) ;
         }
         return result;
@@ -77,7 +77,7 @@ public class SimulationDataExpressionProvider implements IExpressionProvider {
             return null ;
         }
 
-        EObject reference = expression.getReferencedElements().get(0);
+        final EObject reference = expression.getReferencedElements().get(0);
         return adapterLabelProvider.getImage(reference) ;
     }
 
@@ -89,7 +89,7 @@ public class SimulationDataExpressionProvider implements IExpressionProvider {
 
 
     private Expression createExpression(SimulationData d) {
-        Expression exp = ExpressionFactory.eINSTANCE.createExpression() ;
+        final Expression exp = ExpressionFactory.eINSTANCE.createExpression() ;
         exp.setType(getExpressionType()) ;
         exp.setContent(d.getName()) ;
         exp.setName(d.getName()) ;

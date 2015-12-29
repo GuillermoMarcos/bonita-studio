@@ -131,7 +131,7 @@ public class ContractConstraintExpressionWizardPage extends WizardPage implement
         if (!inputs.isEmpty()) {
             contractContainer = ModelHelper.getFirstContainerOfType(inputs.get(0), ContractContainer.class);
         }
-        groovyViewer.setContext(null, contractContainer, null, null);
+        groovyViewer.setContext(null, contractContainer, null);
         return groovyViewer;
     }
 

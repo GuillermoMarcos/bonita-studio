@@ -17,7 +17,8 @@
 package org.bonitasoft.studio.expression.editor.provider;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.autocompletion.ExpressionProposal;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ListExpression;
@@ -55,7 +56,7 @@ public class ExpressionColumnLabelProvider extends ColumnLabelProvider {
 
     @Override
     public Color getBackground(Object element) {
-        String text = getText(element) ;
+        final String text = getText(element) ;
         if(text == null || text.isEmpty()){
             return bgColor;
         }
@@ -79,7 +80,7 @@ public class ExpressionColumnLabelProvider extends ColumnLabelProvider {
             if(((Expression) expression).getName() == null || ((Expression) expression).getName().isEmpty()){
                 return null ;
             }
-            for(IExpressionProvider provider : ExpressionEditorService.getInstance().getExpressionProviders()){
+            for (final IExpressionProvider provider : ExpressionProviderService.getInstance().getExpressionProviders()) {
                 if(provider.getExpressionType().equals(((Expression) expression).getType())){
                     return 	provider.getIcon((Expression) expression) ;
                 }
@@ -104,7 +105,7 @@ public class ExpressionColumnLabelProvider extends ColumnLabelProvider {
             expression = ((ExpressionProposal) expression).getExpression() ;
         }
         if(expression instanceof Expression){
-            for(IExpressionProvider provider : ExpressionEditorService.getInstance().getExpressionProviders()){
+            for (final IExpressionProvider provider : ExpressionProviderService.getInstance().getExpressionProviders()) {
                 if(provider.getExpressionType().equals(((Expression) expression).getType())){
                     return 	provider.getProposalLabel((Expression) expression) ;
                 }

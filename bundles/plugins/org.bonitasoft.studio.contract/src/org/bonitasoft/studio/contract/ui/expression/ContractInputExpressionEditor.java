@@ -26,10 +26,9 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.contract.core.expression.ContractInputExpressionProvider;
 import org.bonitasoft.studio.contract.i18n.Messages;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.process.ContractInput;
@@ -147,7 +146,7 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
 
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext,
-            final EObject context, final Expression inputExpression, final ViewerFilter[] filters, final ExpressionViewer expressionViewer) {
+            final EObject context, final Expression inputExpression, final ViewerFilter[] filters) {
         editorInputExpression = inputExpression;
         updateViewerInput(context);
 

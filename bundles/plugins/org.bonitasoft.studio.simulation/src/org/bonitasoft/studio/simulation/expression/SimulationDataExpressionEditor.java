@@ -23,10 +23,9 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.jface.TableColumnSorter;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.simulation.SimulationData;
@@ -86,16 +85,16 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
 
         viewer = new TableViewer(mainComposite, SWT.FULL_SELECTION | SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
 
-        TableLayout layout = new TableLayout();
+        final TableLayout layout = new TableLayout();
         layout.addColumnData(new ColumnWeightData(100, false));
         viewer.getTable().setLayout(layout);
         viewer.getTable().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
-        TableViewerColumn columnViewer = new TableViewerColumn(viewer, SWT.NONE);
-        TableColumn column = columnViewer.getColumn();
+        final TableViewerColumn columnViewer = new TableViewerColumn(viewer, SWT.NONE);
+        final TableColumn column = columnViewer.getColumn();
         column.setText(Messages.name);
 
-        TableColumnSorter sorter = new TableColumnSorter(viewer);
+        final TableColumnSorter sorter = new TableColumnSorter(viewer);
         sorter.setColumn(column);
 
         viewer.getTable().setHeaderVisible(true);
@@ -124,14 +123,14 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
     }
 
     protected void createReturnTypeComposite(Composite parent) {
-        Composite typeComposite = new Composite(parent, SWT.NONE);
+        final Composite typeComposite = new Composite(parent, SWT.NONE);
         typeComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        GridLayout gl = new GridLayout(2, false);
+        final GridLayout gl = new GridLayout(2, false);
         gl.marginWidth = 0;
         gl.marginHeight = 0;
         typeComposite.setLayout(gl);
 
-        Label typeLabel = new Label(typeComposite, SWT.NONE);
+        final Label typeLabel = new Label(typeComposite, SWT.NONE);
         typeLabel.setText(Messages.returnType);
         typeLabel.setLayoutData(GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).create());
 
@@ -150,13 +149,12 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
     }
 
     @Override
-    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters,
-            ExpressionViewer viewer) {
+    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters) {
 
         editorInputExpression = inputExpression;
-        Set<SimulationData> input = new HashSet<SimulationData>();
-        IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.SIMULATION_VARIABLE_TYPE);
-        for (Expression e : provider.getExpressions(context)) {
+        final Set<SimulationData> input = new HashSet<SimulationData>();
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.SIMULATION_VARIABLE_TYPE);
+        for (final Expression e : provider.getExpressions(context)) {
             if (inputExpression.isReturnTypeFixed()) {
                 if (e.getReturnType().equals(inputExpression.getReturnType())) {
                     input.add((SimulationData) e.getReferencedElements().get(0));
@@ -167,13 +165,13 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
         }
         viewer.setInput(input);
 
-        IObservableValue contentObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
-        IObservableValue nameObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);
-        IObservableValue returnTypeObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__RETURN_TYPE);
-        IObservableValue referenceObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS);
+        final IObservableValue contentObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
+        final IObservableValue nameObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);
+        final IObservableValue returnTypeObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__RETURN_TYPE);
+        final IObservableValue referenceObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS);
 
-        UpdateValueStrategy selectionToName = new UpdateValueStrategy();
-        IConverter nameConverter = new Converter(SimulationData.class, String.class) {
+        final UpdateValueStrategy selectionToName = new UpdateValueStrategy();
+        final IConverter nameConverter = new Converter(SimulationData.class, String.class) {
 
             @Override
             public Object convert(Object data) {
@@ -183,8 +181,8 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
         };
         selectionToName.setConverter(nameConverter);
 
-        UpdateValueStrategy selectionToContent = new UpdateValueStrategy();
-        IConverter contentConverter = new Converter(SimulationData.class, String.class) {
+        final UpdateValueStrategy selectionToContent = new UpdateValueStrategy();
+        final IConverter contentConverter = new Converter(SimulationData.class, String.class) {
 
             @Override
             public Object convert(Object data) {
@@ -194,8 +192,8 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
         };
         selectionToContent.setConverter(contentConverter);
 
-        UpdateValueStrategy selectionToReturnType = new UpdateValueStrategy();
-        IConverter returnTypeConverter = new Converter(SimulationData.class, String.class) {
+        final UpdateValueStrategy selectionToReturnType = new UpdateValueStrategy();
+        final IConverter returnTypeConverter = new Converter(SimulationData.class, String.class) {
 
             @Override
             public Object convert(Object data) {
@@ -205,8 +203,8 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
         };
         selectionToReturnType.setConverter(returnTypeConverter);
 
-        UpdateValueStrategy selectionToReferencedData = new UpdateValueStrategy();
-        IConverter referenceConverter = new Converter(SimulationData.class, List.class) {
+        final UpdateValueStrategy selectionToReferencedData = new UpdateValueStrategy();
+        final IConverter referenceConverter = new Converter(SimulationData.class, List.class) {
 
             @Override
             public Object convert(Object data) {
@@ -220,12 +218,12 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
         };
         selectionToReferencedData.setConverter(referenceConverter);
 
-        UpdateValueStrategy referencedDataToSelection = new UpdateValueStrategy();
-        IConverter referencetoDataConverter = new Converter(List.class, SimulationData.class) {
+        final UpdateValueStrategy referencedDataToSelection = new UpdateValueStrategy();
+        final IConverter referencetoDataConverter = new Converter(List.class, SimulationData.class) {
 
             @Override
             public Object convert(Object dataList) {
-                List<SimulationData> list = (List<SimulationData>) dataList;
+                final List<SimulationData> list = (List<SimulationData>) dataList;
                 if (list.isEmpty()) {
                     return null;
                 } else {

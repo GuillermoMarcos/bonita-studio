@@ -15,7 +15,8 @@
 package org.bonitasoft.studio.expression.editor.provider;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.autocompletion.ExpressionProposal;
 import org.bonitasoft.studio.expression.editor.autocompletion.IExpressionProposalLabelProvider;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -35,7 +36,7 @@ public class ExpressionLabelProvider extends LabelProvider implements IExpressio
             expression = ((ExpressionProposal) expression).getExpression();
         }
         if (expression instanceof Expression) {
-            for (final IExpressionProvider provider : ExpressionEditorService.getInstance().getExpressionProviders()) {
+            for (final IExpressionProvider provider : ExpressionProviderService.getInstance().getExpressionProviders()) {
                 if (provider.getExpressionType().equals(((Expression) expression).getType())) {
                     return provider.getIcon((Expression) expression);
                 }
@@ -55,7 +56,7 @@ public class ExpressionLabelProvider extends LabelProvider implements IExpressio
             expression = ((ExpressionProposal) expression).getExpression();
         }
         if (expression instanceof Expression) {
-            for (final IExpressionProvider provider : ExpressionEditorService.getInstance().getExpressionProviders()) {
+            for (final IExpressionProvider provider : ExpressionProviderService.getInstance().getExpressionProviders()) {
                 if (provider.getExpressionType().equals(((Expression) expression).getType())) {
                     return provider.getProposalLabel((Expression) expression);
                 }

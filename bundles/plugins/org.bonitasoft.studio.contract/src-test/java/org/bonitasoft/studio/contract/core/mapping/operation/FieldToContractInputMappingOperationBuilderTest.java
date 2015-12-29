@@ -41,7 +41,7 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.contract.core.mapping.FieldToContractInputMapping;
 import org.bonitasoft.studio.contract.core.mapping.expression.FieldToContractInputMappingExpressionBuilder;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.editor.filter.ExpressionReturnTypeFilter;
 import org.bonitasoft.studio.model.expression.Operation;
 import org.bonitasoft.studio.model.expression.assertions.ExpressionAssert;
@@ -66,7 +66,7 @@ public class FieldToContractInputMappingOperationBuilderTest {
     @Mock
     private RepositoryAccessor repositoryAccessor;
     @Mock
-    private ExpressionEditorService expressionEditorService;
+    private ExpressionProviderService expressionEditorService;
     @Mock
     private FieldToContractInputMappingExpressionBuilder expressionBuilder;
 

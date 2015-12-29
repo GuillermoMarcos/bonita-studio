@@ -17,16 +17,11 @@
 package org.bonitasoft.studio.groovy.ui.providers;
 
 import org.bonitasoft.studio.common.jface.databinding.validator.InputLengthValidator;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionNatureProvider;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.groovy.ui.viewer.GroovyViewer;
 import org.bonitasoft.studio.model.expression.Expression;
-import org.bonitasoft.studio.model.expression.ExpressionPackage;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
-import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.text.DocumentEvent;
@@ -78,31 +73,16 @@ public class GroovyScriptFileEditor extends GroovyScriptExpressionEditor impleme
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression, final ViewerFilter[] filters,
-            final ExpressionViewer expressionViewer) {
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression,
+            final ViewerFilter[] filters) {
         this.inputExpression = inputExpression;
         this.context = context;
-
-        final IObservableValue contentModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
-
         groovyViewer.getDocument().set(inputExpression.getContent());
-        IExpressionNatureProvider natureProvider = null;
-        if (expressionViewer != null) {
-            natureProvider = expressionViewer.getExpressionNatureProvider();
-        }
-        groovyViewer.setContext(null, context, filters, natureProvider);
+        groovyViewer.setContext(null, context, filters);
         groovyViewer.getSourceViewer().getTextWidget().setData(BONITA_KEYWORDS_DATA_KEY, null);
         groovyViewer.getSourceViewer().getTextWidget().setData(PROCESS_VARIABLES_DATA_KEY, null);
         groovyViewer.getSourceViewer().getTextWidget().setData(CONTEXT_DATA_KEY, null);
-       /* dataBindingContext.bindValue(new DocumentObservable(sourceViewer), contentModelObservable,
-                new UpdateValueStrategy().setAfterGetValidator(new InputLengthValidator("", GroovyViewer.MAX_SCRIPT_LENGTH)), null);
-        sourceViewer.addTextListener(new ITextListener() {
 
-            @Override
-            public void textChanged(TextEvent event) {
-                sourceViewer.getTextWidget().notifyListeners(SWT.Modify, new Event());
-            }
-        });*/
         final IValidator lenghtValidator = new InputLengthValidator("", GroovyViewer.MAX_SCRIPT_LENGTH);
         sourceViewer.getDocument().addDocumentListener(new IDocumentListener() {
 
@@ -110,7 +90,6 @@ public class GroovyScriptFileEditor extends GroovyScriptExpressionEditor impleme
             public void documentChanged(final DocumentEvent event) {
                 final String text = event.getDocument().get();
                 if (lenghtValidator.validate(text).isOK()) {
-                	//groovyViewer.resetFoldingStructure();
                     GroovyScriptFileEditor.this.inputExpression.setContent(text);
                 }
 

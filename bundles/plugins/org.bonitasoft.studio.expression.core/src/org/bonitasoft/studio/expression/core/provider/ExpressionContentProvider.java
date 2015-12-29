@@ -12,13 +12,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bonitasoft.studio.expression.editor.provider;
+package org.bonitasoft.studio.expression.core.provider;
 
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.ecore.EObject;
 
@@ -28,15 +27,15 @@ import org.eclipse.emf.ecore.EObject;
 public class ExpressionContentProvider implements IExpressionNatureProvider {
 
     private static ExpressionContentProvider INSTANCE;
-    private final ExpressionEditorService expressionEditorService;
+    private final ExpressionProviderService expressionEditorService;
 
-    private ExpressionContentProvider(final ExpressionEditorService expressionEditorService) {
+    private ExpressionContentProvider(final ExpressionProviderService expressionEditorService) {
         this.expressionEditorService = expressionEditorService;
     }
 
     public static ExpressionContentProvider getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new ExpressionContentProvider(ExpressionEditorService.getInstance());
+            INSTANCE = new ExpressionContentProvider(ExpressionProviderService.getInstance());
         }
         return INSTANCE;
     }

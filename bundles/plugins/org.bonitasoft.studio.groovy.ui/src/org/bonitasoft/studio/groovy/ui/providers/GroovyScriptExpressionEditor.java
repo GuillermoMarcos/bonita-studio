@@ -30,10 +30,9 @@ import org.bonitasoft.studio.common.jface.databinding.observables.DocumentObserv
 import org.bonitasoft.studio.common.jface.databinding.validator.InputLengthValidator;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.dependencies.ui.dialog.ManageConnectorJarDialog;
-import org.bonitasoft.studio.expression.editor.provider.ExpressionContentProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.expression.editor.viewer.SelectDependencyDialog;
 import org.bonitasoft.studio.groovy.GroovyPlugin;
 import org.bonitasoft.studio.groovy.ScriptVariable;
@@ -448,7 +447,7 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
 
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression,
-            final ViewerFilter[] filters, final ExpressionViewer viewer) {
+            final ViewerFilter[] filters) {
         this.inputExpression = inputExpression;
         this.context = context;
 
@@ -460,7 +459,7 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
         inputExpression.setType(ExpressionConstants.SCRIPT_TYPE);
         inputExpression.setInterpreter(ExpressionConstants.GROOVY);
 
-        groovyViewer.setContext(viewer, context, filters, viewer.getExpressionNatureProvider());
+        groovyViewer.setContext(null, context, filters);
         nodes = new ArrayList<ScriptVariable>(groovyViewer.getFieldNodes());
 
         if (context == null && nodes == null) {

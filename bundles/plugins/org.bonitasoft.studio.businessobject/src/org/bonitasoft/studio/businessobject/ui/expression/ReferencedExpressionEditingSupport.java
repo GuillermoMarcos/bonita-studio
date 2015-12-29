@@ -17,8 +17,8 @@
  */
 package org.bonitasoft.studio.businessobject.ui.expression;
 
+import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.editor.autocompletion.IExpressionProposalLabelProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewerCellEditor;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.edit.domain.EditingDomain;

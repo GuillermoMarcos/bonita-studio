@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bonitasoft.studio.expression.editor.provider;
+package org.bonitasoft.studio.expression.core.provider;
 
 import java.util.Comparator;
 

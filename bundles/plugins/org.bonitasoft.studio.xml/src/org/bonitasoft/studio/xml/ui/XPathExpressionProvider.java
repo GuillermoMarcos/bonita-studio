@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.XMLData;
 import org.bonitasoft.studio.pics.Pics;
@@ -41,11 +41,12 @@ public class XPathExpressionProvider implements IExpressionProvider {
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getExpressions(org.eclipse.emf.ecore.EObject)
 	 */
-	public Set<Expression> getExpressions(EObject context) {
-		Set<Expression> exprSet = new HashSet<Expression>();
-		IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE) ;
+	@Override
+    public Set<Expression> getExpressions(EObject context) {
+		final Set<Expression> exprSet = new HashSet<Expression>();
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
 		if(provider != null){
-			for(Expression exp : provider.getExpressions(context)){
+			for(final Expression exp : provider.getExpressions(context)){
 				if(exp.getReferencedElements().get(0) instanceof XMLData){
 					exprSet.add(exp);
 				}
@@ -57,38 +58,43 @@ public class XPathExpressionProvider implements IExpressionProvider {
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getExpressionType()
 	 */
-	public String getExpressionType() {
+	@Override
+    public String getExpressionType() {
 		return ExpressionConstants.XPATH_TYPE;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getIcon(org.bonitasoft.studio.model.expression.Expression)
 	 */
-	public Image getIcon(Expression expression) {
+	@Override
+    public Image getIcon(Expression expression) {
 		return Pics.getImage(PicsConstants.xml);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getTypeIcon()
 	 */
-	public Image getTypeIcon() {
+	@Override
+    public Image getTypeIcon() {
 		return Pics.getImage(PicsConstants.xml);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getProposalLabel(org.bonitasoft.studio.model.expression.Expression)
 	 */
-	public String getProposalLabel(Expression expression) {
+	@Override
+    public String getProposalLabel(Expression expression) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#isRelevantFor(org.eclipse.emf.ecore.EObject)
 	 */
-	public boolean isRelevantFor(EObject context) {
-		IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE) ;
+	@Override
+    public boolean isRelevantFor(EObject context) {
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
 		if(provider != null){
-			for(Expression exp : provider.getExpressions(context)){
+			for(final Expression exp : provider.getExpressions(context)){
 				if(exp.getReferencedElements().get(0) instanceof XMLData){
 					return true ;
 				}
@@ -101,14 +107,16 @@ public class XPathExpressionProvider implements IExpressionProvider {
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getTypeLabel()
 	 */
-	public String getTypeLabel() {
+	@Override
+    public String getTypeLabel() {
 		return Messages.xpathExpressionType;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getExpressionEditor(org.bonitasoft.studio.model.expression.Expression)
 	 */
-	public IExpressionEditor getExpressionEditor(Expression expression,EObject context) {
+	@Override
+    public IExpressionEditor getExpressionEditor(Expression expression,EObject context) {
 		return new XPathExpressionEditor();
 	}
 

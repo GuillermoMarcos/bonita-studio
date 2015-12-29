@@ -22,9 +22,9 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.expression.ListExpression;
@@ -43,23 +43,21 @@ import org.eclipse.swt.graphics.Image;
  */
 public class MessageIdExpressionProvider implements IExpressionProvider {
 
-
-
     /* (non-Javadoc)
      * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getExpressions(org.eclipse.emf.ecore.EObject)
      */
     @Override
     public Set<Expression> getExpressions(EObject context) {
         if(context instanceof AbstractCatchMessageEvent){
-            String event = ((AbstractCatchMessageEvent) context).getEvent();
+            final String event = ((AbstractCatchMessageEvent) context).getEvent();
             if(event != null){
                 final Message message = ModelHelper.findEvent((Element) context, event);
                 if(message != null){
-                    TableExpression throwMessageContent = message.getMessageContent();
-                    HashSet<Expression> messageContentIds = new HashSet<Expression>();
+                    final TableExpression throwMessageContent = message.getMessageContent();
+                    final HashSet<Expression> messageContentIds = new HashSet<Expression>();
                     for (int i=0;i<throwMessageContent.getExpressions().size();i++){
-                        ListExpression row = throwMessageContent.getExpressions().get(i);
-                        Expression id = row.getExpressions().get(0);
+                        final ListExpression row = throwMessageContent.getExpressions().get(i);
+                        final Expression id = row.getExpressions().get(0);
                         if (id!=null && id.getName() !=null){
                             messageContentIds.add(createExpression(id.getName()));
                         }
@@ -72,7 +70,7 @@ public class MessageIdExpressionProvider implements IExpressionProvider {
     }
 
     private Expression createExpression(String id) {
-        Expression exp = ExpressionFactory.eINSTANCE.createExpression() ;
+        final Expression exp = ExpressionFactory.eINSTANCE.createExpression() ;
         exp.setType(getExpressionType()) ;
         exp.setContent(id) ;
         exp.setName(id) ;

@@ -21,7 +21,7 @@ import static org.mockito.Mockito.doReturn;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.data.provider.DataExpressionProvider;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.model.process.CallActivity;
 import org.bonitasoft.studio.model.process.InputMappingAssignationType;
 import org.bonitasoft.studio.model.process.builders.InputMappingBuilder;
@@ -60,7 +60,7 @@ public class ParametersMappingSectionTest {
     @Mock
     private TabbedPropertySheetPage aTabbedPropertySheetPage;
     @Mock
-    private ExpressionEditorService expressionEditorService;
+    private ExpressionProviderService expressionEditorService;
     @Mock
     private RepositoryAccessor repositoryAccessor;
     @Mock

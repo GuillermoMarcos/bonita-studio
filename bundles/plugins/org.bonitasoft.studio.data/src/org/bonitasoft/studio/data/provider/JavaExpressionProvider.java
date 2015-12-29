@@ -23,9 +23,9 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.data.i18n.Messages;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.Data;
 import org.bonitasoft.studio.model.process.JavaObjectData;
@@ -62,9 +62,9 @@ public class JavaExpressionProvider implements IExpressionProvider {
 
 	@Override
 	public boolean isRelevantFor(EObject context) {
-		IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE) ;
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
 		if(provider != null){
-			for(Expression exp : provider.getExpressions(context)){
+			for(final Expression exp : provider.getExpressions(context)){
 				if(exp.getReferencedElements().get(0) instanceof JavaObjectData || ((Data)exp.getReferencedElements().get(0)).isMultiple()){
 					return true ;
 				}
@@ -74,7 +74,8 @@ public class JavaExpressionProvider implements IExpressionProvider {
 		return false;
 	}
 
-	public Image getTypeIcon() {
+	@Override
+    public Image getTypeIcon() {
 		return Pics.getImage(PicsConstants.java);
 	}
 

@@ -17,7 +17,7 @@
 package org.bonitasoft.studio.properties.form.provider;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;

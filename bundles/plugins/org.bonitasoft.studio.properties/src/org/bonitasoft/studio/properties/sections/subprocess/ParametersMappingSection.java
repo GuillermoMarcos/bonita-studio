@@ -26,7 +26,7 @@ import org.bonitasoft.studio.common.jface.databinding.CustomEMFEditObservables;
 import org.bonitasoft.studio.common.properties.EObjectSelectionProviderSection;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.common.widgets.MagicComposite;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.process.CallActivity;
 import org.bonitasoft.studio.model.process.Data;
@@ -84,11 +84,11 @@ public class ParametersMappingSection extends EObjectSelectionProviderSection {
     private Composite outputMappingControl;
     private Composite parent;
     private TabbedPropertySheetWidgetFactory widgetFactory;
-    private final ExpressionEditorService expressionEditorService;
+    private final ExpressionProviderService expressionEditorService;
     private final ISharedImages sharedImages;
 
     @Inject
-    public ParametersMappingSection(final ExpressionEditorService expressionEditorService, final ISharedImages sharedImages,
+    public ParametersMappingSection(final ExpressionProviderService expressionEditorService, final ISharedImages sharedImages,
             final RepositoryAccessor repositoryAccessor) {
         this.expressionEditorService = expressionEditorService;
         this.sharedImages = sharedImages;

@@ -16,7 +16,6 @@ package org.bonitasoft.studio.contract.ui.property.input.labelProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.bonitasoft.studio.contract.ui.property.input.labelProvider.ContractInputTypeCellLabelProvider;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.eclipse.core.databinding.observable.set.WritableSet;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;

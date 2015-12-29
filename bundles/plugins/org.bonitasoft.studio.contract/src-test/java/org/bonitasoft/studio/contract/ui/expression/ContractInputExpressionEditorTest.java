@@ -92,7 +92,7 @@ public class ContractInputExpressionEditorTest {
     public void should_bindExpression_convert_viewer_selection_to_contract_input_expression() throws Exception {
         contractInputExpressionEditor.createExpressionEditor(parent, dataBindingContext);
         contractInputExpressionEditor.bindExpression(dataBindingContext, task,
-                ExpressionHelper.createConstantExpression("", String.class.getName()), null, null);
+                ExpressionHelper.createConstantExpression("", String.class.getName()), null);
         final Object elementAt = contractInputExpressionEditor.getViewer().getElementAt(2);
 
         assertThat(contractInputExpressionEditor.canFinish()).isFalse();
@@ -112,7 +112,7 @@ public class ContractInputExpressionEditorTest {
         contractInputExpressionEditor.createExpressionEditor(parent, dataBindingContext);
         final Expression contractInputExpression = ExpressionHelper.createContractInputExpression(contract.getInputs().get(0));
         contractInputExpressionEditor.bindExpression(dataBindingContext, task,
-                contractInputExpression, null, null);
+                contractInputExpression, null);
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat(viewer.getSelection().isEmpty()).isFalse();
 
@@ -128,7 +128,7 @@ public class ContractInputExpressionEditorTest {
 
         final Expression contractInputExpression = ExpressionHelper.createContractInputExpression(ProcessFactory.eINSTANCE.createContractInput());
         contractInputExpressionEditor.bindExpression(dataBindingContext, task,
-                contractInputExpression, null, null);
+                contractInputExpression, null);
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat(viewer.getSelection().isEmpty()).isTrue();
     }
@@ -139,7 +139,7 @@ public class ContractInputExpressionEditorTest {
         final Expression contractInputExpression = ExpressionHelper.createContractInputExpression(contract.getInputs().get(0));
         contractInputExpression.setReturnTypeFixed(true);
         contractInputExpressionEditor.bindExpression(dataBindingContext, task,
-                contractInputExpression, null, null);
+                contractInputExpression, null);
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat((Collection) viewer.getInput()).hasSize(2);
     }

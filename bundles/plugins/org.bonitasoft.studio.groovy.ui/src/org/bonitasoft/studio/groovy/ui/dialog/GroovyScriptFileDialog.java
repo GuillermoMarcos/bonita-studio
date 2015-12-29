@@ -17,7 +17,7 @@
 package org.bonitasoft.studio.groovy.ui.dialog;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.viewer.EditExpressionDialog;
 import org.bonitasoft.studio.groovy.ui.providers.GroovyScriptFileEditor;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -52,7 +52,7 @@ public class GroovyScriptFileDialog extends EditExpressionDialog {
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        Control c = super.createDialogArea(parent);
+        final Control c = super.createDialogArea(parent);
         showContent(ExpressionConstants.SCRIPT_TYPE);
         return c;
     }
@@ -78,8 +78,8 @@ public class GroovyScriptFileDialog extends EditExpressionDialog {
                     closeTray();
                 }
             }
-            UpdateValueStrategy selectionToExpressionType = new UpdateValueStrategy();
-            IConverter convert = new Converter(IExpressionProvider.class, String.class) {
+            final UpdateValueStrategy selectionToExpressionType = new UpdateValueStrategy();
+            final IConverter convert = new Converter(IExpressionProvider.class, String.class) {
 
                 @Override
                 public Object convert(Object arg0) {
@@ -87,7 +87,7 @@ public class GroovyScriptFileDialog extends EditExpressionDialog {
                 }
             };
             selectionToExpressionType.setConverter(convert);
-            currentExpressionEditor.bindExpression(dataBindingContext, context, inputExpression, viewerTypeFilters, null);
+            currentExpressionEditor.bindExpression(dataBindingContext, context, inputExpression, viewerTypeFilters);
         }
     }
 

@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ListExpression;
 import org.bonitasoft.studio.model.expression.TableExpression;

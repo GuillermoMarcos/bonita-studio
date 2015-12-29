@@ -16,10 +16,9 @@
  */
 package org.bonitasoft.studio.expression.editor.constant;
 
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -66,12 +65,12 @@ public class ConstantExpressionEditor extends SelectionAwareExpressionEditor imp
 
     @Override
     public Control createExpressionEditor(Composite parent, EMFDataBindingContext ctx, boolean isPassword) {
-        Composite mainComposite = new Composite(parent, SWT.NONE);
+        final Composite mainComposite = new Composite(parent, SWT.NONE);
         mainComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
         mainComposite.setLayout(new GridLayout(2, false));
 
-        Label valueLabel = new Label(mainComposite, SWT.NONE);
+        final Label valueLabel = new Label(mainComposite, SWT.NONE);
         valueLabel.setText(Messages.value);
         if (isPassword) {
             valueText = new Text(mainComposite, SWT.BORDER | SWT.PASSWORD);
@@ -81,7 +80,7 @@ public class ConstantExpressionEditor extends SelectionAwareExpressionEditor imp
 
         valueText.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).hint(300, 80).create());
 
-        Label typeLabel = new Label(mainComposite, SWT.NONE);
+        final Label typeLabel = new Label(mainComposite, SWT.NONE);
         typeLabel.setText(Messages.returnType);
 
         typeCombo = new ComboViewer(mainComposite, SWT.BORDER | SWT.READ_ONLY);
@@ -116,14 +115,13 @@ public class ConstantExpressionEditor extends SelectionAwareExpressionEditor imp
     }
 
     @Override
-    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters,
-            ExpressionViewer expressionViewer) {
+    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters) {
         this.inputExpression = inputExpression;
-        IObservableValue contentModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
-        IObservableValue returnTypeModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__RETURN_TYPE);
+        final IObservableValue contentModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
+        final IObservableValue returnTypeModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__RETURN_TYPE);
 
         dataBindingContext.bindValue(SWTObservables.observeText(valueText, SWT.Modify), contentModelObservable);
-        UpdateValueStrategy targetToModel = new UpdateValueStrategy();
+        final UpdateValueStrategy targetToModel = new UpdateValueStrategy();
         targetToModel.setAfterConvertValidator(new IValidator() {
 
             @Override

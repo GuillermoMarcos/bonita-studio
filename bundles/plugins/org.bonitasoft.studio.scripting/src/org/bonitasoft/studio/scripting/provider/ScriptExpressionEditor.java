@@ -19,11 +19,10 @@ import org.bonitasoft.studio.common.jface.databinding.validator.EmptyInputValida
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.constant.ExpressionReturnTypeContentProvider;
 import org.bonitasoft.studio.expression.editor.filter.ExpressionReturnTypeFilter;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.scripting.extensions.IScriptLanguageProvider;
@@ -227,8 +226,7 @@ public class ScriptExpressionEditor extends SelectionAwareExpressionEditor imple
 
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression,
-            final ViewerFilter[] filters,
-            final ExpressionViewer viewer) {
+            final ViewerFilter[] filters) {
         this.inputExpression = inputExpression;
         final IObservableValue nameModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);
         final IObservableValue interpreterModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__INTERPRETER);
@@ -249,7 +247,7 @@ public class ScriptExpressionEditor extends SelectionAwareExpressionEditor imple
             }
         });
 
-        editor.bindExpression(dataBindingContext, context, inputExpression, filters, viewer);
+        editor.bindExpression(dataBindingContext, context, inputExpression, filters);
 
         if (inputExpression.getReturnType() != null) {
             typeCombo.setInput(inputExpression.getReturnType());

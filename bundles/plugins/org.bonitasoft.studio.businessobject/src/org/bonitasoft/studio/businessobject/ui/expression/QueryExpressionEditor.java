@@ -28,11 +28,10 @@ import org.bonitasoft.studio.businessobject.i18n.Messages;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.NamingUtils;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionColumnLabelProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.pics.Pics;
@@ -341,8 +340,7 @@ public class QueryExpressionEditor extends SelectionAwareExpressionEditor implem
 
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression,
-            final ViewerFilter[] viewerTypeFilters,
-            final ExpressionViewer viewer) {
+            final ViewerFilter[] viewerTypeFilters) {
         editingSupport.setInput(context);
         this.inputExpression = inputExpression;
 

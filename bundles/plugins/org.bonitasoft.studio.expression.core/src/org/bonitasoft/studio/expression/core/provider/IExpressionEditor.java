@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bonitasoft.studio.expression.editor.provider;
+package org.bonitasoft.studio.expression.core.provider;
 
 import java.util.List;
 
 import org.bonitasoft.studio.common.IBonitaVariableContext;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
@@ -40,8 +39,7 @@ public interface IExpressionEditor extends IBonitaVariableContext {
 
     Control createExpressionEditor(Composite contentComposite, EMFDataBindingContext ctx, boolean isPassword);
 
-    void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] viewerTypeFilters,
-            ExpressionViewer viewer);
+    void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] viewerTypeFilters);
 
     boolean canFinish();
 

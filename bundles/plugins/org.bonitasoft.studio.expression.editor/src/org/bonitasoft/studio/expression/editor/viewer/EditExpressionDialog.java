@@ -21,12 +21,12 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.jface.FileActionDialog;
 import org.bonitasoft.studio.common.jface.databinding.DialogSupport;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionTypeContentProvider;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionTypeLabelProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -163,7 +163,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
                 expressionType = ExpressionConstants.SCRIPT_TYPE;
             }
         }
-        final IExpressionProvider currentProvider = ExpressionEditorService.getInstance().getExpressionProvider(expressionType);
+        final IExpressionProvider currentProvider = ExpressionProviderService.getInstance().getExpressionProvider(expressionType);
         if (currentProvider != null && expressionTypeViewer != null) {
             expressionTypeViewer.setSelection(new StructuredSelection(currentProvider));
         }
@@ -314,7 +314,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
     }
 
     protected void showContent(final String type) {
-        final IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider(type);
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(type);
 
         Assert.isNotNull(provider);
 
@@ -361,7 +361,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
             } else {
                 inputExpression.setType(type);
             }
-            currentExpressionEditor.bindExpression(dataBindingContext, context, inputExpression, viewerTypeFilters, expressionViewer);
+            currentExpressionEditor.bindExpression(dataBindingContext, context, inputExpression, viewerTypeFilters);
             currentExpressionEditor.addListener(new Listener() {
 
                 @Override

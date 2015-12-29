@@ -31,12 +31,11 @@ import org.bonitasoft.studio.common.jface.TableColumnSorter;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.data.i18n.Messages;
 import org.bonitasoft.studio.data.ui.wizard.CreateVariableProposalListener;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.provider.IProposalListener;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.form.DateFormField;
@@ -180,8 +179,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
 
     }
 
-    private void expressionButtonListener(final EObject context, final ExpressionViewer expressionViewer,
-            final ViewerFilter[] filters) throws CoreException {
+    private void expressionButtonListener(final EObject context, final ViewerFilter[] filters) throws CoreException {
         for (final IConfigurationElement element : BonitaStudioExtensionRegistryManager.getInstance()
                 .getConfigurationElements("org.bonitasoft.studio.expression.proposalListener")) {
             final String expressionTypeLink = element.getAttribute("type");
@@ -198,7 +196,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
 
     private void fillViewerData(final EObject context, final ViewerFilter[] filters) {
         final Set<Data> input = new HashSet<Data>();
-        final IExpressionProvider provider = ExpressionEditorService.getInstance()
+        final IExpressionProvider provider = ExpressionProviderService.getInstance()
                 .getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
         final Set<Expression> expressions = provider.getExpressions(context);
         final Set<Expression> filteredExpressions = new HashSet<Expression>();
@@ -229,7 +227,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
 
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext,
-            final EObject context, final Expression inputExpression, final ViewerFilter[] filters, final ExpressionViewer expressionViewer) {
+            final EObject context, final Expression inputExpression, final ViewerFilter[] filters) {
 
         final EObject finalContext = context;
         if (context instanceof Widget && ModelHelper.getPageFlow((Widget) context) instanceof Pool) {
@@ -241,7 +239,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 try {
-                    expressionButtonListener(finalContext, expressionViewer, finalFilters);
+                    expressionButtonListener(finalContext, finalFilters);
                 } catch (final CoreException e1) {
                     BonitaStudioLog.error(e1);
                 }

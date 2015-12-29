@@ -53,7 +53,7 @@ import org.bonitasoft.studio.data.ui.wizard.provider.BooleanExpressionNatureProv
 import org.bonitasoft.studio.data.ui.wizard.provider.NowDateExpressionNatureProvider;
 import org.bonitasoft.studio.data.ui.wizard.provider.OptionsExpressionNatureProvider;
 import org.bonitasoft.studio.data.util.DataUtil;
-import org.bonitasoft.studio.expression.editor.provider.ExpressionContentProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;

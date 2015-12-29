@@ -29,12 +29,11 @@ import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.diagram.custom.repository.ProcessConfigurationFileStore;
 import org.bonitasoft.studio.diagram.custom.repository.ProcessConfigurationRepositoryStore;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
-import org.bonitasoft.studio.expression.editor.provider.ExpressionComparator;
-import org.bonitasoft.studio.expression.editor.provider.ExpressionContentProvider;
-import org.bonitasoft.studio.expression.editor.provider.ICustomExpressionNatureProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionNatureProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionComparator;
+import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.groovy.GroovyUtil;
 import org.bonitasoft.studio.groovy.ScriptVariable;
@@ -236,7 +235,6 @@ public class GroovyViewer implements IDocumentListener {
         return editor.getDocumentProvider().getDocument(input);
     }
 
-    @SuppressWarnings("restriction")
     public SourceViewer getSourceViewer() {
         return (SourceViewer) editor.getViewer();
     }
@@ -245,14 +243,10 @@ public class GroovyViewer implements IDocumentListener {
         getSourceViewer().getTextWidget().setLayoutData(layoutData);
     }
 
-    public void setContext(final ExpressionViewer viewer, final EObject context, final ViewerFilter[] filters,
-            final IExpressionNatureProvider expressionProvider) {
+    public void setContext(final ExpressionViewer viewer, final EObject context, final ViewerFilter[] filters) {
         nodes = new ArrayList<ScriptVariable>();
 
-        IExpressionNatureProvider provider = expressionProvider;
-        if (!(provider instanceof ICustomExpressionNatureProvider)) {
-            provider = ExpressionContentProvider.getInstance();
-        }
+        final IExpressionNatureProvider provider = ExpressionContentProvider.getInstance();
         final Set<Expression> filteredExpressions = new HashSet<Expression>();
         final Expression[] expressions = provider.getExpressions(context);
         if (expressions != null) {
@@ -314,7 +308,7 @@ public class GroovyViewer implements IDocumentListener {
 
     public List<ScriptVariable> getProvidedVariables(final EObject context, final ViewerFilter[] filters) {
         final List<ScriptVariable> providedScriptVariable = GroovyUtil.getBonitaVariables(context, filters, isPageFlowContext);
-        final IExpressionProvider daoExpressionProvider = ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.DAO_TYPE);
+        final IExpressionProvider daoExpressionProvider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.DAO_TYPE);
         if (daoExpressionProvider != null) {
             final List<Expression> expressions = newArrayList(daoExpressionProvider.getExpressions(null));
             Collections.sort(expressions, new ExpressionComparator());

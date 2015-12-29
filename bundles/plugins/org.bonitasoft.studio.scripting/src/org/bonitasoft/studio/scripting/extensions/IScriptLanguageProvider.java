@@ -16,7 +16,7 @@
  */
 package org.bonitasoft.studio.scripting.extensions;
 
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.eclipse.swt.graphics.Image;
 
 /**

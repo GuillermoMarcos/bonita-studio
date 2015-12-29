@@ -17,7 +17,7 @@
 package org.bonitasoft.studio.groovy.ui.providers;
 
 import org.bonitasoft.engine.expression.ExpressionInterpreter;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.pics.Pics;
 import org.bonitasoft.studio.pics.PicsConstants;
 import org.bonitasoft.studio.scripting.extensions.IScriptLanguageProvider;
@@ -31,19 +31,23 @@ public class GroovyScriptLanguageProvider implements IScriptLanguageProvider {
 
 	private static final String LANGUAGE_ID = ExpressionInterpreter.GROOVY.name();
 	
-	public String getLanguageId() {
+	@Override
+    public String getLanguageId() {
 		return LANGUAGE_ID;
 	}
 
-	public String getLanguageName() {
+	@Override
+    public String getLanguageName() {
 		return LANGUAGE_ID;
 	}
 
-	public Image getIcon() {
+	@Override
+    public Image getIcon() {
 		return Pics.getImage(PicsConstants.groovyScript);
 	}
 
-	public IExpressionEditor getExpressionEditor() {
+	@Override
+    public IExpressionEditor getExpressionEditor() {
 		return new GroovyScriptExpressionEditor();
 	}
 

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.expression.editor.provider.ExpressionComparator;
+import org.bonitasoft.studio.expression.core.provider.ExpressionComparator;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionLabelProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.jface.text.IDocument;

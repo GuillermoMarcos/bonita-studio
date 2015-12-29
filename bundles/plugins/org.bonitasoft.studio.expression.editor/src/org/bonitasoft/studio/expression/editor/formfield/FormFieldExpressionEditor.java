@@ -25,12 +25,11 @@ import java.util.Set;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.WidgetHelper;
 import org.bonitasoft.studio.common.jface.TableColumnSorter;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.form.Widget;
@@ -91,6 +90,7 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
      * (non-Javadoc)
      * @see org.bonitasoft.studio.expression.editor.provider.IExpressionEditor#createExpressionEditor(org.eclipse.swt.widgets.Composite)
      */
+    @Override
     public Control createExpressionEditor(Composite parent, EMFDataBindingContext ctx) {
         mainComposite = new Composite(parent, SWT.NONE);
         mainComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
@@ -99,16 +99,16 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
         viewer = new TableViewer(mainComposite, SWT.FULL_SELECTION | SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
         viewer.getTable().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
-        TableLayout layout = new TableLayout();
+        final TableLayout layout = new TableLayout();
         layout.addColumnData(new ColumnWeightData(100, false));
         viewer.getTable().setLayout(layout);
         viewer.getTable().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
-        TableViewerColumn columnViewer = new TableViewerColumn(viewer, SWT.NONE);
-        TableColumn column = columnViewer.getColumn();
+        final TableViewerColumn columnViewer = new TableViewerColumn(viewer, SWT.NONE);
+        final TableColumn column = columnViewer.getColumn();
         column.setText(Messages.name);
 
-        TableColumnSorter sorter = new TableColumnSorter(viewer);
+        final TableColumnSorter sorter = new TableColumnSorter(viewer);
         sorter.setColumn(column);
 
         viewer.getTable().setHeaderVisible(true);
@@ -117,6 +117,7 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
         viewer.setLabelProvider(adapterLabelProvider);
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
+            @Override
             public void selectionChanged(SelectionChangedEvent arg0) {
                 FormFieldExpressionEditor.this.fireSelectionChanged();
             }
@@ -128,14 +129,14 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
     }
 
     protected void createReturnTypeComposite(Composite parent) {
-        Composite typeComposite = new Composite(parent, SWT.NONE);
+        final Composite typeComposite = new Composite(parent, SWT.NONE);
         typeComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        GridLayout gl = new GridLayout(2, false);
+        final GridLayout gl = new GridLayout(2, false);
         gl.marginWidth = 0;
         gl.marginHeight = 0;
         typeComposite.setLayout(gl);
 
-        Label typeLabel = new Label(typeComposite, SWT.NONE);
+        final Label typeLabel = new Label(typeComposite, SWT.NONE);
         typeLabel.setText(Messages.returnType);
         typeLabel.setLayoutData(GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).create());
 
@@ -149,11 +150,11 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
      * @see org.bonitasoft.studio.expression.editor.provider.IExpressionEditor#bindExpression(org.eclipse.emf.databinding.EMFDataBindingContext,
      * org.eclipse.emf.ecore.EObject, org.bonitasoft.studio.model.expression.Expression, org.eclipse.emf.edit.domain.EditingDomain)
      */
-    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters,
-            ExpressionViewer expressionViewer) {
+    @Override
+    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters) {
         this.inputExpression = inputExpression;
-        Set<Widget> input = new HashSet<Widget>();
-        IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.FORM_FIELD_TYPE);
+        final Set<Widget> input = new HashSet<Widget>();
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.FORM_FIELD_TYPE);
         final Set<Expression> filteredExpressions = new HashSet<Expression>();
         final Set<Expression> expressions = provider.getExpressions(context);
         if (expressions != null) {
@@ -168,9 +169,9 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
                 }
             }
         }
-        Set<String> widgetName = new HashSet<String>();
-        for (Expression e : filteredExpressions) {
-            Widget widget = (Widget) e.getReferencedElements().get(0);
+        final Set<String> widgetName = new HashSet<String>();
+        for (final Expression e : filteredExpressions) {
+            final Widget widget = (Widget) e.getReferencedElements().get(0);
             if (inputExpression.isReturnTypeFixed()) {
                 if (!widgetName.contains(widget.getName()) && compatibleReturnType(inputExpression, e)) {
                     input.add(widget);
@@ -185,15 +186,16 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
         }
         viewer.setInput(input);
 
-        IObservableValue contentObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
-        IObservableValue nameObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);
-        IObservableValue returnTypeObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__RETURN_TYPE);
-        IObservableValue referenceObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS);
+        final IObservableValue contentObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
+        final IObservableValue nameObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);
+        final IObservableValue returnTypeObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__RETURN_TYPE);
+        final IObservableValue referenceObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS);
 
-        UpdateValueStrategy selectionToName = new UpdateValueStrategy();
+        final UpdateValueStrategy selectionToName = new UpdateValueStrategy();
 
-        IConverter nameConverter = new Converter(Widget.class, String.class) {
+        final IConverter nameConverter = new Converter(Widget.class, String.class) {
 
+            @Override
             public Object convert(Object widget) {
                 return ((Widget) widget).getName();
             }
@@ -201,9 +203,10 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
         };
         selectionToName.setConverter(nameConverter);
 
-        UpdateValueStrategy selectionToContent = new UpdateValueStrategy();
-        IConverter contentConverter = new Converter(Widget.class, String.class) {
+        final UpdateValueStrategy selectionToContent = new UpdateValueStrategy();
+        final IConverter contentConverter = new Converter(Widget.class, String.class) {
 
+            @Override
             public Object convert(Object widget) {
                 return WidgetHelper.FIELD_PREFIX + ((Widget) widget).getName();
             }
@@ -211,9 +214,10 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
         };
         selectionToContent.setConverter(contentConverter);
 
-        UpdateValueStrategy selectionToReturnType = new UpdateValueStrategy();
-        IConverter returnTypeConverter = new Converter(Widget.class, String.class) {
+        final UpdateValueStrategy selectionToReturnType = new UpdateValueStrategy();
+        final IConverter returnTypeConverter = new Converter(Widget.class, String.class) {
 
+            @Override
             public Object convert(Object widget) {
                 return WidgetHelper.getAssociatedReturnType((Widget) widget);
             }
@@ -221,9 +225,10 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
         };
         selectionToReturnType.setConverter(returnTypeConverter);
 
-        UpdateValueStrategy selectionToReferencedData = new UpdateValueStrategy();
-        IConverter referenceConverter = new Converter(Widget.class, List.class) {
+        final UpdateValueStrategy selectionToReferencedData = new UpdateValueStrategy();
+        final IConverter referenceConverter = new Converter(Widget.class, List.class) {
 
+            @Override
             public Object convert(Object widget) {
                 return Collections.singletonList(widget);
             }
@@ -231,13 +236,14 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
         };
         selectionToReferencedData.setConverter(referenceConverter);
 
-        UpdateValueStrategy referencedDataToSelection = new UpdateValueStrategy();
-        IConverter referencetoDataConverter = new Converter(List.class, Widget.class) {
+        final UpdateValueStrategy referencedDataToSelection = new UpdateValueStrategy();
+        final IConverter referencetoDataConverter = new Converter(List.class, Widget.class) {
 
+            @Override
             public Object convert(Object widgetList) {
-                Widget w = ((List<Widget>) widgetList).get(0);
-                Collection<Widget> inputData = (Collection<Widget>) viewer.getInput();
-                for (Widget widget : inputData) {
+                final Widget w = ((List<Widget>) widgetList).get(0);
+                final Collection<Widget> inputData = (Collection<Widget>) viewer.getInput();
+                for (final Widget widget : inputData) {
                     if (widget.getName().equals(w.getName())
                             && WidgetHelper.getAssociatedReturnType(widget).equals(WidgetHelper.getAssociatedReturnType(w))) {
                         return widget;
@@ -263,16 +269,19 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
      * (non-Javadoc)
      * @see org.bonitasoft.studio.expression.editor.provider.IExpressionEditor#canFinish()
      */
+    @Override
     public boolean canFinish() {
         return !viewer.getSelection().isEmpty();
     }
 
+    @Override
     public void okPressed() {
         if (!inputExpression.getContent().equals(inputExpression.getName())) {
             inputExpression.setName(inputExpression.getContent());
         }
     }
 
+    @Override
     public Control getTextControl() {
         return null;
     }

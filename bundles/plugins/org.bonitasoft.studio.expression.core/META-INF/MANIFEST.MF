@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Expression Core Plugin
+Bundle-SymbolicName: org.bonitasoft.studio.expression.core;singleton:=true
+Bundle-Version: 7.2.0.qualifier
+Bundle-Activator: org.bonitasoft.studio.expression.core.ExpressionCorePlugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.bonitasoft.studio.model;bundle-version="7.2.0",
+ org.eclipse.e4.core.di,
+ org.bonitasoft.studio.common,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.ui;bundle-version="3.106.0",
+ org.eclipse.emf.databinding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: Bonitasoft S.A.
+Export-Package: org.bonitasoft.studio.expression.core.provider

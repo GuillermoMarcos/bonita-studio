@@ -16,7 +16,6 @@ package org.bonitasoft.studio.contract.ui.property.constraint.labelProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.bonitasoft.studio.contract.ui.property.constraint.labelProvider.ConstraintExpressionCellLabelProvider;
 import org.bonitasoft.studio.model.process.ContractConstraint;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.provider.ProcessItemProviderAdapterFactory;

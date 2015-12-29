@@ -38,8 +38,12 @@ import org.bonitasoft.studio.common.jface.databinding.CustomEMFEditObservables;
 import org.bonitasoft.studio.common.jface.databinding.validator.EmptyInputValidator;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
+import org.bonitasoft.studio.expression.core.provider.ExpressionComparator;
+import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.ExpressionEditorPlugin;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
 import org.bonitasoft.studio.expression.editor.autocompletion.AutoCompletionField;
 import org.bonitasoft.studio.expression.editor.autocompletion.BonitaContentProposalAdapter;
 import org.bonitasoft.studio.expression.editor.autocompletion.ExpressionProposal;
@@ -47,12 +51,8 @@ import org.bonitasoft.studio.expression.editor.autocompletion.IBonitaContentProp
 import org.bonitasoft.studio.expression.editor.autocompletion.IExpressionProposalLabelProvider;
 import org.bonitasoft.studio.expression.editor.filter.ExpressionReturnTypeFilter;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
-import org.bonitasoft.studio.expression.editor.provider.ExpressionComparator;
-import org.bonitasoft.studio.expression.editor.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionLabelProvider;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionTypeLabelProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionNatureProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionToolbarContribution;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.expression.editor.widget.ContentAssistText;
@@ -181,7 +181,7 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
     private IExpressionProposalLabelProvider expressionProposalLableProvider;
     private ContentAssistText contentAssistText;
     private ISelection selection;
-    private final ExpressionEditorService expressionEditorService;
+    private final ExpressionProviderService expressionEditorService;
     private final Set<String> filteredEditor = new HashSet<String>();
     protected final ExpressionItemProvider expressionItemProvider = new ExpressionItemProvider(new ExpressionItemProviderAdapterFactory());
     private String defaultReturnType;
@@ -244,7 +244,7 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
     public ExpressionViewer(final Composite composite, final int style, final TabbedPropertySheetWidgetFactory widgetFactory,
             final EditingDomain editingDomain, final EReference expressionReference, final boolean withConnector) {
         Assert.isNotNull(composite, "composite");
-        expressionEditorService = ExpressionEditorService.getInstance();
+        expressionEditorService = ExpressionProviderService.getInstance();
         filters = new HashSet<ViewerFilter>();
         this.withConnector = withConnector;
         createControl(composite, style, widgetFactory);
@@ -1278,7 +1278,7 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
 
     }
 
-    public IExpressionNatureProvider getExpressionNatureProvider() {
+    public org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider getExpressionNatureProvider() {
         return expressionNatureProvider;
     }
 

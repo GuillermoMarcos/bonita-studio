@@ -28,11 +28,10 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.jface.DataStyledTreeLabelProvider;
 import org.bonitasoft.studio.common.jface.TableColumnSorter;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.process.Data;
@@ -96,8 +95,6 @@ public class XPathExpressionEditor extends SelectionAwareExpressionEditor implem
     private TableViewer viewer;
 
     private XSDContentProvider provider;
-
-    private String dataName;
 
     private TreeViewer xsdViewer;
 
@@ -199,10 +196,10 @@ public class XPathExpressionEditor extends SelectionAwareExpressionEditor implem
 
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext,
-            final EObject context, final Expression inputExpression, final ViewerFilter[] filters, final ExpressionViewer expressionViewer) {
+            final EObject context, final Expression inputExpression, final ViewerFilter[] filters) {
         editorInputExpression = inputExpression;
         final Set<Data> input = new HashSet<Data>();
-        final IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
         for (final Expression e : provider.getExpressions(context)) {
 
             final EObject data = e.getReferencedElements().get(0);
@@ -293,7 +290,6 @@ public class XPathExpressionEditor extends SelectionAwareExpressionEditor implem
             public Object convert(final Object data) {
                 if (data != null) {
                     final XMLData xmlData = (XMLData) data;
-                    dataName = xmlData.getName();
                     final String namespace = xmlData.getNamespace();
                     final String element = xmlData.getType();
                     final XSDRepositoryStore xsdStore = RepositoryManager.getInstance().getRepositoryStore(XSDRepositoryStore.class);
@@ -321,7 +317,6 @@ public class XPathExpressionEditor extends SelectionAwareExpressionEditor implem
                 for (final Data data : inputData) {
                     if (data.getName().equals(d.getName()) && data.getDataType().getName().equals(d.getDataType().getName())) {
                         final XMLData xmlData = (XMLData) data;
-                        dataName = xmlData.getName();
                         final String namespace = xmlData.getNamespace();
                         final String element = xmlData.getType();
                         final XSDRepositoryStore xsdStore = RepositoryManager.getInstance().getRepositoryStore(XSDRepositoryStore.class);

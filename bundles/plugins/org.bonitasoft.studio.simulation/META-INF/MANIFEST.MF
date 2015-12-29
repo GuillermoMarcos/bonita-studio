@@ -36,7 +36,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.bonitasoft.studio.application,
  org.bonitasoft.studio.common.repository,
  org.bonitasoft.studio.groovy.ui,
- org.bonitasoft.studio.expression.editor;bundle-version="1.0.0"
+ org.bonitasoft.studio.expression.editor;bundle-version="1.0.0",
+ org.bonitasoft.studio.expression.core;bundle-version="7.2.0"
 Export-Package: org.bonitasoft.studio.simulation,org.bonitasoft.studio
  .simulation.commands,org.bonitasoft.studio.simulation.engine,org.boni
  tasoft.studio.simulation.i18n,org.bonitasoft.studio.simulation.proper

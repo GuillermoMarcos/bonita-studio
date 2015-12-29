@@ -20,7 +20,7 @@ package org.bonitasoft.studio.connectors.ui.wizard.page;
 import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.connector.model.definition.ConnectorDefinition;
 import org.bonitasoft.studio.connectors.i18n.Messages;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.model.process.Connector;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.ecore.EObject;
@@ -105,7 +105,7 @@ public abstract class AbstractConnectorOutputWizardPage extends WizardPage imple
         	return previousPageBackup;
         }
     	
-    	IWizard wizard = getWizard();
+    	final IWizard wizard = getWizard();
         if(wizard != null){
             return wizard.getPreviousPage(this);
         }

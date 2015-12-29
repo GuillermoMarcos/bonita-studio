@@ -21,12 +21,11 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.jface.TableColumnSorter;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -71,13 +70,13 @@ public class MessageIdExpressionEditor extends SelectionAwareExpressionEditor im
     @Override
     public Control createExpressionEditor(Composite parent, EMFDataBindingContext ctx) {
 
-        Composite mainComposite = new Composite(parent, SWT.NONE);
+        final Composite mainComposite = new Composite(parent, SWT.NONE);
         mainComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         mainComposite.setLayout(new GridLayout(2, false));
 
         createViewer(mainComposite);
 
-        Label valueLabel = new Label(mainComposite, SWT.NONE);
+        final Label valueLabel = new Label(mainComposite, SWT.NONE);
         valueLabel.setText(Messages.messageDataId);
 
         valueText = new Text(mainComposite, SWT.BORDER);
@@ -89,16 +88,16 @@ public class MessageIdExpressionEditor extends SelectionAwareExpressionEditor im
     private void createViewer(Composite mainComposite) {
         viewer = new TableViewer(mainComposite, SWT.FULL_SELECTION | SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
 
-        TableLayout layout = new TableLayout();
+        final TableLayout layout = new TableLayout();
         layout.addColumnData(new ColumnWeightData(100, false));
         viewer.getTable().setLayout(layout);
         viewer.getTable().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).span(2, 1).create());
 
-        TableViewerColumn columnViewer = new TableViewerColumn(viewer, SWT.NONE);
-        TableColumn column = columnViewer.getColumn();
+        final TableViewerColumn columnViewer = new TableViewerColumn(viewer, SWT.NONE);
+        final TableColumn column = columnViewer.getColumn();
         column.setText(Messages.availableIds);
 
-        TableColumnSorter sorter = new TableColumnSorter(viewer);
+        final TableColumnSorter sorter = new TableColumnSorter(viewer);
         sorter.setColumn(column);
 
         viewer.getTable().setHeaderVisible(true);
@@ -112,7 +111,7 @@ public class MessageIdExpressionEditor extends SelectionAwareExpressionEditor im
 
             @Override
             public Image getImage(Object element) {
-                return ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.MESSAGE_ID_TYPE).getTypeIcon();
+                return ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.MESSAGE_ID_TYPE).getTypeIcon();
             }
         });
 
@@ -128,15 +127,14 @@ public class MessageIdExpressionEditor extends SelectionAwareExpressionEditor im
     }
 
     @Override
-    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters,
-            ExpressionViewer expressionViewer) {
+    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters) {
         this.inputExpression = inputExpression;
-        IObservableValue nameModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);
-        IObservableValue contentModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
+        final IObservableValue nameModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);
+        final IObservableValue contentModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
 
-        Set<String> input = new HashSet<String>();
-        IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider(ExpressionConstants.MESSAGE_ID_TYPE);
-        for (Expression e : provider.getExpressions(context)) {
+        final Set<String> input = new HashSet<String>();
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.MESSAGE_ID_TYPE);
+        for (final Expression e : provider.getExpressions(context)) {
             input.add(e.getName());
         }
         viewer.setInput(input);

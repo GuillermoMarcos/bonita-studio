@@ -15,7 +15,8 @@
 package org.bonitasoft.studio.expression.editor.provider;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.expression.editor.ExpressionEditorService;
+import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -31,7 +32,7 @@ public class ExpressionTypeLabelProvider extends CellLabelProvider {
         if (element instanceof IExpressionProvider) {
             return ((IExpressionProvider) element).getTypeLabel();
         } else if (element instanceof String) {
-            final IExpressionProvider provider = ExpressionEditorService.getInstance().getExpressionProvider((String) element);
+            final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider((String) element);
             if (provider == null) {
                 if (element.toString().equals("process" + ExpressionConstants.VARIABLE_TYPE)) {
                     return Messages.processVariable;

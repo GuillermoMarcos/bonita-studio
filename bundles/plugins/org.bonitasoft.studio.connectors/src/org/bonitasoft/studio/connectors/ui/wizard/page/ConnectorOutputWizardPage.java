@@ -27,10 +27,10 @@
 package org.bonitasoft.studio.connectors.ui.wizard.page;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
+import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.operation.OperationsComposite;
 import org.bonitasoft.studio.expression.editor.operation.WizardPageOperationsComposite;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionNatureProvider;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;

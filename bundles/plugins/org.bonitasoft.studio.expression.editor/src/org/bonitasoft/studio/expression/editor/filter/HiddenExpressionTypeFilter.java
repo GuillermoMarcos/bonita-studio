@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bonitasoft.studio.expression.editor.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -31,7 +31,7 @@ import org.eclipse.jface.viewers.ViewerFilter;
  */
 public class HiddenExpressionTypeFilter extends ViewerFilter {
 
-	private Set<String> contentTypes;
+	private final Set<String> contentTypes;
 
 	public HiddenExpressionTypeFilter(String[] contentTypes){
 		this.contentTypes = new HashSet<String>(Arrays.asList(contentTypes))  ;

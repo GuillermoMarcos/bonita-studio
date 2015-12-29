@@ -32,13 +32,12 @@ import org.bonitasoft.studio.condition.conditionModel.Operation_Compare;
 import org.bonitasoft.studio.condition.ui.i18n.Messages;
 import org.bonitasoft.studio.condition.ui.internal.ConditionModelActivator;
 import org.bonitasoft.studio.condition.validation.ConditionModelJavaValidator;
+import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.ExpressionEditorPlugin;
 import org.bonitasoft.studio.expression.editor.constant.ConstantTypeLabelProvider;
 import org.bonitasoft.studio.expression.editor.constant.ExpressionReturnTypeContentProvider;
-import org.bonitasoft.studio.expression.editor.provider.ExpressionContentProvider;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.expression.editor.viewer.SelectDependencyDialog;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -307,7 +306,7 @@ public class ComparisonExpressionEditor extends SelectionAwareExpressionEditor i
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext,
             final EObject context, final Expression inputExpression,
-            final ViewerFilter[] viewerTypeFilters, final ExpressionViewer expressionViewer) {
+            final ViewerFilter[] viewerTypeFilters) {
         this.inputExpression = inputExpression;
         final IObservableValue contentModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
         final IObservableValue nameModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);

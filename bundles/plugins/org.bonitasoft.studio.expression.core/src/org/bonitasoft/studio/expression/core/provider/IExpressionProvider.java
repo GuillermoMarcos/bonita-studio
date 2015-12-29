@@ -14,23 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bonitasoft.studio.expression.editor.provider;
+package org.bonitasoft.studio.expression.core.provider;
 
-import org.bonitasoft.studio.common.ExpressionConstants;
+import java.util.Set;
+
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * @author Romain Bioteau
- *
  */
-public interface IExpressionNatureProvider extends ExpressionConstants {
+public interface IExpressionProvider {
 
-    /**
-     *
-     * @return the provided expression
-     */
-    Expression[] getExpressions(EObject context);
+	Set<Expression> getExpressions(EObject context) ;
+	
+	String getExpressionType() ;
+	
+	Image getIcon(Expression expression) ;
+	
+	Image getTypeIcon() ;
+	
+	String getProposalLabel(Expression expression) ;
 
+	boolean isRelevantFor(EObject context);
 
+	String getTypeLabel();
+
+	IExpressionEditor getExpressionEditor(Expression expression, EObject context) ;
 }
