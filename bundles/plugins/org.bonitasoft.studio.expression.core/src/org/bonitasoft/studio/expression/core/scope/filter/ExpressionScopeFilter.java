@@ -12,25 +12,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bonitasoft.studio.expression.core.scope;
+package org.bonitasoft.studio.expression.core.scope.filter;
 
-import javax.inject.Singleton;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.model.expression.Expression;
 
-import org.eclipse.e4.core.di.annotations.Creatable;
 
-/**
- * Provide a variable scope for an Expression given its location in the model
- */
-@Creatable
-@Singleton
-public class ExpressionScopeProvider {
+public interface ExpressionScopeFilter {
 
-    public ExpressionScope get(ModelLocation location) {
-        return resolveScope(location);
-    }
+    boolean isRelevant(ModelLocation location);
 
-    private ExpressionScope resolveScope(ModelLocation location) {
-        return new ExpressionScopeResolver().resolve(location);
-    }
+    boolean apply(ModelLocation location, Expression expression);
 
 }

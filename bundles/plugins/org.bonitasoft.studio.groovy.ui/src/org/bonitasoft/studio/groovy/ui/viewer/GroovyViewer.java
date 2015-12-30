@@ -17,7 +17,6 @@ package org.bonitasoft.studio.groovy.ui.viewer;
 import static com.google.common.collect.Lists.newArrayList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -30,11 +29,9 @@ import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.diagram.custom.repository.ProcessConfigurationFileStore;
 import org.bonitasoft.studio.diagram.custom.repository.ProcessConfigurationRepositoryStore;
 import org.bonitasoft.studio.expression.core.provider.ExpressionComparator;
-import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
-import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.groovy.GroovyUtil;
 import org.bonitasoft.studio.groovy.ScriptVariable;
 import org.bonitasoft.studio.groovy.repository.GroovyFileStore;
@@ -63,7 +60,6 @@ import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.TextEvent;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -206,7 +202,7 @@ public class GroovyViewer implements IDocumentListener {
         });
         enableContextAssitShortcut();
 
-        getSourceViewer().getTextWidget().setData(BONITA_KEYWORDS_DATA_KEY, getProvidedVariables(null, null));
+        getSourceViewer().getTextWidget().setData(BONITA_KEYWORDS_DATA_KEY, getProvidedVariables(null));
         mainComposite.getShell().addDisposeListener(new DisposeListener() {
 
             @Override
@@ -243,26 +239,11 @@ public class GroovyViewer implements IDocumentListener {
         getSourceViewer().getTextWidget().setLayoutData(layoutData);
     }
 
-    public void setContext(final ExpressionViewer viewer, final EObject context, final ViewerFilter[] filters) {
+    public void setContext(final ExpressionScope scope) {
         nodes = new ArrayList<ScriptVariable>();
 
-        final IExpressionNatureProvider provider = ExpressionContentProvider.getInstance();
-        final Set<Expression> filteredExpressions = new HashSet<Expression>();
-        final Expression[] expressions = provider.getExpressions(context);
-        if (expressions != null) {
-            filteredExpressions.addAll(Arrays.asList(expressions));
-            if (context != null && filters != null) {
-                for (final Expression exp : expressions) {
-                    for (final ViewerFilter filter : filters) {
-                        if (filter != null && !filter.select(viewer, input, exp)) {
-                            filteredExpressions.remove(exp);
-                        }
-                    }
-                }
-            }
-        }
-
-        for (final Expression e : filteredExpressions) {
+        final EObject context = scope.getLocation().getModelElement();
+        for (final Expression e : scope.getExpressions()) {
             final ScriptVariable v = GroovyUtil.createScriptVariable(e, context);
             if (context != null && ExpressionConstants.PARAMETER_TYPE.equals(e.getType())) {
                 final AbstractProcess proc = ModelHelper.getParentProcess(context);
@@ -286,7 +267,7 @@ public class GroovyViewer implements IDocumentListener {
 
         // Add context in TextWidget to access it in content assist
         getSourceViewer().getTextWidget().setData(PROCESS_VARIABLES_DATA_KEY, nodes);
-        final List<ScriptVariable> providedVariables = getProvidedVariables(context, filters);
+        final List<ScriptVariable> providedVariables = getProvidedVariables(scope);
         getSourceViewer().getTextWidget().setData(BONITA_KEYWORDS_DATA_KEY, providedVariables);
         getSourceViewer().getTextWidget().setData(CONTEXT_DATA_KEY, context);
         getSourceViewer().getDocument().addDocumentListener(this);
@@ -306,8 +287,8 @@ public class GroovyViewer implements IDocumentListener {
         unknownElementsIndexer.addJobChangeListener(new UpdateUnknownReferencesListener(getDocument(), getSourceViewer().getAnnotationModel()));
     }
 
-    public List<ScriptVariable> getProvidedVariables(final EObject context, final ViewerFilter[] filters) {
-        final List<ScriptVariable> providedScriptVariable = GroovyUtil.getBonitaVariables(context, filters, isPageFlowContext);
+    public List<ScriptVariable> getProvidedVariables(final ExpressionScope scope) {
+        final List<ScriptVariable> providedScriptVariable = GroovyUtil.getBonitaVariables(scope, isPageFlowContext);
         final IExpressionProvider daoExpressionProvider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.DAO_TYPE);
         if (daoExpressionProvider != null) {
             final List<Expression> expressions = newArrayList(daoExpressionProvider.getExpressions(null));

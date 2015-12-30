@@ -70,7 +70,7 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
 
     private final TransactionalEditingDomain editingDomain;
 
-    private boolean isPageFlowContext = false;
+    private final boolean isPageFlowContext = false;
 
     private boolean isOverviewContext = false;
 
@@ -262,11 +262,11 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         return isPageFlowContext;
     }
 
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
+    //    @Override
+    //    public void setIsPageFlowContext(final boolean isPageFlowContext) {
+    //        this.isPageFlowContext = isPageFlowContext;
+    //
+    //    }
 
     /*
      * (non-Javadoc)

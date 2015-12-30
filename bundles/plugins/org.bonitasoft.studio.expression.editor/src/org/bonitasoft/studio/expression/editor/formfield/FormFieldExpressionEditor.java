@@ -25,9 +25,8 @@ import java.util.Set;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.WidgetHelper;
 import org.bonitasoft.studio.common.jface.TableColumnSorter;
-import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -39,7 +38,6 @@ import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -52,7 +50,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -151,26 +148,11 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
      * org.eclipse.emf.ecore.EObject, org.bonitasoft.studio.model.expression.Expression, org.eclipse.emf.edit.domain.EditingDomain)
      */
     @Override
-    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters) {
+    public void bindExpression(EMFDataBindingContext dataBindingContext, Expression inputExpression, ExpressionScope scope) {
         this.inputExpression = inputExpression;
         final Set<Widget> input = new HashSet<Widget>();
-        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.FORM_FIELD_TYPE);
-        final Set<Expression> filteredExpressions = new HashSet<Expression>();
-        final Set<Expression> expressions = provider.getExpressions(context);
-        if (expressions != null) {
-            filteredExpressions.addAll(expressions);
-            if (context != null && filters != null) {
-                for (final Expression exp : expressions) {
-                    for (final ViewerFilter filter : filters) {
-                        if (filter != null && !filter.select(viewer, context, exp)) {
-                            filteredExpressions.remove(exp);
-                        }
-                    }
-                }
-            }
-        }
         final Set<String> widgetName = new HashSet<String>();
-        for (final Expression e : filteredExpressions) {
+        for (final Expression e : scope.getExpressionsWithType(ExpressionConstants.FORM_FIELD_TYPE)) {
             final Widget widget = (Widget) e.getReferencedElements().get(0);
             if (inputExpression.isReturnTypeFixed()) {
                 if (!widgetName.contains(widget.getName()) && compatibleReturnType(inputExpression, e)) {

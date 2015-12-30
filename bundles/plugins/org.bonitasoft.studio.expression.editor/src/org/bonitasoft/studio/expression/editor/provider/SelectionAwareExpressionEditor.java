@@ -110,10 +110,10 @@ public abstract class SelectionAwareExpressionEditor implements IExpressionEdito
         return isPageFlowContext;
     }
 
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-    }
+    //    @Override
+    //    public void setIsPageFlowContext(final boolean isPageFlowContext) {
+    //        this.isPageFlowContext = isPageFlowContext;
+    //    }
 
     /*
      * (non-Javadoc)

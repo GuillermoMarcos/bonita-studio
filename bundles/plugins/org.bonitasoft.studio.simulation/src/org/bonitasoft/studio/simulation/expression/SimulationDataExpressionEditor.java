@@ -23,8 +23,7 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.jface.TableColumnSorter;
-import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
-import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -37,7 +36,6 @@ import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -49,7 +47,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -149,12 +146,10 @@ public class SimulationDataExpressionEditor extends SelectionAwareExpressionEdit
     }
 
     @Override
-    public void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] filters) {
-
+    public void bindExpression(EMFDataBindingContext dataBindingContext, Expression inputExpression, ExpressionScope scope) {
         editorInputExpression = inputExpression;
         final Set<SimulationData> input = new HashSet<SimulationData>();
-        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.SIMULATION_VARIABLE_TYPE);
-        for (final Expression e : provider.getExpressions(context)) {
+        for (final Expression e : scope.getExpressionsWithType(ExpressionConstants.SIMULATION_VARIABLE_TYPE)) {
             if (inputExpression.isReturnTypeFixed()) {
                 if (e.getReturnType().equals(inputExpression.getReturnType())) {
                     input.add((SimulationData) e.getReferencedElements().get(0));

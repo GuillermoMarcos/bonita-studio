@@ -16,6 +16,7 @@ package org.bonitasoft.studio.common.predicate;
 
 import java.util.Objects;
 
+import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.parameter.Parameter;
@@ -37,6 +38,19 @@ public class ExpressionPredicates {
             @Override
             public boolean apply(final Expression input) {
                 return expressionType.equals(input.getType());
+            }
+        };
+    }
+
+    public static Predicate<Expression> withVariableType() {
+        return new Predicate<Expression>() {
+
+            @Override
+            public boolean apply(final Expression input) {
+                return ExpressionConstants.VARIABLE_TYPE.equals(input.getType()) ||
+                        ExpressionConstants.JAVA_TYPE.equals(input.getType()) ||
+                        ExpressionConstants.MULTIINSTANCE_ITERATOR_TYPE.equals(input.getType()) ||
+                        ExpressionConstants.XPATH_TYPE.equals(input.getType());
             }
         };
     }

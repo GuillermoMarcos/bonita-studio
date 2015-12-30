@@ -31,9 +31,8 @@ import org.bonitasoft.studio.common.jface.TableColumnSorter;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.data.i18n.Messages;
 import org.bonitasoft.studio.data.ui.wizard.CreateVariableProposalListener;
-import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.provider.IProposalListener;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -64,7 +63,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -179,7 +177,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
 
     }
 
-    private void expressionButtonListener(final EObject context, final ViewerFilter[] filters) throws CoreException {
+    private void expressionButtonListener(final EObject context, final ExpressionScope scope) throws CoreException {
         for (final IConfigurationElement element : BonitaStudioExtensionRegistryManager.getInstance()
                 .getConfigurationElements("org.bonitasoft.studio.expression.proposalListener")) {
             final String expressionTypeLink = element.getAttribute("type");
@@ -196,33 +194,16 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
                     proposalListener.setIsOverviewContext(isOverViewContext());
                     proposalListener.setIsPageFlowContext(isPageFlowContext());
                     proposalListener.handleEvent(context, fixedReturnType);
-                    fillViewerData(context, filters);
+                    fillViewerData(context, scope);
                     return;
                 }
             }
         }
     }
 
-    private void fillViewerData(final EObject context, final ViewerFilter[] filters) {
+    private void fillViewerData(final EObject context, final ExpressionScope scope) {
         final Set<Data> input = new HashSet<Data>();
-        final IExpressionProvider provider = ExpressionProviderService.getInstance()
-                .getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
-        final Set<Expression> expressions = provider.getExpressions(context);
-        final Set<Expression> filteredExpressions = new HashSet<Expression>();
-        if (expressions != null) {
-            filteredExpressions.addAll(expressions);
-            if (input != null && filters != null) {
-                for (final Expression exp : expressions) {
-                    for (final ViewerFilter filter : filters) {
-                        if (filter != null
-                                && !filter.select(viewer, context, exp)) {
-                            filteredExpressions.remove(exp);
-                        }
-                    }
-                }
-            }
-        }
-        for (final Expression e1 : filteredExpressions) {
+        for (final Expression e1 : scope.getExpressionsWithType(ExpressionConstants.VARIABLE_TYPE)) {
             if (editorInputExpression.isReturnTypeFixed()) {
                 if (compatibleReturnType(editorInputExpression, e1)) {
                     input.add((Data) e1.getReferencedElements().get(0));
@@ -235,20 +216,18 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext,
-            final EObject context, final Expression inputExpression, final ViewerFilter[] filters) {
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
 
-        final EObject finalContext = context;
-        if (context instanceof Widget && ModelHelper.getPageFlow((Widget) context) instanceof Pool) {
+        final EObject modelElement = scope.getLocation().getModelElement();
+        if (modelElement instanceof Widget && ModelHelper.getPageFlow((Widget) modelElement) instanceof Pool) {
             addExpressionButton.setEnabled(false);
         }
-        final ViewerFilter[] finalFilters = filters;
         addExpressionButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 try {
-                    expressionButtonListener(finalContext, finalFilters);
+                    expressionButtonListener(modelElement, scope);
                 } catch (final CoreException e1) {
                     BonitaStudioLog.error(e1);
                 }
@@ -256,7 +235,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
         });
 
         editorInputExpression = inputExpression;
-        fillViewerData(context, filters);
+        fillViewerData(modelElement, scope);
 
         final IObservableValue contentObservable = EMFObservables
                 .observeValue(inputExpression,
@@ -363,7 +342,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
                 SWTObservables.observeText(typeText, SWT.Modify),
                 returnTypeObservable);
 
-        if (context instanceof DateFormField) {
+        if (modelElement instanceof DateFormField) {
             handleDateFormFieldBinding();
         }
 

@@ -15,6 +15,7 @@
 package org.bonitasoft.studio.model.process.builders;
 
 import org.bonitasoft.studio.model.Buildable;
+import org.bonitasoft.studio.model.form.builders.FormBuilder;
 import org.bonitasoft.studio.model.parameter.builders.ParameterBuilder;
 import org.bonitasoft.studio.model.process.Connection;
 import org.bonitasoft.studio.model.process.Container;
@@ -126,6 +127,15 @@ public class PoolBuilder extends ElementBuilder<Pool, PoolBuilder> {
         return getThis();
     }
 
+    public PoolBuilder havingForm(FormBuilder... forms) {
+        if (forms != null) {
+            for (final FormBuilder formBuilder : forms) {
+                getBuiltInstance().getForm().add(formBuilder.build());
+            }
+        }
+        return getThis();
+    }
+
     public PoolBuilder havingContract(final ContractBuilder contract) {
         getBuiltInstance().setContract(contract.build());
         return getThis();
@@ -145,5 +155,6 @@ public class PoolBuilder extends ElementBuilder<Pool, PoolBuilder> {
     protected Pool newInstance() {
         return ProcessFactory.eINSTANCE.createPool();
     }
+
 
 }

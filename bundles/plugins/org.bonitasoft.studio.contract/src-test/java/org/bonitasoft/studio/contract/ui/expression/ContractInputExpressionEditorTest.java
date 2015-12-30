@@ -17,10 +17,13 @@ package org.bonitasoft.studio.contract.ui.expression;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.contract.core.expression.ContractInputExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.assertions.ExpressionAssert;
 import org.bonitasoft.studio.model.process.Contract;
@@ -91,8 +94,9 @@ public class ContractInputExpressionEditorTest {
     @Test
     public void should_bindExpression_convert_viewer_selection_to_contract_input_expression() throws Exception {
         contractInputExpressionEditor.createExpressionEditor(parent, dataBindingContext);
-        contractInputExpressionEditor.bindExpression(dataBindingContext, task,
-                ExpressionHelper.createConstantExpression("", String.class.getName()), null);
+        contractInputExpressionEditor.bindExpression(dataBindingContext,
+                ExpressionHelper.createConstantExpression("", String.class.getName()),
+                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList()));
         final Object elementAt = contractInputExpressionEditor.getViewer().getElementAt(2);
 
         assertThat(contractInputExpressionEditor.canFinish()).isFalse();
@@ -111,8 +115,9 @@ public class ContractInputExpressionEditorTest {
     public void should_contract_input_expression_editor_have_a_default_selection() throws Exception {
         contractInputExpressionEditor.createExpressionEditor(parent, dataBindingContext);
         final Expression contractInputExpression = ExpressionHelper.createContractInputExpression(contract.getInputs().get(0));
-        contractInputExpressionEditor.bindExpression(dataBindingContext, task,
-                contractInputExpression, null);
+        contractInputExpressionEditor.bindExpression(dataBindingContext,
+                contractInputExpression, 
+                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList()));
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat(viewer.getSelection().isEmpty()).isFalse();
 
@@ -127,8 +132,9 @@ public class ContractInputExpressionEditorTest {
         contractInputExpressionEditor.createExpressionEditor(parent, dataBindingContext);
 
         final Expression contractInputExpression = ExpressionHelper.createContractInputExpression(ProcessFactory.eINSTANCE.createContractInput());
-        contractInputExpressionEditor.bindExpression(dataBindingContext, task,
-                contractInputExpression, null);
+        contractInputExpressionEditor.bindExpression(dataBindingContext,
+                contractInputExpression,
+                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList()));
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat(viewer.getSelection().isEmpty()).isTrue();
     }
@@ -138,8 +144,9 @@ public class ContractInputExpressionEditorTest {
         contractInputExpressionEditor.createExpressionEditor(parent, dataBindingContext);
         final Expression contractInputExpression = ExpressionHelper.createContractInputExpression(contract.getInputs().get(0));
         contractInputExpression.setReturnTypeFixed(true);
-        contractInputExpressionEditor.bindExpression(dataBindingContext, task,
-                contractInputExpression, null);
+        contractInputExpressionEditor.bindExpression(dataBindingContext,
+                contractInputExpression,
+                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList()));
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat((Collection) viewer.getInput()).hasSize(2);
     }

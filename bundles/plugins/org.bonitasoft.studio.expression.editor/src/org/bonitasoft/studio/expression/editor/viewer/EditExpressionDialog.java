@@ -25,6 +25,8 @@ import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScopeResolver;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.provider.DataExpressionNatureProvider;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionTypeContentProvider;
@@ -37,7 +39,6 @@ import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.dialogs.DialogTray;
@@ -78,7 +79,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
 
     private TableViewer expressionTypeViewer;
 
-    protected final EObject context;
+    // protected final EObject context;
 
     protected Composite contentComposite;
 
@@ -89,8 +90,6 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
     protected IExpressionEditor currentExpressionEditor;
 
     private ISelection oldSelection;
-
-    protected final ViewerFilter[] viewerTypeFilters;
 
     private final boolean isPassword;
 
@@ -119,6 +118,8 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
 
     private Set<String> filteredEditor = new HashSet<String>();
 
+    protected ExpressionScope scope;
+
     @Override
     public void openTray(final DialogTray tray) throws IllegalStateException, UnsupportedOperationException {
         super.openTray(tray);
@@ -129,9 +130,8 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
     protected EditExpressionDialog(final Shell parentShell,
             final boolean isPassword,
             final Expression inputExpression,
-            final EObject context,
             final EditingDomain domain,
-            final ViewerFilter[] viewerTypeFilters,
+            final ExpressionScope scope,
             final ExpressionViewer expressionViewer) {
         super(parentShell);
         this.inputExpression = inputExpression;
@@ -141,9 +141,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
         if (this.inputExpression.getType() == null) {
             this.inputExpression.setType(ExpressionConstants.CONSTANT_TYPE);
         }
-        this.context = context;
         this.domain = domain;
-        this.viewerTypeFilters = viewerTypeFilters;
         this.isPassword = isPassword;
         this.expressionViewer = expressionViewer;
         setHelpAvailable(true);
@@ -235,9 +233,20 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
                 return p1.getTypeLabel().compareTo(p2.getTypeLabel());
             }
         });
-        if (viewerTypeFilters != null) {
-            expressionTypeViewer.setFilters(viewerTypeFilters);
-        }
+        expressionTypeViewer.addFilter(new ViewerFilter() {
+
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element) {
+                if (element instanceof IExpressionProvider) {
+                    final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
+                    exp.setName("");
+                    exp.setType(((IExpressionProvider) element).getExpressionType());
+                    return new ExpressionScopeResolver().applyTo(scope.getLocation(), exp);
+
+                }
+                return false;
+            }
+        });
         if (!filteredEditor.isEmpty()) {
             expressionTypeViewer.addFilter(filterEditor());
         }
@@ -328,7 +337,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
             currentExpressionEditor.dispose();
         }
 
-        currentExpressionEditor = provider.getExpressionEditor(inputExpression, context);
+        currentExpressionEditor = provider.getExpressionEditor(inputExpression, scope.getLocation().getModelElement());
         currentExpressionEditor.setIsPageFlowContext(isPageFlowContext);
         if (currentExpressionEditor != null) {
             if (dataBindingContext != null) {
@@ -368,7 +377,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
             if (expressionNatureProvider instanceof DataExpressionNatureProvider) {
                 currentExpressionEditor.setDataFeature(((DataExpressionNatureProvider) expressionNatureProvider).getDataFeature());
             }
-            currentExpressionEditor.bindExpression(dataBindingContext, context, inputExpression, viewerTypeFilters);
+            currentExpressionEditor.bindExpression(dataBindingContext, inputExpression, scope);
             currentExpressionEditor.addListener(new Listener() {
 
                 @Override

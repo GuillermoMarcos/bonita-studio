@@ -33,6 +33,10 @@ public class ExpressionContentProvider implements IExpressionNatureProvider {
         this.expressionEditorService = expressionEditorService;
     }
 
+    /**
+     * @deprecated use ExpressionScope instead
+     */
+    @Deprecated
     public static ExpressionContentProvider getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ExpressionContentProvider(ExpressionProviderService.getInstance());

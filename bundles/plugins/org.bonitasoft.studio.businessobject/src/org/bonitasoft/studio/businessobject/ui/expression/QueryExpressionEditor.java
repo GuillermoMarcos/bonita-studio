@@ -29,6 +29,7 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.NamingUtils;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionColumnLabelProvider;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
@@ -61,7 +62,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -339,9 +339,9 @@ public class QueryExpressionEditor extends SelectionAwareExpressionEditor implem
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression,
-            final ViewerFilter[] viewerTypeFilters) {
-        editingSupport.setInput(context);
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression,
+            final ExpressionScope scope) {
+        editingSupport.setInput(scope.getLocation().getModelElement());
         this.inputExpression = inputExpression;
 
         dataBindingContext.bindValue(

@@ -18,6 +18,7 @@ package org.bonitasoft.studio.groovy.ui.dialog;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.viewer.EditExpressionDialog;
 import org.bonitasoft.studio.groovy.ui.providers.GroovyScriptFileEditor;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -25,9 +26,7 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -39,8 +38,8 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class GroovyScriptFileDialog extends EditExpressionDialog {
 
-    public GroovyScriptFileDialog(Shell parentShell, Expression inputExpression, EObject context, EditingDomain domain, ViewerFilter[] viewerTypeFilters) {
-        super(parentShell, false, inputExpression, context, domain, viewerTypeFilters, null);
+    public GroovyScriptFileDialog(Shell parentShell, Expression inputExpression, EditingDomain domain, ExpressionScope scope) {
+        super(parentShell, false, inputExpression, domain, scope, null);
         if (isResizable()) {
             setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE
                     | getDefaultOrientation());
@@ -87,7 +86,7 @@ public class GroovyScriptFileDialog extends EditExpressionDialog {
                 }
             };
             selectionToExpressionType.setConverter(convert);
-            currentExpressionEditor.bindExpression(dataBindingContext, context, inputExpression, viewerTypeFilters);
+            currentExpressionEditor.bindExpression(dataBindingContext, inputExpression, scope);
         }
     }
 

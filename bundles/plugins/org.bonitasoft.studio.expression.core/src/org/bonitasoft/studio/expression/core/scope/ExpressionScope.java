@@ -14,21 +14,42 @@
  */
 package org.bonitasoft.studio.expression.core.scope;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.util.Collections;
 import java.util.List;
 
+import org.bonitasoft.studio.common.predicate.ExpressionPredicates;
 import org.bonitasoft.studio.model.expression.Expression;
+
+import com.google.common.collect.Iterables;
 
 public class ExpressionScope {
 
     private final List<Expression> expressions;
+    private final ModelLocation location;
+    private final List<Expression> providedExpressions;
 
-    public ExpressionScope(List<Expression> expressions) {
+    public ExpressionScope(ModelLocation location, List<Expression> expressions, List<Expression> providedExpressions) {
+        this.location = location;
         this.expressions = expressions;
+        this.providedExpressions = providedExpressions;
     }
 
     public List<Expression> getExpressions() {
         return Collections.unmodifiableList(expressions);
+    }
+
+    public List<Expression> getProvidedExpressions() {
+        return Collections.unmodifiableList(providedExpressions);
+    }
+
+    public ModelLocation getLocation() {
+        return location;
+    }
+
+    public List<Expression> getExpressionsWithType(String expressionType) {
+        return newArrayList(Iterables.filter(getExpressions(), ExpressionPredicates.withExpressionType(expressionType)));
     }
 
 }

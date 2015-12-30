@@ -30,8 +30,4 @@ public class GroovySourceViewerFactory {
         return new GroovyViewer(container, null, editor);
     }
 
-    public GroovyViewer createSourceViewer(final Composite container, final boolean isPageFlowContext) {
-        return new GroovyViewer(container, isPageFlowContext);
-    }
-
 }

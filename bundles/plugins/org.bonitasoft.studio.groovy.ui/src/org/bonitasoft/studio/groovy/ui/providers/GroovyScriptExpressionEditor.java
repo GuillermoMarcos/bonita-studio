@@ -16,12 +16,9 @@ package org.bonitasoft.studio.groovy.ui.providers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.IBonitaVariableContext;
@@ -32,6 +29,7 @@ import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.dependencies.ui.dialog.ManageConnectorJarDialog;
 import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.expression.editor.viewer.SelectDependencyDialog;
 import org.bonitasoft.studio.groovy.GroovyPlugin;
@@ -77,7 +75,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
@@ -446,8 +443,8 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression,
-            final ViewerFilter[] filters) {
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression,
+            final ExpressionScope scope) {
         this.inputExpression = inputExpression;
         this.context = context;
 
@@ -459,7 +456,7 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
         inputExpression.setType(ExpressionConstants.SCRIPT_TYPE);
         inputExpression.setInterpreter(ExpressionConstants.GROOVY);
 
-        groovyViewer.setContext(null, context, filters);
+        groovyViewer.setContext(scope);
         nodes = new ArrayList<ScriptVariable>(groovyViewer.getFieldNodes());
 
         if (context == null && nodes == null) {
@@ -571,21 +568,7 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
         });
 
         final ExpressionContentProvider provider = ExpressionContentProvider.getInstance();
-        final Set<Expression> filteredExpressions = new HashSet<Expression>();
-        final Expression[] expressions = provider.getExpressions(context);
-        if (expressions != null) {
-            filteredExpressions.addAll(Arrays.asList(expressions));
-            if (context != null && filters != null) {
-                for (final Expression exp : expressions) {
-                    for (final ViewerFilter filter : filters) {
-                        if (filter != null && !filter.select(groovyViewer.getSourceViewer(), context, exp)) {
-                            filteredExpressions.remove(exp);
-                        }
-                    }
-                }
-            }
-        }
-
+        final List<Expression> filteredExpressions = scope.getExpressions();
         addDependencyButton.addSelectionListener(new SelectionAdapter() {
 
             @Override

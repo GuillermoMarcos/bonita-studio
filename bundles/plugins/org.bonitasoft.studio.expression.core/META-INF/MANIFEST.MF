@@ -10,8 +10,14 @@ Require-Bundle: org.eclipse.core.runtime,
  org.bonitasoft.studio.common,
  org.eclipse.e4.core.contexts,
  org.eclipse.ui;bundle-version="3.106.0",
- org.eclipse.emf.databinding
+ org.eclipse.emf.databinding,
+ org.junit;bundle-version="4.11.0";resolution:=optional,
+ assertj-core;bundle-version="1.5.0";resolution:=optional,
+ org.mockito;bundle-version="1.10.19";resolution:=optional,
+ org.bonitasoft.studio.tests-utils;bundle-version="7.2.0";resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Bonitasoft S.A.
-Export-Package: org.bonitasoft.studio.expression.core.provider
+Export-Package: org.bonitasoft.studio.expression.core.provider,
+ org.bonitasoft.studio.expression.core.scope
+Import-Package: org.bonitasoft.engine.expression

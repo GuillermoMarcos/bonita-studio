@@ -18,15 +18,14 @@ package org.bonitasoft.studio.groovy.ui.providers;
 
 import org.bonitasoft.studio.common.jface.databinding.validator.InputLengthValidator;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.groovy.ui.viewer.GroovyViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocumentListener;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -73,12 +72,12 @@ public class GroovyScriptFileEditor extends GroovyScriptExpressionEditor impleme
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression,
-            final ViewerFilter[] filters) {
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression,
+            final ExpressionScope scope) {
         this.inputExpression = inputExpression;
-        this.context = context;
+        this.context = scope.getLocation().getModelElement();
         groovyViewer.getDocument().set(inputExpression.getContent());
-        groovyViewer.setContext(null, context, filters);
+        groovyViewer.setContext(scope);
         groovyViewer.getSourceViewer().getTextWidget().setData(BONITA_KEYWORDS_DATA_KEY, null);
         groovyViewer.getSourceViewer().getTextWidget().setData(PROCESS_VARIABLES_DATA_KEY, null);
         groovyViewer.getSourceViewer().getTextWidget().setData(CONTEXT_DATA_KEY, null);

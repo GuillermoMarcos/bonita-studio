@@ -17,10 +17,9 @@
 package org.bonitasoft.studio.expression.editor.viewer;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.model.expression.Expression;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
@@ -30,9 +29,9 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class GroovyOnlyEditExpressionDialog extends EditExpressionDialog {
 
-    protected GroovyOnlyEditExpressionDialog(final Shell parentShell, final boolean isPassword, final Expression inputExpression, final EObject context,
-            final EditingDomain domain, final ViewerFilter[] viewerTypeFilters, final ExpressionViewer expressionViewer) {
-		super(parentShell,isPassword,inputExpression,context,domain,viewerTypeFilters,expressionViewer);
+    protected GroovyOnlyEditExpressionDialog(final Shell parentShell, final boolean isPassword, final Expression inputExpression, 
+            final EditingDomain domain, final ExpressionScope scope, final ExpressionViewer expressionViewer) {
+        super(parentShell, isPassword, inputExpression, domain, scope, expressionViewer);
 		this.inputExpression.setType(ExpressionConstants.SCRIPT_TYPE) ;
 	}
 

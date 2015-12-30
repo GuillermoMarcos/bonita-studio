@@ -16,7 +16,6 @@ package org.bonitasoft.studio.expression.editor.viewer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -43,9 +42,9 @@ public class SelectDependencyDialog extends Dialog {
     private final AdapterFactoryLabelProvider adapterLabelProvider;
     private TableViewer dependenciesViewer;
     private final List<EObject> deps;
-    private final Set<Expression> filteredExpression;
+    private final List<Expression> filteredExpression;
 
-    public SelectDependencyDialog(final Shell parentShell, final Set<Expression> filteredExpression, final List<EObject> currentDepList) {
+    public SelectDependencyDialog(final Shell parentShell, final List<Expression> filteredExpression, final List<EObject> currentDepList) {
         super(parentShell);
         this.filteredExpression = filteredExpression;
         adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);

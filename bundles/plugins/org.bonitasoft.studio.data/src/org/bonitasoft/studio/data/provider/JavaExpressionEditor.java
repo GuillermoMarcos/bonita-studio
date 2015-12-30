@@ -25,9 +25,8 @@ import org.bonitasoft.studio.common.jface.DataStyledTreeLabelProvider;
 import org.bonitasoft.studio.common.jface.TableColumnSorter;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.data.i18n.Messages;
-import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -42,7 +41,6 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -241,21 +239,16 @@ public class JavaExpressionEditor extends SelectionAwareExpressionEditor impleme
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext, final EObject context, final Expression inputExpression,
-            final ViewerFilter[] filters) {
-
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
         editorInputExpression = inputExpression;
         setContentProvider(new PojoBrowserContentProvider());
         javaTreeviewer.setContentProvider(getContentProvider());
 
         final Set<Data> input = new HashSet<Data>();
-        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
-        for (final Expression e : provider.getExpressions(context)) {
-            if (acceptExpression(e, context, filters)) {
-                final Data data = (Data) e.getReferencedElements().get(0);
-                if (data instanceof JavaObjectData || data.isMultiple()) {
-                    input.add(data);
-                }
+        for (final Expression e : scope.getExpressionsWithType(ExpressionConstants.VARIABLE_TYPE)) {
+            final Data data = (Data) e.getReferencedElements().get(0);
+            if (data instanceof JavaObjectData || data.isMultiple()) {
+                input.add(data);
             }
         }
         viewer.setInput(input);
@@ -401,17 +394,6 @@ public class JavaExpressionEditor extends SelectionAwareExpressionEditor impleme
                 return javaViewerSingleSelection.getValue() instanceof IMethod ? ValidationStatus.ok() : ValidationStatus.error("");
             }
         });
-    }
-
-    private boolean acceptExpression(final Expression e, final EObject context, final ViewerFilter[] filters) {
-        if (filters != null) {
-            for (final ViewerFilter f : filters) {
-                if (!f.select(null, context, e)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override

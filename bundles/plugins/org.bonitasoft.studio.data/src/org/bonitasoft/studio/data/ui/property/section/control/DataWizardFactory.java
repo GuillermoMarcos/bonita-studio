@@ -30,18 +30,18 @@ public class DataWizardFactory {
     private final boolean showAutoGenerateForm;
     private final boolean isPageFlowContext;
     private final boolean isOverviewContext;
-
-    public DataWizardFactory(final EStructuralFeature dataFeature,
-            final Set<EStructuralFeature> dataFeatureToCheckUniqueID,
-            final boolean showAutoGenerateForm,
-            final boolean isPageFlowContext,
-            final boolean isOverviewContext) {
-        this.dataFeature = dataFeature;
-        this.dataFeatureToCheckUniqueID = dataFeatureToCheckUniqueID;
-        this.showAutoGenerateForm = showAutoGenerateForm;
-        this.isPageFlowContext = isPageFlowContext;
-        this.isOverviewContext = isOverviewContext;
-    }
+    //
+    //    public DataWizardFactory(final EStructuralFeature dataFeature,
+    //            final Set<EStructuralFeature> dataFeatureToCheckUniqueID,
+    //            final boolean showAutoGenerateForm,
+    //            final boolean isPageFlowContext,
+    //            final boolean isOverviewContext) {
+    //        this.dataFeature = dataFeature;
+    //        this.dataFeatureToCheckUniqueID = dataFeatureToCheckUniqueID;
+    //        this.showAutoGenerateForm = showAutoGenerateForm;
+    //        this.isPageFlowContext = isPageFlowContext;
+    //        this.isOverviewContext = isOverviewContext;
+    //    }
 
     public DataWizardFactory(final EStructuralFeature dataFeature) {
         this(dataFeature, Collections.singleton(dataFeature), true, false, false);

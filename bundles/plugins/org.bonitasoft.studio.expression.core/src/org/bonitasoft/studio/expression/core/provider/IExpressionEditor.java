@@ -19,13 +19,12 @@ package org.bonitasoft.studio.expression.core.provider;
 import java.util.List;
 
 import org.bonitasoft.studio.common.IBonitaVariableContext;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.DialogTray;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
@@ -40,7 +39,7 @@ public interface IExpressionEditor extends IBonitaVariableContext {
 
     Control createExpressionEditor(Composite contentComposite, EMFDataBindingContext ctx, boolean isPassword);
 
-    void bindExpression(EMFDataBindingContext dataBindingContext, EObject context, Expression inputExpression, ViewerFilter[] viewerTypeFilters);
+    void bindExpression(EMFDataBindingContext dataBindingContext, Expression inputExpression, ExpressionScope scope);
 
     boolean canFinish();
 

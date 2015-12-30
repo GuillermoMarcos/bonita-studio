@@ -19,12 +19,12 @@ import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.designer.core.command.UpdateFormMappingCommand;
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.viewer.EditExpressionDialog;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.process.FormMapping;
 import org.eclipse.core.databinding.conversion.Converter;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -49,7 +49,7 @@ public class FormReferenceExpressionViewer extends ExpressionViewer {
     }
 
     @Override
-    protected EditExpressionDialog createEditDialog(final EObject editInput) {
+    protected EditExpressionDialog createEditDialog(final ExpressionScope scope) {
         return null;
     }
 

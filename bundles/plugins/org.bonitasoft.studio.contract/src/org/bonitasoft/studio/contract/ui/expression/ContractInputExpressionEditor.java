@@ -28,6 +28,7 @@ import org.bonitasoft.studio.contract.core.expression.ContractInputExpressionPro
 import org.bonitasoft.studio.contract.i18n.Messages;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -48,7 +49,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -145,10 +145,9 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext,
-            final EObject context, final Expression inputExpression, final ViewerFilter[] filters) {
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
         editorInputExpression = inputExpression;
-        updateViewerInput(context);
+        updateViewerInput(scope.getLocation().getModelElement());
 
         final IObservableValue contentObservable = EMFObservables
                 .observeValue(inputExpression,

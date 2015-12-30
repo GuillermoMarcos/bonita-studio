@@ -56,7 +56,6 @@ public class EditGroovyScriptHandler extends AbstractHandler {
                     ExpressionHelper.createGroovyScriptExpression(script, Object.class.getName())
                     ,
                     null,
-                    null,
                     null);
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
 

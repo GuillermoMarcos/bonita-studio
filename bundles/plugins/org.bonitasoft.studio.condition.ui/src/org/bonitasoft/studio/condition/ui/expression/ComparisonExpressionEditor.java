@@ -15,11 +15,8 @@
 package org.bonitasoft.studio.condition.ui.expression;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
@@ -32,8 +29,8 @@ import org.bonitasoft.studio.condition.conditionModel.Operation_Compare;
 import org.bonitasoft.studio.condition.ui.i18n.Messages;
 import org.bonitasoft.studio.condition.ui.internal.ConditionModelActivator;
 import org.bonitasoft.studio.condition.validation.ConditionModelJavaValidator;
-import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.ExpressionEditorPlugin;
 import org.bonitasoft.studio.expression.editor.constant.ConstantTypeLabelProvider;
 import org.bonitasoft.studio.expression.editor.constant.ExpressionReturnTypeContentProvider;
@@ -62,7 +59,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -298,15 +294,8 @@ public class ComparisonExpressionEditor extends SelectionAwareExpressionEditor i
         typeCombo.setInput(new Object());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.expression.editor.provider.IExpressionEditor#bindExpression(org.eclipse.emf.databinding.EMFDataBindingContext,
-     * org.eclipse.emf.ecore.EObject, org.bonitasoft.studio.model.expression.Expression, org.eclipse.jface.viewers.ViewerFilter[])
-     */
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext,
-            final EObject context, final Expression inputExpression,
-            final ViewerFilter[] viewerTypeFilters) {
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
         this.inputExpression = inputExpression;
         final IObservableValue contentModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
         final IObservableValue nameModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__NAME);
@@ -332,29 +321,11 @@ public class ComparisonExpressionEditor extends SelectionAwareExpressionEditor i
         ControlDecorationSupport
                 .create(dataBindingContext.bindValue(ViewersObservables.observeSingleSelection(typeCombo), returnTypeModelObservable), SWT.LEFT);
         typeCombo.getCombo().setEnabled(!inputExpression.isReturnTypeFixed());
-
-        final ExpressionContentProvider provider = ExpressionContentProvider.getInstance();
-
-        final Set<Expression> filteredExpressions = new HashSet<Expression>();
-        final Expression[] expressions = provider.getExpressions(context);
-        if (expressions != null) {
-            filteredExpressions.addAll(Arrays.asList(expressions));
-            if (context != null && viewerTypeFilters != null) {
-                for (final Expression exp : expressions) {
-                    for (final ViewerFilter filter : viewerTypeFilters) {
-                        if (filter != null && !filter.select(comparisonEditor.getViewer(), context, exp)) {
-                            filteredExpressions.remove(exp);
-                        }
-                    }
-                }
-            }
-        }
-
         addDependencyButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                final SelectDependencyDialog dialog = new SelectDependencyDialog(Display.getDefault().getActiveShell(), filteredExpressions,
+                final SelectDependencyDialog dialog = new SelectDependencyDialog(Display.getDefault().getActiveShell(), scope.getExpressions(),
                         ComparisonExpressionEditor.this.inputExpression.getReferencedElements());
                 dialog.open();
             }

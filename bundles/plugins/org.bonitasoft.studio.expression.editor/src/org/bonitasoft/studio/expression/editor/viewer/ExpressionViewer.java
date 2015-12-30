@@ -43,6 +43,10 @@ import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScopeProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScopeResolver;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.ExpressionEditorPlugin;
 import org.bonitasoft.studio.expression.editor.autocompletion.AutoCompletionField;
 import org.bonitasoft.studio.expression.editor.autocompletion.BonitaContentProposalAdapter;
@@ -162,6 +166,7 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
     private AbstractRefactorOperation operation;
     private AbstractRefactorOperation removeOperation;
     final ExpressionViewerValidator expressionViewerValidator = new ExpressionViewerValidator();
+    private final ExpressionScopeProvider scopeProvider = new ExpressionScopeProvider();
     protected final DisposeListener disposeListener = new DisposeListener() {
 
         @Override
@@ -528,10 +533,18 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
     }
 
     protected EditExpressionDialog createEditDialog() {
+        return createEditDialog(getExpressionScope());
+    }
+
+    private ExpressionScope getExpressionScope() {
         final Object input = getInput();
-        final EObject editInput = getEditInput(input);
-        final EditExpressionDialog dialog = createEditDialog(editInput);
-        return dialog;
+        final EObject context = getEditInput(input);
+        final ExpressionScopeProvider provider = new ExpressionScopeProvider();
+        final Expression selectedExpression = getSelectedExpression();
+        if (selectedExpression != null) {
+            return provider.get(new ModelLocation(context, selectedExpression.eContainingFeature()));
+        }
+        return null;
     }
 
     private EObject getEditInput(final Object input) {
@@ -546,9 +559,13 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
         return editInput;
     }
 
-    protected EditExpressionDialog createEditDialog(final EObject editInput) {
-        final EditExpressionDialog dialog = new EditExpressionDialog(control.getShell(), isPassword, EcoreUtil.copy(getSelectedExpression()), editInput,
-                getEditingDomain(), filters.toArray(new ViewerFilter[filters.size()]), this);
+    protected EditExpressionDialog createEditDialog(final ExpressionScope scope) {
+        final EditExpressionDialog dialog = new EditExpressionDialog(control.getShell(),
+                isPassword,
+                EcoreUtil.copy(getSelectedExpression()),
+                getEditingDomain(),
+                scope,
+                this);
         dialog.setEditorFilters(filteredEditor);
         return dialog;
     }
@@ -652,8 +669,7 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
                 && filteredExpressionType.contains(ExpressionConstants.FORM_REFERENCE_TYPE)
                 && filteredExpressions.isEmpty()) {
             contentAssistText.setProposalEnabled(false);
-        }
-        else {
+        } else {
             contentAssistText.setProposalEnabled(true);
         }
     }
@@ -664,16 +680,16 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
 
     private ArrayList<String> getFilteredExpressionType() {
         final ArrayList<String> filteredExpressions = new ArrayList<String>();
-        final Set<ViewerFilter> fitlers = getFilters();
-
         final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
         exp.setName("");
         if (filters != null && expressionNatureProvider != null && context != null && expressionEditorService != null) {
-            final Set<IExpressionProvider> expressionProviders = expressionEditorService.getExpressionProviders();
-            for (final IExpressionProvider provider : expressionProviders) {
-                for (final ViewerFilter viewerFilter : fitlers) {
+            final Expression selectedExpression = getSelectedExpression();
+            if (selectedExpression != null) {
+                final ExpressionScopeResolver scopeResolver = new ExpressionScopeResolver();
+                final Set<IExpressionProvider> expressionProviders = expressionEditorService.getExpressionProviders();
+                for (final IExpressionProvider provider : expressionProviders) {
                     exp.setType(provider.getExpressionType());
-                    if (!viewerFilter.select(this, context, exp)) {
+                    if (!scopeResolver.applyTo(new ModelLocation(context, selectedExpression.eContainingFeature()), exp)) {
                         filteredExpressions.add(provider.getExpressionType());
                     }
                 }
@@ -690,37 +706,37 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
         final Set<Expression> filteredExpressions = new TreeSet<Expression>(new ExpressionComparator());
         if (expressionNatureProvider != null) {
             if (!(expressionNatureProvider instanceof ExpressionContentProvider)) {
-                final ExpressionContentProvider provider = ExpressionContentProvider.getInstance();
-                final Expression[] expressions = provider.getExpressions(context);
+                final Expression[] expressions = expressionNatureProvider.getExpressions(context);
                 if (expressions != null) {
                     filteredExpressions.addAll(Arrays.asList(expressions));
                 }
             }
-            final Expression[] expressions = expressionNatureProvider.getExpressions(context);
-            if (expressions != null) {
-                filteredExpressions.addAll(Arrays.asList(expressions));
+            final ExpressionScope scope = getExpressionScope();
+            if (scope != null) {
+                filteredExpressions.addAll(scope.getExpressions());
             }
+
             final Set<Expression> toRemove = new HashSet<Expression>();
-            if (context != null) {
-                for (final Expression exp : filteredExpressions) {
-                    for (final ViewerFilter filter : getFilters()) {
-                        if (filter != null && !filter.select(this, context, exp)) {
-                            toRemove.add(exp);
-                        }
-                    }
-                    final Expression selectedExpression = getSelectedExpression();
-                    if (selectedExpression != null
-                            && !ExpressionConstants.CONDITION_TYPE.equals(selectedExpression.getType())) {
-                        if (selectedExpression != null && selectedExpression.isReturnTypeFixed()
-                                && selectedExpression.getReturnType() != null) {
-                            if (!compatibleReturnTypes(selectedExpression, exp)) {
-                                toRemove.add(exp);
-                            }
-                        }
-                    }
-                }
-            }
-            filteredExpressions.removeAll(toRemove);
+            //            if (context != null) {
+            //                for (final Expression exp : filteredExpressions) {
+            //                    for (final ViewerFilter filter : getFilters()) {
+            //                        if (filter != null && !filter.select(this, context, exp)) {
+            //                            toRemove.add(exp);
+            //                        }
+            //                    }
+            //                    final Expression selectedExpression = getSelectedExpression();
+            //                    if (selectedExpression != null
+            //                            && !ExpressionConstants.CONDITION_TYPE.equals(selectedExpression.getType())) {
+            //                        if (selectedExpression != null && selectedExpression.isReturnTypeFixed()
+            //                                && selectedExpression.getReturnType() != null) {
+            //                            if (!compatibleReturnTypes(selectedExpression, exp)) {
+            //                                toRemove.add(exp);
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //            filteredExpressions.removeAll(toRemove);
         }
         return filteredExpressions;
     }
@@ -1284,14 +1300,12 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
 
     @Override
     public boolean isPageFlowContext() {
-
         return isPageFlowContext;
     }
 
     @Override
     public void setIsPageFlowContext(final boolean isPageFlowContext) {
         this.isPageFlowContext = isPageFlowContext;
-
     }
 
     public void setRefactorOperationToExecuteWhenUpdatingContent(final AbstractRefactorOperation<?, ?, ?> operation) {
@@ -1400,5 +1414,9 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
 
     public EObject getContext() {
         return context;
+    }
+
+    public void clearFilters() {
+        filters.clear();
     }
 }

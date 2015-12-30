@@ -28,9 +28,8 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.jface.DataStyledTreeLabelProvider;
 import org.bonitasoft.studio.common.jface.TableColumnSorter;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
-import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
-import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -67,7 +66,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -195,13 +193,10 @@ public class XPathExpressionEditor extends SelectionAwareExpressionEditor implem
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext,
-            final EObject context, final Expression inputExpression, final ViewerFilter[] filters) {
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
         editorInputExpression = inputExpression;
         final Set<Data> input = new HashSet<Data>();
-        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
-        for (final Expression e : provider.getExpressions(context)) {
-
+        for (final Expression e : scope.getExpressionsWithType(ExpressionConstants.VARIABLE_TYPE)) {
             final EObject data = e.getReferencedElements().get(0);
             if (data instanceof XMLData) {
                 input.add((XMLData) data);
@@ -224,7 +219,6 @@ public class XPathExpressionEditor extends SelectionAwareExpressionEditor implem
                     return xmlData.getName() + " - " + editorInputExpression.getContent();
                 } else if (data instanceof String) {
                     final XMLData xmlData = (XMLData) ((IStructuredSelection) viewer.getSelection()).getFirstElement();
-
                     return xmlData.getName() + " - " + data;
 
                 }

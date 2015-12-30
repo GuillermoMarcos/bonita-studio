@@ -226,7 +226,7 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
 
     private final String fixedReturnType;
 
-    private boolean isPageFlowContext = false;
+    private final boolean isPageFlowContext = false;
 
     private boolean isOverviewContext = false;
 
@@ -1311,12 +1311,12 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
 
         return isPageFlowContext;
     }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
+    //
+    //    @Override
+    //    public void setIsPageFlowContext(final boolean isPageFlowContext) {
+    //        this.isPageFlowContext = isPageFlowContext;
+    //
+    //    }
 
     public Set<String> refreshDataNames() {
         if (!(container instanceof AbstractProcess)) {

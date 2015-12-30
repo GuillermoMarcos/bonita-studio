@@ -28,6 +28,7 @@ import org.bonitasoft.studio.document.i18n.Messages;
 import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -52,7 +53,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -153,10 +153,10 @@ public class DocumentExpressionEditor extends SelectionAwareExpressionEditor
                 .align(SWT.FILL, SWT.CENTER).indent(10, 0).create());
     }
 
-    private void fillViewerDocument(final EObject context, final ViewerFilter[] filters) {
+    private void fillViewerDocument(final ExpressionScope scope) {
         final Set<Document> simpleDocuments = new HashSet<Document>();
         final Set<Document> multipleDocuments = new HashSet<Document>();
-        retrieveAndFillDocumentSet(context, simpleDocuments, multipleDocuments);
+        retrieveAndFillDocumentSet(scope.getLocation().getModelElement(), simpleDocuments, multipleDocuments);
         final Set<Document> input = computeInput(simpleDocuments, multipleDocuments);
         viewer.setInput(input);
     }
@@ -193,10 +193,9 @@ public class DocumentExpressionEditor extends SelectionAwareExpressionEditor
     }
 
     @Override
-    public void bindExpression(final EMFDataBindingContext dataBindingContext,
-            final EObject context, final Expression inputExpression, final ViewerFilter[] filters) {
+    public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
         editorInputExpression = inputExpression;
-        fillViewerDocument(context, filters);
+        fillViewerDocument(scope);
 
         final IObservableValue contentObservable = EMFObservables
                 .observeValue(inputExpression,

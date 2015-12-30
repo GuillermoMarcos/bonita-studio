@@ -17,9 +17,8 @@
 package org.bonitasoft.studio.expression.editor.viewer;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.eclipse.emf.ecore.EObject;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -35,10 +34,9 @@ public class GroovyOnlyExpressionViewer extends ExpressionViewer {
     }
 
     @Override
-    protected EditExpressionDialog createEditDialog(final EObject editInput) {
+    protected EditExpressionDialog createEditDialog(final ExpressionScope scope) {
         final GroovyOnlyEditExpressionDialog groovyOnlyEditExpressionDialog = new GroovyOnlyEditExpressionDialog(control.getShell(), isPassword,
-                EcoreUtil.copy(getSelectedExpression()), editInput, getEditingDomain(),
-                filters.toArray(new ViewerFilter[filters.size()]), this);
+                EcoreUtil.copy(getSelectedExpression()), getEditingDomain(), scope, this);
         return groovyOnlyEditExpressionDialog;
     }
 

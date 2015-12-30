@@ -14,11 +14,75 @@
  */
 package org.bonitasoft.studio.expression.core.scope;
 
-import org.eclipse.emf.ecore.EStructuralFeature;
+import static com.google.common.collect.Iterables.find;
 
-public interface ExpressionScopeResolver {
+import java.util.ArrayList;
+import java.util.List;
 
-    ExpressionScope applyTo(ModelLocation location);
+import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
+import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.provider.ProvidedExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.filter.DuplicableLabelAndTooltipFilter;
+import org.bonitasoft.studio.expression.core.scope.filter.ExpressionScopeFilter;
+import org.bonitasoft.studio.model.expression.Expression;
 
-    boolean isRelevant(EStructuralFeature containgFeature);
+import com.google.common.base.Predicate;
+
+public class ExpressionScopeResolver {
+
+    private static final List<ExpressionScopeFilter> FILTERS;
+
+    static {
+        FILTERS = new ArrayList<>();
+        FILTERS.add(new DuplicableLabelAndTooltipFilter());
+    }
+
+    private static final List<ExpressionScopeFilter> PROVIDED_EXPRESSIONS_FILTERS;
+
+    static {
+        PROVIDED_EXPRESSIONS_FILTERS = new ArrayList<>();
+    }
+
+    public ExpressionScope resolve(ModelLocation location) {
+        final List<Expression> expressions = resolveExpressions(location);
+
+        final List<Expression> providedExpressions = new ArrayList<>();
+        final ExpressionScopeFilter filter = find(PROVIDED_EXPRESSIONS_FILTERS, isRelevant(location), null);
+        for (final Expression expression : new ProvidedExpressionProvider().getExpressions(location.getModelElement())) {
+            if (applyTo(location, expression)) {
+                expressions.add(expression);
+            }
+        }
+        return new ExpressionScope(location, expressions, providedExpressions);
+    }
+
+    private List<Expression> resolveExpressions(ModelLocation location) {
+        final IExpressionNatureProvider provider = ExpressionContentProvider.getInstance();
+        final List<Expression> expressions = new ArrayList<>();
+        final ExpressionScopeFilter filter = find(FILTERS, isRelevant(location), null);
+        for (final Expression expression : provider.getExpressions(location.getModelElement())) {
+            if (applyTo(location, expression)) {
+                expressions.add(expression);
+            }
+        }
+        return expressions;
+    }
+
+    public boolean applyTo(ModelLocation location, Expression expression) {
+        final IExpressionNatureProvider provider = ExpressionContentProvider.getInstance();
+        final List<Expression> expressions = new ArrayList<>();
+        final ExpressionScopeFilter filter = find(FILTERS, isRelevant(location), null);
+        return filter != null && filter.apply(location, expression) || filter == null;
+    }
+
+    private Predicate<? super ExpressionScopeFilter> isRelevant(final ModelLocation location) {
+        return new Predicate<ExpressionScopeFilter>() {
+
+            @Override
+            public boolean apply(ExpressionScopeFilter filter) {
+                return filter.isRelevant(location);
+            }
+        };
+    }
+
 }
