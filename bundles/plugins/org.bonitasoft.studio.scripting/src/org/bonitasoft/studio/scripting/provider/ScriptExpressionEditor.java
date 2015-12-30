@@ -204,10 +204,6 @@ public class ScriptExpressionEditor extends SelectionAwareExpressionEditor imple
         });
     }
 
-    /**
-     * @param classText
-     */
-    @SuppressWarnings("restriction")
     private void openClassSelectionDialog() {
         final JavaSearchScope scope = new JavaSearchScope();
         try {
@@ -255,7 +251,7 @@ public class ScriptExpressionEditor extends SelectionAwareExpressionEditor imple
             typeCombo.setInput(new Object());
         }
         returnTypeModelObservable = EMFObservables.observeValue(inputExpression, ExpressionPackage.Literals.EXPRESSION__RETURN_TYPE);
-        final String defaultReturnType = viewer.getDefaultReturnType();
+        final String defaultReturnType = getDefaultReturnType();
         if (defaultReturnType != null && !inputExpression.isReturnTypeFixed() && shouldChangeReturnType(inputExpression.getReturnType(), defaultReturnType)) {
             returnTypeModelObservable.setValue(defaultReturnType);
         }

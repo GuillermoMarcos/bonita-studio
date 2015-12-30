@@ -23,6 +23,7 @@ import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.DialogTray;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Composite;
@@ -58,5 +59,9 @@ public interface IExpressionEditor extends IBonitaVariableContext {
     Control getTextControl();
 
     IObservable getContentObservable();
+
+    void setDefaultReturnType(String defaultReturnType);
+
+    void setDataFeature(EStructuralFeature feature);
 
 }

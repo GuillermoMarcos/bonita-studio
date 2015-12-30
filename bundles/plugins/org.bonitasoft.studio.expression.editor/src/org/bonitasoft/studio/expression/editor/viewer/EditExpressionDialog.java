@@ -23,8 +23,10 @@ import org.bonitasoft.studio.common.jface.FileActionDialog;
 import org.bonitasoft.studio.common.jface.databinding.DialogSupport;
 import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
+import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
+import org.bonitasoft.studio.expression.editor.provider.DataExpressionNatureProvider;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionTypeContentProvider;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionTypeLabelProvider;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -360,6 +362,11 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
                 domain.getCommandStack().execute(SetCommand.create(domain, inputExpression, ExpressionPackage.Literals.EXPRESSION__TYPE, type));
             } else {
                 inputExpression.setType(type);
+            }
+            currentExpressionEditor.setDefaultReturnType(expressionViewer.getDefaultReturnType());
+            final IExpressionNatureProvider expressionNatureProvider = expressionViewer.getExpressionNatureProvider();
+            if (expressionNatureProvider instanceof DataExpressionNatureProvider) {
+                currentExpressionEditor.setDataFeature(((DataExpressionNatureProvider) expressionNatureProvider).getDataFeature());
             }
             currentExpressionEditor.bindExpression(dataBindingContext, context, inputExpression, viewerTypeFilters);
             currentExpressionEditor.addListener(new Listener() {

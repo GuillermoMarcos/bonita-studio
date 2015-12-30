@@ -186,7 +186,16 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
             if (expressionTypeLink.equals(ExpressionConstants.VARIABLE_TYPE)) {
                 final IProposalListener proposalListener = (IProposalListener) element.createExecutableExtension("providerClass");
                 if (proposalListener.isRelevant(context) && proposalListener instanceof CreateVariableProposalListener) {
-                    expressionViewer.getContentProposal().addNewData(proposalListener);
+                    String fixedReturnType = null;
+                    if (editorInputExpression != null && editorInputExpression.isReturnTypeFixed()) {
+                        fixedReturnType = editorInputExpression.getReturnType();
+                    }
+                    if (getDataFeature() != null) {
+                        proposalListener.setEStructuralFeature(getDataFeature());
+                    }
+                    proposalListener.setIsOverviewContext(isOverViewContext());
+                    proposalListener.setIsPageFlowContext(isPageFlowContext());
+                    proposalListener.handleEvent(context, fixedReturnType);
                     fillViewerData(context, filters);
                     return;
                 }
@@ -444,4 +453,5 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
     @Override
     public void setIsOverviewContext(final boolean isOverviewContext) {
     }
+
 }

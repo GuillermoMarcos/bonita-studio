@@ -25,6 +25,7 @@ import org.bonitasoft.studio.expression.editor.filter.ExpressionReturnTypeFilter
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.DialogTray;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -39,6 +40,8 @@ public abstract class SelectionAwareExpressionEditor implements IExpressionEdito
     private final List<Listener> listeners = new ArrayList<Listener>();
     private boolean isPageFlowContext;
     private boolean isOverviewContext;
+    private String defaultReturnType;
+    private EStructuralFeature dataFeature;
 
     @Override
     public void addListener(final Listener listener) {
@@ -139,5 +142,31 @@ public abstract class SelectionAwareExpressionEditor implements IExpressionEdito
     public Control getTextControl() {
         //No text control by default
         return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionEditor#setDefaultReturnType(java.lang.String)
+     */
+    @Override
+    public void setDefaultReturnType(String defaultReturnType) {
+        this.defaultReturnType = defaultReturnType;
+    }
+
+    protected String getDefaultReturnType() {
+        return defaultReturnType;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionEditor#setDataFeature(org.eclipse.emf.ecore.EStructuralFeature)
+     */
+    @Override
+    public void setDataFeature(EStructuralFeature dataFeature) {
+        this.dataFeature = dataFeature;
+    }
+
+    public EStructuralFeature getDataFeature() {
+        return dataFeature;
     }
 }
