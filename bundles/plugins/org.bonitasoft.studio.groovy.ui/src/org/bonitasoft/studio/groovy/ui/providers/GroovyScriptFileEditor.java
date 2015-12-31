@@ -5,12 +5,10 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,7 +31,6 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * @author Romain Bioteau
- *
  */
 public class GroovyScriptFileEditor extends GroovyScriptExpressionEditor implements IExpressionEditor {
 
@@ -75,7 +72,6 @@ public class GroovyScriptFileEditor extends GroovyScriptExpressionEditor impleme
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression,
             final ExpressionScope scope) {
         this.inputExpression = inputExpression;
-        this.context = scope.getLocation().getModelElement();
         groovyViewer.getDocument().set(inputExpression.getContent());
         groovyViewer.setContext(scope);
         groovyViewer.getSourceViewer().getTextWidget().setData(BONITA_KEYWORDS_DATA_KEY, null);
@@ -91,7 +87,6 @@ public class GroovyScriptFileEditor extends GroovyScriptExpressionEditor impleme
                 if (lenghtValidator.validate(text).isOK()) {
                     GroovyScriptFileEditor.this.inputExpression.setContent(text);
                 }
-
             }
 
             @Override

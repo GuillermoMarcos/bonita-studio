@@ -141,6 +141,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
         if (this.inputExpression.getType() == null) {
             this.inputExpression.setType(ExpressionConstants.CONSTANT_TYPE);
         }
+        this.scope = scope;
         this.domain = domain;
         this.isPassword = isPassword;
         this.expressionViewer = expressionViewer;
@@ -236,7 +237,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
         expressionTypeViewer.addFilter(new ViewerFilter() {
 
             @Override
-            public boolean select(Viewer viewer, Object parentElement, Object element) {
+            public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
                 if (element instanceof IExpressionProvider) {
                     final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
                     exp.setName("");

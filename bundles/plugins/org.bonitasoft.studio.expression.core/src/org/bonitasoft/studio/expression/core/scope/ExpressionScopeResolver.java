@@ -43,34 +43,40 @@ public class ExpressionScopeResolver {
         PROVIDED_EXPRESSIONS_FILTERS = new ArrayList<>();
     }
 
-    public ExpressionScope resolve(ModelLocation location) {
+    public ExpressionScope resolve(final ModelLocation location) {
         final List<Expression> expressions = resolveExpressions(location);
-
-        final List<Expression> providedExpressions = new ArrayList<>();
-        final ExpressionScopeFilter filter = find(PROVIDED_EXPRESSIONS_FILTERS, isRelevant(location), null);
-        for (final Expression expression : new ProvidedExpressionProvider().getExpressions(location.getModelElement())) {
-            if (applyTo(location, expression)) {
-                expressions.add(expression);
-            }
-        }
+        final List<Expression> providedExpressions = resolveProvidedExpressions(location);
         return new ExpressionScope(location, expressions, providedExpressions);
     }
 
-    private List<Expression> resolveExpressions(ModelLocation location) {
+    private List<Expression> resolveProvidedExpressions(final ModelLocation location) {
+        final List<Expression> providedExpressions = new ArrayList<>();
+        final ExpressionScopeFilter filter = find(PROVIDED_EXPRESSIONS_FILTERS, isRelevant(location), null);
+        for (final Expression expression : new ProvidedExpressionProvider().getExpressions(location.getModelElement())) {
+            if (applyTo(filter, location, expression)) {
+                providedExpressions.add(expression);
+            }
+        }
+        return providedExpressions;
+    }
+
+    private List<Expression> resolveExpressions(final ModelLocation location) {
         final IExpressionNatureProvider provider = ExpressionContentProvider.getInstance();
         final List<Expression> expressions = new ArrayList<>();
         final ExpressionScopeFilter filter = find(FILTERS, isRelevant(location), null);
         for (final Expression expression : provider.getExpressions(location.getModelElement())) {
-            if (applyTo(location, expression)) {
+            if (applyTo(filter, location, expression)) {
                 expressions.add(expression);
             }
         }
         return expressions;
     }
 
-    public boolean applyTo(ModelLocation location, Expression expression) {
-        final IExpressionNatureProvider provider = ExpressionContentProvider.getInstance();
-        final List<Expression> expressions = new ArrayList<>();
+    public boolean applyTo(final ExpressionScopeFilter filter, final ModelLocation location, final Expression expression) {
+        return filter != null && filter.apply(location, expression) || filter == null;
+    }
+
+    public boolean applyTo(final ModelLocation location, final Expression expression) {
         final ExpressionScopeFilter filter = find(FILTERS, isRelevant(location), null);
         return filter != null && filter.apply(location, expression) || filter == null;
     }
@@ -79,7 +85,7 @@ public class ExpressionScopeResolver {
         return new Predicate<ExpressionScopeFilter>() {
 
             @Override
-            public boolean apply(ExpressionScopeFilter filter) {
+            public boolean apply(final ExpressionScopeFilter filter) {
                 return filter.isRelevant(location);
             }
         };

@@ -96,7 +96,7 @@ public class ContractInputExpressionEditorTest {
         contractInputExpressionEditor.createExpressionEditor(parent, dataBindingContext);
         contractInputExpressionEditor.bindExpression(dataBindingContext,
                 ExpressionHelper.createConstantExpression("", String.class.getName()),
-                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList()));
+                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList(), Collections.<Expression> emptyList()));
         final Object elementAt = contractInputExpressionEditor.getViewer().getElementAt(2);
 
         assertThat(contractInputExpressionEditor.canFinish()).isFalse();
@@ -116,8 +116,8 @@ public class ContractInputExpressionEditorTest {
         contractInputExpressionEditor.createExpressionEditor(parent, dataBindingContext);
         final Expression contractInputExpression = ExpressionHelper.createContractInputExpression(contract.getInputs().get(0));
         contractInputExpressionEditor.bindExpression(dataBindingContext,
-                contractInputExpression, 
-                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList()));
+                contractInputExpression,
+                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList(), Collections.<Expression> emptyList()));
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat(viewer.getSelection().isEmpty()).isFalse();
 
@@ -134,7 +134,7 @@ public class ContractInputExpressionEditorTest {
         final Expression contractInputExpression = ExpressionHelper.createContractInputExpression(ProcessFactory.eINSTANCE.createContractInput());
         contractInputExpressionEditor.bindExpression(dataBindingContext,
                 contractInputExpression,
-                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList()));
+                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList(), Collections.<Expression> emptyList()));
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat(viewer.getSelection().isEmpty()).isTrue();
     }
@@ -146,7 +146,7 @@ public class ContractInputExpressionEditorTest {
         contractInputExpression.setReturnTypeFixed(true);
         contractInputExpressionEditor.bindExpression(dataBindingContext,
                 contractInputExpression,
-                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList()));
+                new ExpressionScope(new ModelLocation(task, null), Collections.<Expression> emptyList(), Collections.<Expression> emptyList()));
         final TableViewer viewer = contractInputExpressionEditor.getViewer();
         assertThat((Collection) viewer.getInput()).hasSize(2);
     }

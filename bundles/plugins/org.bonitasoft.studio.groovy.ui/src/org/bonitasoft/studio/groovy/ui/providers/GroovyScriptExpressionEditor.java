@@ -27,7 +27,6 @@ import org.bonitasoft.studio.common.jface.databinding.observables.DocumentObserv
 import org.bonitasoft.studio.common.jface.databinding.validator.InputLengthValidator;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.dependencies.ui.dialog.ManageConnectorJarDialog;
-import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
@@ -117,8 +116,6 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
     private ComputeScriptDependenciesJob dependencyJob;
 
     protected GroovyViewer groovyViewer;
-
-    protected EObject context;
 
     private IDocument document;
 
@@ -446,7 +443,7 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression,
             final ExpressionScope scope) {
         this.inputExpression = inputExpression;
-        this.context = context;
+        final EObject context = scope.getLocation().getModelElement();
 
         final IObservableValue dependenciesModelObservable = EMFObservables.observeValue(inputExpression,
                 ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS);
@@ -476,7 +473,9 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
                 dataCombo.getTableCombo().setEnabled(false);
             }
         }
-        bonitaDataCombo.setInput(groovyViewer.getProvidedVariables(context, filters));
+        final List<ScriptVariable> providedVariables = (List<ScriptVariable>) groovyViewer.getSourceViewer().getTextWidget()
+                .getData(GroovyViewer.BONITA_KEYWORDS_DATA_KEY);
+        bonitaDataCombo.setInput(providedVariables);
         bonitaDataCombo.setSelection(new StructuredSelection(ProcessVariableContentProvider.SELECT_ENTRY));
 
         dataBindingContext.bindValue(ViewersObservables.observeInput(dependenciesViewer), dependenciesModelObservable);
@@ -504,7 +503,7 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
 
         dependencyJob = new ComputeScriptDependenciesJob(groovyViewer.getGroovyCompilationUnit());
         dependencyJob.setContext(context);
-        nodes.addAll(groovyViewer.getProvidedVariables(context, filters));
+        nodes.addAll(providedVariables);
         dependencyJob.setNodes(nodes);
 
         final InputLengthValidator lenghtValidator = new InputLengthValidator("", GroovyViewer.MAX_SCRIPT_LENGTH);
@@ -567,7 +566,6 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
 
         });
 
-        final ExpressionContentProvider provider = ExpressionContentProvider.getInstance();
         final List<Expression> filteredExpressions = scope.getExpressions();
         addDependencyButton.addSelectionListener(new SelectionAdapter() {
 

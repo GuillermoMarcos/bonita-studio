@@ -539,10 +539,9 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
     private ExpressionScope getExpressionScope() {
         final Object input = getInput();
         final EObject context = getEditInput(input);
-        final ExpressionScopeProvider provider = new ExpressionScopeProvider();
         final Expression selectedExpression = getSelectedExpression();
         if (selectedExpression != null) {
-            return provider.get(new ModelLocation(context, selectedExpression.eContainingFeature()));
+            return scopeProvider.get(new ModelLocation(context, selectedExpression.eContainingFeature()));
         }
         return null;
     }

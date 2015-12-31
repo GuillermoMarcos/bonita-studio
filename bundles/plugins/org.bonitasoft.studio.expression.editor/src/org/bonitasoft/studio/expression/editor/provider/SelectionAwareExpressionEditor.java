@@ -110,10 +110,10 @@ public abstract class SelectionAwareExpressionEditor implements IExpressionEdito
         return isPageFlowContext;
     }
 
-    //    @Override
-    //    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-    //        this.isPageFlowContext = isPageFlowContext;
-    //    }
+    @Override
+    public void setIsPageFlowContext(final boolean isPageFlowContext) {
+        this.isPageFlowContext = isPageFlowContext;
+    }
 
     /*
      * (non-Javadoc)
@@ -149,7 +149,7 @@ public abstract class SelectionAwareExpressionEditor implements IExpressionEdito
      * @see org.bonitasoft.studio.expression.core.provider.IExpressionEditor#setDefaultReturnType(java.lang.String)
      */
     @Override
-    public void setDefaultReturnType(String defaultReturnType) {
+    public void setDefaultReturnType(final String defaultReturnType) {
         this.defaultReturnType = defaultReturnType;
     }
 
@@ -162,7 +162,7 @@ public abstract class SelectionAwareExpressionEditor implements IExpressionEdito
      * @see org.bonitasoft.studio.expression.core.provider.IExpressionEditor#setDataFeature(org.eclipse.emf.ecore.EStructuralFeature)
      */
     @Override
-    public void setDataFeature(EStructuralFeature dataFeature) {
+    public void setDataFeature(final EStructuralFeature dataFeature) {
         this.dataFeature = dataFeature;
     }
 

@@ -194,7 +194,7 @@ public class GroovyViewer implements IDocumentListener {
                 if (e.keyCode == SWT.DEL) {
                     actionFactory.getDeleteAction().run();
                 } else
-                if ((e.stateMask == SWT.CTRL || e.stateMask == SWT.COMMAND) && e.keyCode == 'i') {
+                    if ((e.stateMask == SWT.CTRL || e.stateMask == SWT.COMMAND) && e.keyCode == 'i') {
                     actionFactory.getFormatAction().run();
                 }
             }
@@ -202,7 +202,7 @@ public class GroovyViewer implements IDocumentListener {
         });
         enableContextAssitShortcut();
 
-        getSourceViewer().getTextWidget().setData(BONITA_KEYWORDS_DATA_KEY, getProvidedVariables(null));
+        //        getSourceViewer().getTextWidget().setData(BONITA_KEYWORDS_DATA_KEY, getProvidedVariables(new ExpressionScopeProvider().get(location)));
         mainComposite.getShell().addDisposeListener(new DisposeListener() {
 
             @Override
@@ -288,7 +288,12 @@ public class GroovyViewer implements IDocumentListener {
     }
 
     public List<ScriptVariable> getProvidedVariables(final ExpressionScope scope) {
-        final List<ScriptVariable> providedScriptVariable = GroovyUtil.getBonitaVariables(scope, isPageFlowContext);
+        final List<ScriptVariable> providedScriptVariable = new ArrayList<>();
+        for (final Expression e : scope.getProvidedExpressions()) {
+            final ScriptVariable scriptVariable = GroovyUtil.createScriptVariable(e, scope.getLocation().getModelElement());
+            scriptVariable.setCategory(null);
+            providedScriptVariable.add(scriptVariable);
+        }
         final IExpressionProvider daoExpressionProvider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.DAO_TYPE);
         if (daoExpressionProvider != null) {
             final List<Expression> expressions = newArrayList(daoExpressionProvider.getExpressions(null));

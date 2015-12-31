@@ -108,7 +108,7 @@ public class GeneratedScriptPreviewPageTest {
         when(repositoryAccessor.getRepositoryStore(BusinessObjectModelRepositoryStore.class)).thenReturn(store);
         when(store.getBusinessObjectByQualifiedName("org.company.Employee")).thenReturn(
                 BusinessObjectBuilder.aBO("org.company.Employee").withField(SimpleFieldBuilder.aStringField("firstName").build()).build());
-        when(sourceViewerFactory.createSourceViewer(any(Composite.class), any(Boolean.class))).thenReturn(groovyViewer);
+        when(sourceViewerFactory.createSourceViewer(any(Composite.class))).thenReturn(groovyViewer);
         when(groovyViewer.getSourceViewer()).thenReturn(sourceViewer);
         when(groovyViewer.getDocument()).thenReturn(document);
         when(expressionBuilder.toExpression(any(BusinessObjectData.class), any(FieldToContractInputMapping.class), anyBoolean())).thenReturn(

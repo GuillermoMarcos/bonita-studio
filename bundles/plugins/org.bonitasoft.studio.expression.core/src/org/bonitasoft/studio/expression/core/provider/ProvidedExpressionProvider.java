@@ -31,7 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 
 public class ProvidedExpressionProvider {
 
-    public List<Expression> getExpressions(EObject context, final boolean isPageFlowContext) {
+    public List<Expression> getExpressions(EObject context) {
         final List<Expression> result = new ArrayList<Expression>();
         result.add(toExpression(ExpressionConstants.API_ACCESSOR));
         result.add(toExpression(ExpressionConstants.PROCESS_DEFINITION_ID));
@@ -41,9 +41,9 @@ public class ProvidedExpressionProvider {
         if (context instanceof Expression) {
             context = context.eContainer();
         }
-        if (isPageFlowContext) {
-            result.add(toExpression(ExpressionConstants.LOGGED_USER_ID));
-        }
+        //      if (isPageFlowContext) {
+        result.add(toExpression(ExpressionConstants.LOGGED_USER_ID));
+        //    }
         if (context instanceof Activity) {
             if (((Activity) context).getType() == MultiInstanceType.PARALLEL || ((Activity) context).getType() == MultiInstanceType.SEQUENTIAL) {
                 result.add(toExpression(ExpressionConstants.NUMBER_OF_TERMINATED_INSTANCES));
@@ -71,11 +71,12 @@ public class ProvidedExpressionProvider {
         return result;
     }
 
-    private Expression toExpression(ExpressionConstants expressionConstant) {
+    private Expression toExpression(final ExpressionConstants expressionConstant) {
         final Expression expression = ExpressionFactory.eINSTANCE.createExpression();
         expression.setName(expressionConstant.getEngineConstantName());
         expression.setContent(expressionConstant.getEngineConstantName());
         expression.setReturnType(expressionConstant.getReturnType());
+        expression.setType(org.bonitasoft.studio.common.ExpressionConstants.ENGINE_CONSTANT_TYPE);
         return expression;
     }
 }

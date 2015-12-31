@@ -133,7 +133,7 @@ public class ContractInputGenerationWizardTest {
                 BusinessObjectBuilder.aBO("org.company.Employee").withField(SimpleFieldBuilder.aStringField("firstName").build()).build());
         when(repositoryAccessor.getRepositoryStore(BusinessObjectModelRepositoryStore.class)).thenReturn(store);
         when(preferenceStore.getString(ContractInputGenerationInfoDialogFactory.SHOW_GENERATION_SUCCESS_DIALOG)).thenReturn("always");
-        when(sourceViewerFactory.createSourceViewer(any(Composite.class), any(Boolean.class))).thenReturn(groovyViewer);
+        when(sourceViewerFactory.createSourceViewer(any(Composite.class))).thenReturn(groovyViewer);
         when(groovyViewer.getSourceViewer()).thenReturn(sourceViewer);
         when(groovyViewer.getDocument()).thenReturn(document);
 
@@ -161,7 +161,7 @@ public class ContractInputGenerationWizardTest {
                 BusinessObjectBuilder.aBO("org.company.Employee").withField(SimpleFieldBuilder.aStringField("firstName").build()).build());
         when(repositoryAccessor.getRepositoryStore(BusinessObjectModelRepositoryStore.class)).thenReturn(store);
         when(preferenceStore.getString(ContractInputGenerationInfoDialogFactory.SHOW_GENERATION_SUCCESS_DIALOG)).thenReturn("always");
-        when(sourceViewerFactory.createSourceViewer(any(Composite.class), any(Boolean.class))).thenReturn(groovyViewer);
+        when(sourceViewerFactory.createSourceViewer(any(Composite.class))).thenReturn(groovyViewer);
         when(groovyViewer.getSourceViewer()).thenReturn(sourceViewer);
         when(groovyViewer.getDocument()).thenReturn(document);
 
@@ -193,7 +193,7 @@ public class ContractInputGenerationWizardTest {
         when(preferenceStore.getString(ContractInputGenerationInfoDialogFactory.SHOW_GENERATION_SUCCESS_DIALOG)).thenReturn("always");
         when(expressionBuilder.toExpression(any(BusinessObjectData.class), any(FieldToContractInputMapping.class), anyBoolean())).thenReturn(
                 aGroovyScriptExpression().build());
-        when(sourceViewerFactory.createSourceViewer(any(Composite.class), any(Boolean.class))).thenReturn(groovyViewer);
+        when(sourceViewerFactory.createSourceViewer(any(Composite.class))).thenReturn(groovyViewer);
         when(groovyViewer.getSourceViewer()).thenReturn(sourceViewer);
         when(groovyViewer.getDocument()).thenReturn(document);
 
@@ -300,7 +300,7 @@ public class ContractInputGenerationWizardTest {
     public void should_add_FileInput_whenDataIsDocument_onFinish() {
         final Pool process = aPool().havingContract(aContract()).build();
         process.getDocuments().add(ProcessFactory.eINSTANCE.createDocument());
-        when(sourceViewerFactory.createSourceViewer(any(Composite.class), any(Boolean.class))).thenReturn(groovyViewer);
+        when(sourceViewerFactory.createSourceViewer(any(Composite.class))).thenReturn(groovyViewer);
         when(groovyViewer.getSourceViewer()).thenReturn(sourceViewer);
         when(groovyViewer.getDocument()).thenReturn(document);
 
@@ -322,7 +322,7 @@ public class ContractInputGenerationWizardTest {
     @Test
     public void should_canFinish_return_false_when_no_data_is_defined() {
         final Pool process = aPool().havingContract(aContract()).build();
-        when(sourceViewerFactory.createSourceViewer(any(Composite.class), any(Boolean.class))).thenReturn(groovyViewer);
+        when(sourceViewerFactory.createSourceViewer(any(Composite.class))).thenReturn(groovyViewer);
         when(groovyViewer.getSourceViewer()).thenReturn(sourceViewer);
         when(groovyViewer.getDocument()).thenReturn(document);
 
@@ -348,7 +348,7 @@ public class ContractInputGenerationWizardTest {
         Mockito.doReturn(BusinessObjectBuilder.aBO("com.company.Employee").withField(SimpleFieldBuilder.aTextField("name").build()).build()).when(store)
                 .getBusinessObjectByQualifiedName("com.company.Employee");
         when(repositoryAccessor.getRepositoryStore(BusinessObjectModelRepositoryStore.class)).thenReturn(store);
-        when(sourceViewerFactory.createSourceViewer(any(Composite.class), any(Boolean.class))).thenReturn(groovyViewer);
+        when(sourceViewerFactory.createSourceViewer(any(Composite.class))).thenReturn(groovyViewer);
         when(groovyViewer.getSourceViewer()).thenReturn(sourceViewer);
         when(groovyViewer.getDocument()).thenReturn(document);
 
