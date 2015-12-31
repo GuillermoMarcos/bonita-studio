@@ -5,12 +5,10 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -63,7 +61,6 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * @author Romain Bioteau
- *
  */
 public class DocumentExpressionEditor extends SelectionAwareExpressionEditor
         implements IExpressionEditor {
@@ -156,7 +153,7 @@ public class DocumentExpressionEditor extends SelectionAwareExpressionEditor
     private void fillViewerDocument(final ExpressionScope scope) {
         final Set<Document> simpleDocuments = new HashSet<Document>();
         final Set<Document> multipleDocuments = new HashSet<Document>();
-        retrieveAndFillDocumentSet(scope.getLocation().getModelElement(), simpleDocuments, multipleDocuments);
+        retrieveAndFillDocumentSet(scope.getContext(), simpleDocuments, multipleDocuments);
         final Set<Document> input = computeInput(simpleDocuments, multipleDocuments);
         viewer.setInput(input);
     }

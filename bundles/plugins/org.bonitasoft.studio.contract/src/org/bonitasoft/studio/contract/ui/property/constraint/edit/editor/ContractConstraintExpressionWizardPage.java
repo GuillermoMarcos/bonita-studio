@@ -23,8 +23,6 @@ import org.bonitasoft.studio.contract.ContractPlugin;
 import org.bonitasoft.studio.contract.core.constraint.ConstraintInputIndexer;
 import org.bonitasoft.studio.contract.i18n.Messages;
 import org.bonitasoft.studio.contract.ui.property.constraint.edit.editor.contentassist.ContractInputCompletionProposalComputer;
-import org.bonitasoft.studio.expression.core.scope.ExpressionScopeProvider;
-import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.groovy.ui.viewer.GroovySourceViewerFactory;
 import org.bonitasoft.studio.groovy.ui.viewer.GroovyViewer;
 import org.bonitasoft.studio.model.process.ContractConstraint;
@@ -133,7 +131,8 @@ public class ContractConstraintExpressionWizardPage extends WizardPage implement
         if (!inputs.isEmpty()) {
             contractContainer = ModelHelper.getFirstContainerOfType(inputs.get(0), ContractContainer.class);
         }
-        groovyViewer.setContext(new ExpressionScopeProvider().get(new ModelLocation(contractContainer, null)));
+
+        //     groovyViewer.setContext(new ExpressionScopeProvider().get(new ModelLocation(contractContainer, null)));
         return groovyViewer;
     }
 

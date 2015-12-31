@@ -21,13 +21,10 @@ import static org.bonitasoft.studio.model.process.builders.PoolBuilder.aPool;
 import static org.bonitasoft.studio.model.process.builders.TaskBuilder.aTask;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.expression.core.scope.ModelLocation;
-import org.bonitasoft.studio.model.form.FormPackage;
 import org.bonitasoft.studio.model.form.TextFormField;
 import org.bonitasoft.studio.model.form.builders.FormBuilder;
 import org.bonitasoft.studio.model.form.builders.TextFormFieldBuilder;
 import org.junit.Test;
-
 
 public class DuplicableLabelAndTooltipFilterTest {
 
@@ -38,7 +35,7 @@ public class DuplicableLabelAndTooltipFilterTest {
         final TextFormField widget = widgetInInstantiationForm();
         widget.setTooltipForAdd(aVariableExpression().build());
 
-        assertThat(filter.apply(new ModelLocation(widget, FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_ADD), widget.getTooltipForAdd())).isFalse();
+        assertThat(filter.apply(widget.getTooltipForAdd(), widget.getTooltipForAdd())).isFalse();
     }
 
     @Test
@@ -48,7 +45,7 @@ public class DuplicableLabelAndTooltipFilterTest {
         final TextFormField widget = widgetInInstantiationForm();
         widget.setTooltipForAdd(anExpression().withExpressionType(ExpressionConstants.SEARCH_INDEX_TYPE).build());
 
-        assertThat(filter.apply(new ModelLocation(widget, FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_ADD), widget.getTooltipForAdd())).isFalse();
+        assertThat(filter.apply(widget.getTooltipForAdd(), widget.getTooltipForAdd())).isFalse();
     }
 
     @Test
@@ -58,7 +55,7 @@ public class DuplicableLabelAndTooltipFilterTest {
         final TextFormField widget = widgetNotInInstantiationForm();
         widget.setTooltipForAdd(aVariableExpression().build());
 
-        assertThat(filter.apply(new ModelLocation(widget, FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_ADD), widget.getTooltipForAdd())).isTrue();
+        assertThat(filter.apply(widget.getTooltipForAdd(), widget.getTooltipForAdd())).isTrue();
     }
 
     @Test
@@ -67,11 +64,15 @@ public class DuplicableLabelAndTooltipFilterTest {
 
         final TextFormField widget = widgetNotInInstantiationForm();
         widget.setTooltipForAdd(aVariableExpression().build());
+        widget.setTooltipForRemove(aVariableExpression().build());
+        assertThat(filter.isRelevant(widget.getTooltipForAdd())).isTrue();
+        assertThat(filter.isRelevant(widget.getTooltipForRemove())).isTrue();
 
-        assertThat(filter.isRelevant(new ModelLocation(null, FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_ADD))).isTrue();
-        assertThat(filter.isRelevant(new ModelLocation(null, FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_REMOVE))).isTrue();
-        assertThat(filter.isRelevant(new ModelLocation(null, FormPackage.Literals.DUPLICABLE__DISPLAY_LABEL_FOR_ADD))).isTrue();
-        assertThat(filter.isRelevant(new ModelLocation(null, FormPackage.Literals.DUPLICABLE__DISPLAY_LABEL_FOR_REMOVE))).isTrue();
+        widget.setDisplayLabelForAdd(aVariableExpression().build());
+        widget.setDisplayLabelForRemove(aVariableExpression().build());
+
+        assertThat(filter.isRelevant(widget.getDisplayLabelForAdd())).isTrue();
+        assertThat(filter.isRelevant(widget.getDisplayLabelForRemove())).isTrue();
     }
 
     @Test
@@ -79,9 +80,9 @@ public class DuplicableLabelAndTooltipFilterTest {
         final DuplicableLabelAndTooltipFilter filter = new DuplicableLabelAndTooltipFilter();
 
         final TextFormField widget = widgetNotInInstantiationForm();
-        widget.setTooltipForAdd(aVariableExpression().build());
+        widget.setTooltip(aVariableExpression().build());
 
-        assertThat(filter.isRelevant(new ModelLocation(null, FormPackage.Literals.DUPLICABLE__MAX_NUMBER_OF_DUPLICATION))).isFalse();
+        assertThat(filter.isRelevant(widget.getTooltip())).isFalse();
     }
 
     private TextFormField widgetInInstantiationForm() {

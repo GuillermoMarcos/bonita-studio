@@ -341,7 +341,7 @@ public class QueryExpressionEditor extends SelectionAwareExpressionEditor implem
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression,
             final ExpressionScope scope) {
-        editingSupport.setInput(scope.getLocation().getModelElement());
+        editingSupport.setInput(scope.getContext());
         this.inputExpression = inputExpression;
 
         dataBindingContext.bindValue(

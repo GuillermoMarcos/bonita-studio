@@ -5,12 +5,10 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -78,7 +76,6 @@ import org.eclipse.ui.PlatformUI;
 
 /**
  * @author Romain Bioteau
- *
  */
 public class DataExpressionEditor extends SelectionAwareExpressionEditor
         implements IExpressionEditor {
@@ -218,8 +215,8 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
 
-        final EObject modelElement = scope.getLocation().getModelElement();
-        if (modelElement instanceof Widget && ModelHelper.getPageFlow((Widget) modelElement) instanceof Pool) {
+        final EObject context = scope.getContext();
+        if (context instanceof Widget && ModelHelper.getPageFlow((Widget) context) instanceof Pool) {
             addExpressionButton.setEnabled(false);
         }
         addExpressionButton.addSelectionListener(new SelectionAdapter() {
@@ -227,7 +224,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 try {
-                    expressionButtonListener(modelElement, scope);
+                    expressionButtonListener(context, scope);
                 } catch (final CoreException e1) {
                     BonitaStudioLog.error(e1);
                 }
@@ -235,7 +232,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
         });
 
         editorInputExpression = inputExpression;
-        fillViewerData(modelElement, scope);
+        fillViewerData(context, scope);
 
         final IObservableValue contentObservable = EMFObservables
                 .observeValue(inputExpression,
@@ -342,7 +339,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
                 SWTObservables.observeText(typeText, SWT.Modify),
                 returnTypeObservable);
 
-        if (modelElement instanceof DateFormField) {
+        if (context instanceof DateFormField) {
             handleDateFormFieldBinding();
         }
 

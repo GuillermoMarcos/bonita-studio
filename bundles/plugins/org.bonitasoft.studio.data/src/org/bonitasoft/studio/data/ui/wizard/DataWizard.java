@@ -23,6 +23,7 @@ import org.bonitasoft.studio.common.DataTypeLabels;
 import org.bonitasoft.studio.common.DatasourceConstants;
 import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
+import org.bonitasoft.studio.common.emf.tools.WorkingCopyFactory;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.data.DataPlugin;
@@ -30,7 +31,6 @@ import org.bonitasoft.studio.data.i18n.Messages;
 import org.bonitasoft.studio.model.process.Activity;
 import org.bonitasoft.studio.model.process.Data;
 import org.bonitasoft.studio.model.process.DataAware;
-import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.bonitasoft.studio.pics.Pics;
 import org.bonitasoft.studio.refactoring.core.RefactorDataOperation;
@@ -82,7 +82,7 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         initDataWizard(dataContainmentFeature, showAutogenerateForm);
         this.editingDomain = editingDomain;
         this.container = container;
-        dataWorkingCopy = createWorkingCopy(container);
+        dataWorkingCopy = createWorkingCopy(container, dataContainmentFeature);
         editMode = false;
         this.featureToCheckForUniqueID = new HashSet<EStructuralFeature>();
         this.featureToCheckForUniqueID.add(dataContainmentFeature);
@@ -95,7 +95,7 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         initDataWizard(dataContainmentFeature, showAutogenerateForm);
         this.editingDomain = editingDomain;
         this.container = container;
-        dataWorkingCopy = createWorkingCopy(container);
+        dataWorkingCopy = createWorkingCopy(container, dataContainmentFeature);
         editMode = false;
         this.featureToCheckForUniqueID = new HashSet<EStructuralFeature>();
         this.featureToCheckForUniqueID.add(dataContainmentFeature);
@@ -103,8 +103,8 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         setWindowTitle(Messages.newVariable);
     }
 
-    private Data createWorkingCopy(final EObject container) {
-        final Data dataWorkingCopy = ProcessFactory.eINSTANCE.createData();
+    private Data createWorkingCopy(final EObject container, final EStructuralFeature feature) {
+        final Data dataWorkingCopy = WorkingCopyFactory.newWorkingCopy(ProcessPackage.Literals.DATA, container, feature);
         dataWorkingCopy.setDataType(ModelHelper.getDataTypeForID(container, DataTypeLabels.stringDataType));
         return dataWorkingCopy;
     }
@@ -117,7 +117,7 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         setNeedsProgressMonitor(true);
         container = data.eContainer();
         originalData = data;
-        dataWorkingCopy = EcoreUtil.copy(data);
+        dataWorkingCopy = WorkingCopyFactory.newWorkingCopy(originalData);
         editMode = true;
         this.featureToCheckForUniqueID = featureToCheckForUniqueID;
         setWindowTitle(Messages.editVariable);
@@ -196,10 +196,10 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
                 }
             }
         } else {
-            editingDomain.getCommandStack().execute(AddCommand.create(editingDomain, container, dataContainmentFeature, workingCopy));
+            editingDomain.getCommandStack().execute(AddCommand.create(editingDomain, container, dataContainmentFeature, EcoreUtil.copy(workingCopy)));
         }
         if (page != null) {
-            page.setWorkingCopy(createWorkingCopy(container));
+            page.setWorkingCopy(createWorkingCopy(container, dataContainmentFeature));
         }
         refreshXtextReferences();
         return true;

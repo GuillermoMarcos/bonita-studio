@@ -14,14 +14,12 @@
  */
 package org.bonitasoft.studio.expression.core.scope.filter;
 
-import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
-
 
 public interface ExpressionScopeFilter {
 
-    boolean isRelevant(ModelLocation location);
+    boolean isRelevant(Expression expression);
 
-    boolean apply(ModelLocation location, Expression expression);
+    boolean apply(Expression expression, Expression expressionToTest);
 
 }

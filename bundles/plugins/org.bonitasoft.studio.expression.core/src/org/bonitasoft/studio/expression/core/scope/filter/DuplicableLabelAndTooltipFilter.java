@@ -22,7 +22,6 @@ import java.util.Objects;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
-import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.form.FormPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -34,8 +33,8 @@ public class DuplicableLabelAndTooltipFilter implements ExpressionScopeFilter {
      * @see org.bonitasoft.studio.expression.core.scope.ExpressionScopeResolver#isRelevant(org.eclipse.emf.ecore.EStructuralFeature)
      */
     @Override
-    public boolean isRelevant(ModelLocation location) {
-        final EStructuralFeature containingFeature = location.getContainingFeature();
+    public boolean isRelevant(final Expression expression) {
+        final EStructuralFeature containingFeature = expression.eContainingFeature();
         return Objects.equals(FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_ADD, containingFeature) ||
                 Objects.equals(FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_REMOVE, containingFeature) ||
                 Objects.equals(FormPackage.Literals.DUPLICABLE__DISPLAY_LABEL_FOR_REMOVE, containingFeature) ||
@@ -48,16 +47,16 @@ public class DuplicableLabelAndTooltipFilter implements ExpressionScopeFilter {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean apply(ModelLocation location, Expression expression) {
-        if (ModelHelper.isInEntryPageFlowOnAPool(ModelHelper.getParentWidget(location.getModelElement()))) {
-            return withExpressionType(ExpressionConstants.CONSTANT_TYPE).apply(expression);
+    public boolean apply(final Expression expression, final Expression expressionToTest) {
+        if (ModelHelper.isInEntryPageFlowOnAPool(ModelHelper.getParentWidget(expression))) {
+            return withExpressionType(ExpressionConstants.CONSTANT_TYPE).apply(expressionToTest);
         }
         return or(
                 withVariableType(),
                 withExpressionType(ExpressionConstants.CONSTANT_TYPE),
                 withExpressionType(ExpressionConstants.SCRIPT_TYPE),
                 withExpressionType(ExpressionConstants.PARAMETER_TYPE),
-                withExpressionType(ExpressionConstants.SEARCH_INDEX_TYPE)).apply(expression);
+                withExpressionType(ExpressionConstants.SEARCH_INDEX_TYPE)).apply(expressionToTest);
     }
 
 }

@@ -21,19 +21,22 @@ import java.util.List;
 
 import org.bonitasoft.studio.common.predicate.ExpressionPredicates;
 import org.bonitasoft.studio.model.expression.Expression;
+import org.eclipse.emf.ecore.EObject;
 
 import com.google.common.collect.Iterables;
 
 public class ExpressionScope {
 
     private final List<Expression> expressions;
-    private final ModelLocation location;
+    private final Expression expression;
     private final List<Expression> providedExpressions;
+    private final EObject context;
 
-    public ExpressionScope(ModelLocation location, List<Expression> expressions, List<Expression> providedExpressions) {
-        this.location = location;
+    public ExpressionScope(final EObject context, final Expression expression, final List<Expression> expressions, final List<Expression> providedExpressions) {
+        this.expression = expression;
         this.expressions = expressions;
         this.providedExpressions = providedExpressions;
+        this.context = context;
     }
 
     public List<Expression> getExpressions() {
@@ -44,12 +47,16 @@ public class ExpressionScope {
         return Collections.unmodifiableList(providedExpressions);
     }
 
-    public ModelLocation getLocation() {
-        return location;
+    public Expression getExpression() {
+        return expression;
     }
 
-    public List<Expression> getExpressionsWithType(String expressionType) {
+    public List<Expression> getExpressionsWithType(final String expressionType) {
         return newArrayList(Iterables.filter(getExpressions(), ExpressionPredicates.withExpressionType(expressionType)));
+    }
+
+    public EObject getContext() {
+        return context;
     }
 
 }

@@ -46,7 +46,6 @@ import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScopeProvider;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScopeResolver;
-import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.ExpressionEditorPlugin;
 import org.bonitasoft.studio.expression.editor.autocompletion.AutoCompletionField;
 import org.bonitasoft.studio.expression.editor.autocompletion.BonitaContentProposalAdapter;
@@ -537,11 +536,11 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
     }
 
     private ExpressionScope getExpressionScope() {
-        final Object input = getInput();
-        final EObject context = getEditInput(input);
+        //        final Object input = getInput();
+        //        final EObject context = getEditInput(input);
         final Expression selectedExpression = getSelectedExpression();
         if (selectedExpression != null) {
-            return scopeProvider.get(new ModelLocation(context, selectedExpression.eContainingFeature()));
+            return scopeProvider.get(selectedExpression);
         }
         return null;
     }
@@ -688,7 +687,7 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
                 final Set<IExpressionProvider> expressionProviders = expressionEditorService.getExpressionProviders();
                 for (final IExpressionProvider provider : expressionProviders) {
                     exp.setType(provider.getExpressionType());
-                    if (!scopeResolver.applyTo(new ModelLocation(context, selectedExpression.eContainingFeature()), exp)) {
+                    if (!scopeResolver.applyTo(selectedExpression, exp)) {
                         filteredExpressions.add(provider.getExpressionType());
                     }
                 }

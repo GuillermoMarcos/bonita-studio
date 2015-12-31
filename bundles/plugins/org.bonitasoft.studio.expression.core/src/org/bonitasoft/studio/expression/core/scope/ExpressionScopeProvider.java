@@ -16,21 +16,26 @@ package org.bonitasoft.studio.expression.core.scope;
 
 import javax.inject.Singleton;
 
+import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.google.common.base.Preconditions;
+
 /**
- * Provide a variable scope for an Expression given its location in the model
+ * Provide a variable scope for a given Expression given in the model
  */
 @Creatable
 @Singleton
 public class ExpressionScopeProvider {
 
-    public ExpressionScope get(ModelLocation location) {
-        return resolveScope(location);
+    public ExpressionScope get(final Expression expression) {
+        Preconditions.checkArgument(expression != null, "expression argument is null");
+        Preconditions.checkArgument(expression.eContainer() != null, "expression argument container is null");
+        return resolveScope(expression);
     }
 
-    private ExpressionScope resolveScope(ModelLocation location) {
-        return new ExpressionScopeResolver().resolve(location);
+    private ExpressionScope resolveScope(final Expression expression) {
+        return new ExpressionScopeResolver().resolve(expression);
     }
 
 }

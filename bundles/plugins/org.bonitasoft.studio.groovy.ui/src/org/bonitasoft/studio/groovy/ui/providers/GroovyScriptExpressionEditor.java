@@ -443,8 +443,7 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression,
             final ExpressionScope scope) {
         this.inputExpression = inputExpression;
-        final EObject context = scope.getLocation().getModelElement();
-
+        final EObject context = scope.getContext();
         final IObservableValue dependenciesModelObservable = EMFObservables.observeValue(inputExpression,
                 ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS);
         final IObservableValue autoDepsModelObservable = EMFObservables.observeValue(inputExpression,

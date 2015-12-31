@@ -69,7 +69,6 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * @author Romain Bioteau
- *
  */
 public class ParameterEditor extends SelectionAwareExpressionEditor implements
         IExpressionEditor {
@@ -192,7 +191,8 @@ public class ParameterEditor extends SelectionAwareExpressionEditor implements
 
     private void expressionButtonListener(final EObject context) {
         final ParameterWizardDialog parameterDialog = new ParameterWizardDialog(
-                Display.getCurrent().getActiveShell(), new AddParameterWizard(ModelHelper.getParentProcess(context), TransactionUtil.getEditingDomain(context)));
+                Display.getCurrent().getActiveShell(),
+                new AddParameterWizard(ModelHelper.getParentProcess(context), TransactionUtil.getEditingDomain(context)));
         if (parameterDialog.open() == Dialog.OK) {
             fillViewerInput(context);
         }
@@ -205,11 +205,11 @@ public class ParameterEditor extends SelectionAwareExpressionEditor implements
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 super.widgetSelected(e);
-                expressionButtonListener(scope.getLocation().getModelElement());
+                expressionButtonListener(scope.getContext());
             }
         });
         editorInputExpression = inputExpression;
-        fillViewerInput(scope.getLocation().getModelElement());
+        fillViewerInput(scope.getContext());
 
         final IObservableValue contentObservable = EMFObservables
                 .observeValue(inputExpression,

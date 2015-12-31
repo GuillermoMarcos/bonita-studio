@@ -242,7 +242,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
                     final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
                     exp.setName("");
                     exp.setType(((IExpressionProvider) element).getExpressionType());
-                    return new ExpressionScopeResolver().applyTo(scope.getLocation(), exp);
+                    return new ExpressionScopeResolver().applyTo(scope.getExpression(), exp);
 
                 }
                 return false;
@@ -338,7 +338,7 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
             currentExpressionEditor.dispose();
         }
 
-        currentExpressionEditor = provider.getExpressionEditor(inputExpression, scope.getLocation().getModelElement());
+        currentExpressionEditor = provider.getExpressionEditor(inputExpression, scope.getContext());
         currentExpressionEditor.setIsPageFlowContext(isPageFlowContext);
         if (currentExpressionEditor != null) {
             if (dataBindingContext != null) {

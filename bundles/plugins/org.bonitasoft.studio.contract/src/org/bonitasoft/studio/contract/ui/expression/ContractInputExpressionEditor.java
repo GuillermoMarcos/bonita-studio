@@ -5,12 +5,10 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -58,7 +56,6 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * @author Romain Bioteau
- *
  */
 public class ContractInputExpressionEditor extends SelectionAwareExpressionEditor
         implements IExpressionEditor {
@@ -119,7 +116,6 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
                 .align(SWT.FILL, SWT.CENTER).indent(10, 0).create());
     }
 
-
     private void updateViewerInput(final EObject context) {
         final Set<ContractInput> input = new HashSet<ContractInput>();
         final IExpressionProvider provider = getContractInputExpressionProvider();
@@ -147,7 +143,7 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
         editorInputExpression = inputExpression;
-        updateViewerInput(scope.getLocation().getModelElement());
+        updateViewerInput(scope.getContext());
 
         final IObservableValue contentObservable = EMFObservables
                 .observeValue(inputExpression,
@@ -159,7 +155,6 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
         final IObservableValue referenceObservable = EMFObservables.observeValue(
                 inputExpression,
                 ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS);
-
 
         final IViewerObservableValue observeSingleSelection = ViewersObservables
                 .observeSingleSelection(viewer);
@@ -279,7 +274,6 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
         return !viewer.getSelection().isEmpty();
     }
 
-
     protected TableViewer getViewer() {
         return viewer;
     }
@@ -287,6 +281,5 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
     protected Expression getExpression() {
         return editorInputExpression;
     }
-
 
 }

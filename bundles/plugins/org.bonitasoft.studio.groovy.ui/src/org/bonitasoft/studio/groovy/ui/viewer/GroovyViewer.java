@@ -242,7 +242,7 @@ public class GroovyViewer implements IDocumentListener {
     public void setContext(final ExpressionScope scope) {
         nodes = new ArrayList<ScriptVariable>();
 
-        final EObject context = scope.getLocation().getModelElement();
+        final EObject context = scope.getContext();
         for (final Expression e : scope.getExpressions()) {
             final ScriptVariable v = GroovyUtil.createScriptVariable(e, context);
             if (context != null && ExpressionConstants.PARAMETER_TYPE.equals(e.getType())) {
@@ -290,7 +290,7 @@ public class GroovyViewer implements IDocumentListener {
     public List<ScriptVariable> getProvidedVariables(final ExpressionScope scope) {
         final List<ScriptVariable> providedScriptVariable = new ArrayList<>();
         for (final Expression e : scope.getProvidedExpressions()) {
-            final ScriptVariable scriptVariable = GroovyUtil.createScriptVariable(e, scope.getLocation().getModelElement());
+            final ScriptVariable scriptVariable = GroovyUtil.createScriptVariable(e, scope.getContext());
             scriptVariable.setCategory(null);
             providedScriptVariable.add(scriptVariable);
         }
