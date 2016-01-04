@@ -22,6 +22,7 @@ import java.util.Set;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.pics.Pics;
@@ -34,8 +35,6 @@ import org.eclipse.swt.graphics.Image;
  *
  */
 public class ConstantExpressionProvider implements IExpressionProvider {
-
-
 
     /* (non-Javadoc)
      * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getExpressions(org.eclipse.emf.ecore.EObject)
@@ -95,5 +94,22 @@ public class ConstantExpressionProvider implements IExpressionProvider {
         return new ConstantExpressionEditor();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        return Collections.emptySet();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        return true;
+    }
 
 }

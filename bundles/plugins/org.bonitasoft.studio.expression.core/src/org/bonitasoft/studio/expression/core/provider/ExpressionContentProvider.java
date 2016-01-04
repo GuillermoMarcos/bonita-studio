@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.ecore.EObject;
 
@@ -59,7 +60,23 @@ public class ExpressionContentProvider implements IExpressionNatureProvider {
             }
         }
         return expressionsSet.toArray(new Expression[expressionsSet.size()]);
+    }
 
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final SortedSet<Expression> expressionsSet = new TreeSet<Expression>(new ExpressionComparator());
+        if (location != null && expressionEditorService != null) {
+            final Set<IExpressionProvider> providers = expressionEditorService.getExpressionProviders();
+            for (final IExpressionProvider provider : providers) {
+                if (provider.isRelevantFor(location)) {
+                    final Set<Expression> expressions = provider.getExpressions(location);
+                    if (expressions != null) {
+                        expressionsSet.addAll(expressions);
+                    }
+                }
+            }
+        }
+        return expressionsSet.toArray(new Expression[expressionsSet.size()]);
     }
 
 }

@@ -27,6 +27,8 @@ import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.simulation.SimulationData;
@@ -62,6 +64,29 @@ public class SimulationDataExpressionProvider implements IExpressionProvider {
         final List<SimulationData> simData = ModelHelper.getAccessibleSimulationData(context) ;
         for(final SimulationData d : simData){
             result.add(createExpression(d)) ;
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final Set<Expression> result = new HashSet<Expression>();
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final SimulationDataContainer container = contextFinder.find(SimulationDataContainer.class);
+        if(container != null){
+            for (final SimulationData d : ModelHelper.getAccessibleSimulationData(container)) {
+                result.add(createExpression(d));
+            }
+        }
+        final SimulationTransition transition = contextFinder.find(SimulationTransition.class);
+        if(transition != null){
+            for (final SimulationData d : ModelHelper.getAccessibleSimulationData(transition)) {
+                result.add(createExpression(d));
+            }
         }
         return result;
     }
@@ -119,6 +144,19 @@ public class SimulationDataExpressionProvider implements IExpressionProvider {
         return new SimulationDataExpressionEditor();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final SimulationDataContainer container = contextFinder.find(SimulationDataContainer.class);
+        final SimulationTransition transition = contextFinder.find(SimulationTransition.class);
+        return container != null && !ModelHelper.getAccessibleSimulationData(container).isEmpty() ||
+                transition != null && !ModelHelper.getAccessibleSimulationData(transition).isEmpty();
+
+    }
 
 
 }

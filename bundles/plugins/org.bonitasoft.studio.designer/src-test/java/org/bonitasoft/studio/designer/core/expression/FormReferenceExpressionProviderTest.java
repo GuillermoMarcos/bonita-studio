@@ -27,10 +27,10 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
-import org.bonitasoft.studio.designer.core.expression.FormReferenceExpressionProvider;
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
 import org.bonitasoft.studio.model.expression.Expression;
+import org.eclipse.emf.ecore.EObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -54,7 +54,7 @@ public class FormReferenceExpressionProviderTest {
 
     @Test
     public void should_be_relevant_for_FormMapping_context() throws Exception {
-        assertThat(expressionProvider.isRelevantFor(null)).isFalse();
+        assertThat(expressionProvider.isRelevantFor((EObject) null)).isFalse();
         assertThat(expressionProvider.isRelevantFor(aFormMapping().build())).isTrue();
     }
 
@@ -74,7 +74,7 @@ public class FormReferenceExpressionProviderTest {
         doReturn(Arrays.asList(newWebPageFileStore("newPage", "newPageId"),
                 newWebPageFileStore("form1", "form1-uuid"))).when(store).getChildren();
 
-        final Set<Expression> expressions = expressionProvider.getExpressions(null);
+        final Set<Expression> expressions = expressionProvider.getExpressions((EObject) null);
         assertThat(expressions).extracting("name", "content", "type").contains(tuple("newPage", "newPageId", ExpressionConstants.FORM_REFERENCE_TYPE),
                 tuple("form1", "form1-uuid", ExpressionConstants.FORM_REFERENCE_TYPE));
     }

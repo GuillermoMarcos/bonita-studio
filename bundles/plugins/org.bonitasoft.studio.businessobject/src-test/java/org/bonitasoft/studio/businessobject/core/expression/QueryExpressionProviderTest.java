@@ -31,6 +31,7 @@ import org.bonitasoft.studio.businessobject.ui.expression.QueryExpressionEditor;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.assertions.ExpressionAssert;
+import org.eclipse.emf.ecore.EObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,7 +69,7 @@ public class QueryExpressionProviderTest {
         assertThat(model.getBusinessObjects()).hasSize(1);
         final BusinessObjectExpressionQuery businessObjectExpressionQuery = model.getBusinessObjects().get(0);
         assertThat(businessObjectExpressionQuery.getQualifiedName()).isEqualTo("org.bonita.Employee");
-        String countExpressionName = "Employee.countForFind";
+        final String countExpressionName = "Employee.countForFind";
 		assertThat(businessObjectExpressionQuery.getQueryExpressions()).extracting("name").containsOnly("Employee.find", countExpressionName, "Employee.findByEmployeeId",
                 "Employee.findByPersistenceId");
         for (final Expression exp : businessObjectExpressionQuery.getQueryExpressions()) {
@@ -86,7 +87,7 @@ public class QueryExpressionProviderTest {
 
     @Test
     public void should_be_relevant_for_any_context() throws Exception {
-        assertThat(queryExpressionProvider.isRelevantFor(null)).isTrue();
+        assertThat(queryExpressionProvider.isRelevantFor((EObject) null)).isTrue();
     }
 
     @Test

@@ -24,6 +24,7 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.XMLData;
 import org.bonitasoft.studio.pics.Pics;
@@ -54,6 +55,24 @@ public class XPathExpressionProvider implements IExpressionProvider {
 		}
 		return Collections.emptySet();
 	}
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final Set<Expression> exprSet = new HashSet<Expression>();
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
+        if (provider != null) {
+            for (final Expression exp : provider.getExpressions(location)) {
+                if (exp.getReferencedElements().get(0) instanceof XMLData) {
+                    exprSet.add(exp);
+                }
+            }
+        }
+        return Collections.emptySet();
+    }
 
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getExpressionType()
@@ -103,6 +122,24 @@ public class XPathExpressionProvider implements IExpressionProvider {
 		
 		return false;
 	}
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        final IExpressionProvider provider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.VARIABLE_TYPE);
+        if (provider != null) {
+            for (final Expression exp : provider.getExpressions(location)) {
+                if (exp.getReferencedElements().get(0) instanceof XMLData) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.provider.IExpressionProvider#getTypeLabel()

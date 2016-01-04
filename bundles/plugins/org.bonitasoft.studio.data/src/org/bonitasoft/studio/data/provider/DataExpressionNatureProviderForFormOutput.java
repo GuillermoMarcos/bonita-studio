@@ -22,6 +22,7 @@ import java.util.Set;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.ecore.EObject;
 
@@ -45,6 +46,16 @@ public class DataExpressionNatureProviderForFormOutput implements IExpressionNat
 		return expressions.toArray(new Expression[expressions.size()]);
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final Set<Expression> expressions = dataExpressionProvider.getExpressions(location);
+        expressions.addAll(ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.DOCUMENT_REF_TYPE).getExpressions(location));
+        return expressions.toArray(new Expression[expressions.size()]);
+    }
 
 
 }

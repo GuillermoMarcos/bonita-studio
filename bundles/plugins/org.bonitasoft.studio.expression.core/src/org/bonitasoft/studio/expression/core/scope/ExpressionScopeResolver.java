@@ -21,13 +21,10 @@ import java.util.List;
 
 import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
-import org.bonitasoft.studio.expression.core.provider.ProvidedExpressionProvider;
 import org.bonitasoft.studio.expression.core.scope.filter.DataDefaultValueFilter;
 import org.bonitasoft.studio.expression.core.scope.filter.DuplicableLabelAndTooltipFilter;
 import org.bonitasoft.studio.expression.core.scope.filter.ExpressionScopeFilter;
 import org.bonitasoft.studio.model.expression.Expression;
-import org.bonitasoft.studio.model.process.MainProcess;
-import org.eclipse.emf.ecore.EObject;
 
 import com.google.common.base.Predicate;
 
@@ -41,71 +38,37 @@ public class ExpressionScopeResolver {
         FILTERS.add(new DataDefaultValueFilter());
     }
 
-    private static final List<ExpressionScopeFilter> PROVIDED_EXPRESSIONS_FILTERS;
-
-    static {
-        PROVIDED_EXPRESSIONS_FILTERS = new ArrayList<>();
+    public ExpressionScope resolve(final ModelLocation location) {
+        return new ExpressionScope(location, resolveExpressions(location));
     }
 
-    public ExpressionScope resolve(final Expression expression) {
-        final EObject context = resolveContext(expression);
-        final List<Expression> expressions = resolveExpressions(context, expression);
-        final List<Expression> providedExpressions = resolveProvidedExpressions(context, expression);
-        return new ExpressionScope(context, expression, expressions, providedExpressions);
-    }
-
-    private EObject resolveContext(final Expression expression) {
-        EObject eContainer = expression.eContainer();
-        while (eContainer instanceof Expression) {
-            eContainer = eContainer.eContainer();
-        }
-        if (eContainer == null) {
-            throw new IllegalStateException("context is null");
-        }
-        if (!(eContainer instanceof MainProcess) && eContainer.eContainer() == null) {
-            throw new IllegalStateException("context is not contained in the model");
-        }
-        return eContainer;
-    }
-
-    private List<Expression> resolveProvidedExpressions(final EObject context, final Expression expression) {
-        final List<Expression> providedExpressions = new ArrayList<>();
-        final ExpressionScopeFilter filter = find(PROVIDED_EXPRESSIONS_FILTERS, isRelevant(expression), null);
-        for (final Expression exp : new ProvidedExpressionProvider().getExpressions(context)) {
-            if (applyTo(expression, filter, exp)) {
-                providedExpressions.add(exp);
-            }
-        }
-        return providedExpressions;
-    }
-
-    private List<Expression> resolveExpressions(final EObject context, final Expression expression) {
+    private List<Expression> resolveExpressions(final ModelLocation location) {
         final IExpressionNatureProvider provider = ExpressionContentProvider.getInstance();
         final List<Expression> expressions = new ArrayList<>();
-        final ExpressionScopeFilter filter = find(FILTERS, isRelevant(expression), null);
-        for (final Expression exp : provider.getExpressions(context)) {
-            if (applyTo(expression, filter, exp)) {
+        final ExpressionScopeFilter filter = find(FILTERS, isRelevant(location), null);
+        for (final Expression exp : provider.getExpressions(location)) {
+            if (applyTo(location, filter, exp)) {
                 expressions.add(exp);
             }
         }
         return expressions;
     }
 
-    public boolean applyTo(final Expression expression, final ExpressionScopeFilter filter, final Expression expressionToTest) {
-        return filter != null && filter.apply(expression, expressionToTest) || filter == null;
+    public boolean applyTo(final ModelLocation location, final ExpressionScopeFilter filter, final Expression expression) {
+        return filter != null && filter.apply(location, expression) || filter == null;
     }
 
-    public boolean applyTo(final Expression expression, final Expression exp) {
-        final ExpressionScopeFilter filter = find(FILTERS, isRelevant(expression), null);
-        return filter != null && filter.apply(expression, exp) || filter == null;
+    public boolean applyTo(final ModelLocation location, final Expression expression) {
+        final ExpressionScopeFilter filter = find(FILTERS, isRelevant(location), null);
+        return filter != null && filter.apply(location, expression) || filter == null;
     }
 
-    private Predicate<? super ExpressionScopeFilter> isRelevant(final Expression expression) {
+    private Predicate<? super ExpressionScopeFilter> isRelevant(final ModelLocation location) {
         return new Predicate<ExpressionScopeFilter>() {
 
             @Override
             public boolean apply(final ExpressionScopeFilter filter) {
-                return filter.isRelevant(expression);
+                return filter.isRelevant(location);
             }
         };
     }

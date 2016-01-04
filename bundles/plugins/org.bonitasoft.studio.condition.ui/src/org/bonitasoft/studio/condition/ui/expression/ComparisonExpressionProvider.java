@@ -10,6 +10,8 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.condition.ui.i18n.Messages;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.SequenceFlow;
 import org.bonitasoft.studio.model.process.decision.DecisionTableLine;
@@ -21,6 +23,25 @@ import org.eclipse.swt.graphics.Image;
  * @author aurelie zara
  */
 public class ComparisonExpressionProvider implements IExpressionProvider {
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        return Collections.emptySet();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        final EObject context = new ContextFinder(location).findExpressionContext();
+        return context instanceof SequenceFlow || context instanceof DecisionTableLine;
+    }
 
     /*
      * (non-Javadoc)

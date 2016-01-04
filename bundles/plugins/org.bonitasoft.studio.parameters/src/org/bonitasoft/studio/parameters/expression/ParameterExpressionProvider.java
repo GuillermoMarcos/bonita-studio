@@ -22,6 +22,8 @@ import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.parameter.Parameter;
 import org.bonitasoft.studio.model.process.AbstractProcess;
@@ -56,7 +58,21 @@ public class ParameterExpressionProvider implements IExpressionProvider {
         return result;
     }
 
-
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final Set<Expression> result = new HashSet<Expression>();
+        final AbstractProcess process = new ContextFinder(location).find(AbstractProcess.class);
+        if (process != null) {
+            for (final Parameter p : process.getParameters()) {
+                result.add(ExpressionHelper.createParameterExpression(p));
+            }
+        }
+        return result;
+    }
 
     /*
      * (non-Javadoc)
@@ -100,6 +116,15 @@ public class ParameterExpressionProvider implements IExpressionProvider {
      */
     @Override
     public boolean isRelevantFor(final EObject context) {
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
         return true;
     }
 

@@ -19,6 +19,8 @@ package org.bonitasoft.studio.properties.sections.catchmessage;
 
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ListExpression;
 import org.bonitasoft.studio.model.expression.TableExpression;
@@ -55,6 +57,33 @@ public class CorrelationIdNatureProvider implements IExpressionNatureProvider{
             return expressionsList;
         }
         return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final AbstractCatchMessageEvent catchMessageEvent = new ContextFinder(location).find(AbstractCatchMessageEvent.class);
+        if (catchMessageEvent != null) {
+            final MessageFlow incomingMessag = catchMessageEvent.getIncomingMessag();
+            TableExpression throwCorrelations = null;
+            Expression[] expressionsList = null;
+            if (incomingMessag != null) {
+                final Message message = ModelHelper.findEvent(catchMessageEvent, incomingMessag.getName());
+                if (message != null) {
+                    throwCorrelations = message.getCorrelation().getCorrelationAssociation();
+                    expressionsList = new Expression[throwCorrelations.getExpressions().size()];
+                    for (int i = 0; i < throwCorrelations.getExpressions().size(); i++) {
+                        final ListExpression row = throwCorrelations.getExpressions().get(i);
+                        expressionsList[i] = row.getExpressions().get(0);
+                    }
+                }
+            }
+            return expressionsList;
+        }
+        return new Expression[0];
     }
 
 }

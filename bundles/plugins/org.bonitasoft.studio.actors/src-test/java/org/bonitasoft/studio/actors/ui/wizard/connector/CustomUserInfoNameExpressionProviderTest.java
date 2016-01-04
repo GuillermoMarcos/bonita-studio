@@ -12,6 +12,7 @@ import org.bonitasoft.studio.actors.repository.OrganizationFileStore;
 import org.bonitasoft.studio.actors.repository.OrganizationRepositoryStore;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.ecore.EObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +52,7 @@ public class CustomUserInfoNameExpressionProviderTest {
         given(organization.getCustomUserInfoDefinitions()).willReturn(null);
 
         //when
-        final Expression[] expressions = provider.getExpressions(null);
+        final Expression[] expressions = provider.getExpressions((EObject) null);
 
         //then
         assertThat(expressions).isEmpty();
@@ -63,7 +64,7 @@ public class CustomUserInfoNameExpressionProviderTest {
         given(definitionsContainer.getCustomUserInfoDefinition()).willReturn(elements);
 
         //when
-        final Expression[] expressions = provider.getExpressions(null);
+        final Expression[] expressions = provider.getExpressions((EObject) null);
 
         //then
         assertThat(expressions).isEmpty();
@@ -77,7 +78,7 @@ public class CustomUserInfoNameExpressionProviderTest {
         given(definitionsContainer.getCustomUserInfoDefinition()).willReturn(elements);
 
         //when
-        final Expression[] expressions = provider.getExpressions(null);
+        final Expression[] expressions = provider.getExpressions((EObject) null);
 
         //then
         assertThat(expressions).hasSize(2);

@@ -19,6 +19,9 @@ import java.util.List;
 
 import org.bonitasoft.engine.expression.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.PageFlowContextResolver;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.form.Form;
@@ -26,31 +29,37 @@ import org.bonitasoft.studio.model.form.Widget;
 import org.bonitasoft.studio.model.process.AbstractProcess;
 import org.bonitasoft.studio.model.process.Activity;
 import org.bonitasoft.studio.model.process.MultiInstanceType;
+import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.bonitasoft.studio.model.process.Task;
 import org.eclipse.emf.ecore.EObject;
 
 public class ProvidedExpressionProvider {
 
-    public List<Expression> getExpressions(EObject context) {
+    public List<Expression> getExpressions(ModelLocation location) {
         final List<Expression> result = new ArrayList<Expression>();
         result.add(toExpression(ExpressionConstants.API_ACCESSOR));
         result.add(toExpression(ExpressionConstants.PROCESS_DEFINITION_ID));
         result.add(toExpression(ExpressionConstants.ROOT_PROCESS_INSTANCE_ID));
         result.add(toExpression(ExpressionConstants.PROCESS_INSTANCE_ID));
         result.add(toExpression(ExpressionConstants.ACTIVITY_INSTANCE_ID));
-        if (context instanceof Expression) {
-            context = context.eContainer();
+        final ContextFinder finder = new ContextFinder(location);
+        final EObject context = finder.findExpressionContext();
+        
+        if (new PageFlowContextResolver().isPageFlowContext(location)) {
+            result.add(toExpression(ExpressionConstants.LOGGED_USER_ID));
         }
-        //      if (isPageFlowContext) {
-        result.add(toExpression(ExpressionConstants.LOGGED_USER_ID));
-        //    }
         if (context instanceof Activity) {
             if (((Activity) context).getType() == MultiInstanceType.PARALLEL || ((Activity) context).getType() == MultiInstanceType.SEQUENTIAL) {
-                result.add(toExpression(ExpressionConstants.NUMBER_OF_TERMINATED_INSTANCES));
-                result.add(toExpression(ExpressionConstants.NUMBER_OF_COMPLETED_INSTANCES));
-                result.add(toExpression(ExpressionConstants.NUMBER_OF_INSTANCES));
+                if (finder.find(ProcessPackage.Literals.MULTI_INSTANTIABLE__COMPLETION_CONDITION) != null) {
+                    result.add(toExpression(ExpressionConstants.NUMBER_OF_ACTIVE_INSTANCES));
+                    result.add(toExpression(ExpressionConstants.NUMBER_OF_TERMINATED_INSTANCES));
+                    result.add(toExpression(ExpressionConstants.NUMBER_OF_COMPLETED_INSTANCES));
+                    result.add(toExpression(ExpressionConstants.NUMBER_OF_INSTANCES));
+                }
             } else if (((Activity) context).getType() == MultiInstanceType.STANDARD) {
-                result.add(toExpression(ExpressionConstants.LOOP_COUNTER));
+                if (finder.find(ProcessPackage.Literals.MULTI_INSTANTIABLE__LOOP_CONDITION) != null) {
+                    result.add(toExpression(ExpressionConstants.LOOP_COUNTER));
+                }
             }
         }
         if (context instanceof Task) {

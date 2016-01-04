@@ -22,6 +22,7 @@ import java.util.Set;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.process.AbstractCatchMessageEvent;
@@ -35,8 +36,8 @@ import org.eclipse.emf.ecore.EObject;
 public class CatchMessageEventNamesExpressionNatureProvider implements IExpressionNatureProvider {
 
 	private List<AbstractProcess> processes;
-	private ThrowMessageEvent throwMessage;
 
+	private ThrowMessageEvent throwMessage;
 
 	@Override
     public Expression[] getExpressions(final EObject context) {
@@ -74,5 +75,35 @@ public class CatchMessageEventNamesExpressionNatureProvider implements IExpressi
 		this.throwMessage = throwMessage;
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final List<Expression> result = new ArrayList<Expression>();
+        if (processes != null && !processes.isEmpty()) {
+            final Set<String> names = new HashSet<String>();
+            for (final AbstractProcess process : processes) {
+                for (final AbstractCatchMessageEvent catchMessage : ModelHelper.getAllCatchEvent(process)) {
+                    if (!names.contains(catchMessage.getName())
+                            && (catchMessage.getIncomingMessag() == null || catchMessage.getIncomingMessag().getSource() == null || catchMessage
+                                    .getIncomingMessag().getSource().equals(throwMessage))) {
+                        names.add(catchMessage.getName());
+                    }
+                }
+                for (final String pName : names) {
+                    final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
+                    exp.setName(pName);
+                    exp.setContent(pName);
+                    exp.setReturnType(String.class.getName());
+                    exp.setReturnTypeFixed(true);
+                    exp.setType(ExpressionConstants.CONSTANT_TYPE);
+                    result.add(exp);
+                }
+            }
+        }
+        return result.toArray(new Expression[result.size()]);
+    }
 
 }

@@ -26,10 +26,13 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.core.scope.PageFlowContextResolver;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.AbstractProcess;
 import org.bonitasoft.studio.model.process.Data;
+import org.bonitasoft.studio.model.process.DataAware;
 import org.bonitasoft.studio.model.process.Pool;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.bonitasoft.studio.model.process.Task;
@@ -44,51 +47,47 @@ public class DataDefaultValueFilter implements ExpressionScopeFilter {
         pageFlowContextResolver = new PageFlowContextResolver();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.expression.core.scope.ExpressionScopeResolver#isRelevant(org.eclipse.emf.ecore.EStructuralFeature)
-     */
     @Override
-    public boolean isRelevant(final Expression expression) {
-        final EStructuralFeature containingFeature = expression.eContainingFeature();
+    public boolean isRelevant(final ModelLocation location) {
+        final EStructuralFeature containingFeature = location.getContainingFeature();
         return Objects.equals(ProcessPackage.Literals.DATA__DEFAULT_VALUE, containingFeature);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean apply(final Expression expression, final Expression expressionToTest) {
+    public boolean apply(final ModelLocation location, final Expression expression) {
         final boolean validType = or(
                 withVariableType(),
                 withExpressionType(ExpressionConstants.CONSTANT_TYPE),
                 withExpressionType(ExpressionConstants.SCRIPT_TYPE),
                 withExpressionType(ExpressionConstants.PARAMETER_TYPE),
-                withExpressionType(ExpressionConstants.CONTRACT_INPUT_TYPE)).apply(expressionToTest);
-        final EObject dataContainer = expression.eContainer().eContainer();
-        final Set<String> availableDataNames = getDataNames(expression.eContainer(), dataContainer);
-        if (ExpressionConstants.CONTRACT_INPUT_TYPE.equals(expressionToTest.getType())) {
+                withExpressionType(ExpressionConstants.CONTRACT_INPUT_TYPE)).apply(expression);
+        final DataAware dataContainer = new ContextFinder(location).find(DataAware.class);
+        final Set<String> availableDataNames = getDataNames(location, dataContainer);
+        if (ExpressionConstants.CONTRACT_INPUT_TYPE.equals(expression.getType())) {
             return dataContainer instanceof Pool;
         }
-        if (isExpressionOfVariableType(expressionToTest) && !isNullOrEmpty(expressionToTest.getName())) {
-            return availableDataNames.contains(expressionToTest.getName());
-        } else if (isExpressionOfVariableType(expressionToTest) && isNullOrEmpty(expressionToTest.getName())) {
+        if (isExpressionOfVariableType(expression) && !isNullOrEmpty(expression.getName())) {
+            return availableDataNames.contains(expression.getName());
+        } else if (isExpressionOfVariableType(expression) && isNullOrEmpty(expression.getName())) {
             return !(dataContainer instanceof AbstractProcess)
-                    || dataContainer instanceof Pool && pageFlowContextResolver.isOverviewContext(expression.eContainer());
+                    || dataContainer instanceof Pool && pageFlowContextResolver.isOverviewContext(location);
         }
         return validType;
     }
 
-    public Set<String> getDataNames(final EObject data, final EObject container) {
+    public Set<String> getDataNames(final ModelLocation location, final EObject container) {
         final Set<String> availableDataNames = new HashSet<>();
         if (!(container instanceof AbstractProcess)) {
             final List<Data> availableData = ModelHelper.getAccessibleData(ModelHelper.getParentProcess(container));
-            if (pageFlowContextResolver.isPageFlowContext(data) && container instanceof Task) {
+            if (pageFlowContextResolver.isPageFlowContext(location) && container instanceof Task) {
                 availableData.addAll(((Task) container).getData());
             }
             for (final Data d : availableData) {
                 availableDataNames.add(d.getName());
             }
         } else {
-            if (container instanceof Pool && pageFlowContextResolver.isOverviewContext(data)) {
+            if (container instanceof Pool && pageFlowContextResolver.isOverviewContext(location)) {
                 final List<Data> availableData = ModelHelper.getAccessibleData(ModelHelper.getParentProcess(container));
                 availableData.addAll(((Pool) container).getData());
                 for (final Data d : availableData) {

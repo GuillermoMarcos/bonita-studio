@@ -32,7 +32,6 @@ import org.bonitasoft.studio.expression.editor.constant.ExpressionReturnTypeCont
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.provider.IProposalListener;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
-import org.bonitasoft.studio.groovy.DisplayEngineExpressionWithName;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.process.Data;
@@ -213,9 +212,9 @@ public class IterationPropertySection extends AbstractBonitaDescriptionSection {
                 ExpressionConstants.VARIABLE_TYPE,
                 ExpressionConstants.PARAMETER_TYPE,
                 ExpressionConstants.SCRIPT_TYPE }));
-        loopConditionExpressionViewer.addFilter(new DisplayEngineExpressionWithName(
-                new String[] { org.bonitasoft.engine.expression.ExpressionConstants.LOOP_COUNTER
-                        .getEngineConstantName() }));
+        //        loopConditionExpressionViewer.addFilter(new DisplayEngineExpressionWithName(
+        //                new String[] { org.bonitasoft.engine.expression.ExpressionConstants.LOOP_COUNTER
+        //                        .getEngineConstantName() }));
         loopConditionExpressionViewer.addFilter(new OnlyProcessDataViewerFilter());
 
         context.bindValue(ViewersObservables.observeInput(loopConditionExpressionViewer), selectionObservable);
@@ -304,11 +303,11 @@ public class IterationPropertySection extends AbstractBonitaDescriptionSection {
                 ExpressionConstants.VARIABLE_TYPE,
                 ExpressionConstants.PARAMETER_TYPE,
                 ExpressionConstants.SCRIPT_TYPE }));
-        completionConditionViewer.addFilter(new DisplayEngineExpressionWithName(new String[] {
-                org.bonitasoft.engine.expression.ExpressionConstants.NUMBER_OF_ACTIVE_INSTANCES.getEngineConstantName(),
-                org.bonitasoft.engine.expression.ExpressionConstants.NUMBER_OF_COMPLETED_INSTANCES.getEngineConstantName(),
-                org.bonitasoft.engine.expression.ExpressionConstants.NUMBER_OF_INSTANCES.getEngineConstantName(),
-                org.bonitasoft.engine.expression.ExpressionConstants.NUMBER_OF_TERMINATED_INSTANCES.getEngineConstantName() }));
+        //        completionConditionViewer.addFilter(new DisplayEngineExpressionWithName(new String[] {
+        //                org.bonitasoft.engine.expression.ExpressionConstants.NUMBER_OF_ACTIVE_INSTANCES.getEngineConstantName(),
+        //                org.bonitasoft.engine.expression.ExpressionConstants.NUMBER_OF_COMPLETED_INSTANCES.getEngineConstantName(),
+        //                org.bonitasoft.engine.expression.ExpressionConstants.NUMBER_OF_INSTANCES.getEngineConstantName(),
+        //                org.bonitasoft.engine.expression.ExpressionConstants.NUMBER_OF_TERMINATED_INSTANCES.getEngineConstantName() }));
         completionConditionViewer.setMessage(Messages.multiInstance_completionConditionDescription, IStatus.INFO);
 
         final IObservableValue selectionObservable = ViewersObservables.observeSingleSelection(selectionProvider);

@@ -28,6 +28,7 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.pics.Pics;
@@ -55,6 +56,29 @@ public class DAOExpressionProvider implements IExpressionProvider {
             result.add(createExpression(t));
         }
         return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final Set<Expression> result = new HashSet<Expression>();
+        final BusinessObjectModelRepositoryStore boStore = repositoryAccessor.getRepositoryStore(BusinessObjectModelRepositoryStore.class);
+        for (final IType t : boStore.allBusinessObjectDao(repositoryAccessor.getCurrentRepository().getJavaProject())) {
+            result.add(createExpression(t));
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        return getBusinessFileStore() != null;
     }
 
     protected Expression createExpression(final IType daoType) {
@@ -144,4 +168,5 @@ public class DAOExpressionProvider implements IExpressionProvider {
     protected BusinessObjectModelFileStore getBusinessFileStore() {
         return repositoryAccessor.getRepositoryStore(BusinessObjectModelRepositoryStore.class).getChild(BusinessObjectModelFileStore.DEFAULT_BDM_FILENAME);
     }
+
 }

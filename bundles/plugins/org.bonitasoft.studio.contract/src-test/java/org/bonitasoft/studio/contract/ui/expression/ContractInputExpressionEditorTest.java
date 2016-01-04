@@ -23,6 +23,7 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.contract.core.expression.ContractInputExpressionProvider;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.assertions.ExpressionAssert;
 import org.bonitasoft.studio.model.process.Contract;
@@ -139,7 +140,7 @@ public class ContractInputExpressionEditorTest {
     }
 
     private ExpressionScope newScope() {
-        return new ExpressionScope(task, null, Collections.<Expression> emptyList(), Collections.<Expression> emptyList());
+        return new ExpressionScope(new ModelLocationFactory().newLocation(task), Collections.<Expression> emptyList());
     }
 
     @Test

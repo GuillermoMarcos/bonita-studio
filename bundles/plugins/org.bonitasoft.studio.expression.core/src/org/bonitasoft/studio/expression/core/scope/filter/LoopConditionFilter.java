@@ -14,13 +14,30 @@
  */
 package org.bonitasoft.studio.expression.core.scope.filter;
 
+import java.util.Objects;
+
 import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
+import org.bonitasoft.studio.model.process.ProcessPackage;
 
-public interface ExpressionScopeFilter {
 
-    boolean isRelevant(ModelLocation location);
+public class LoopConditionFilter implements ExpressionScopeFilter {
 
-    boolean apply(ModelLocation location, Expression expression);
+    /* (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.scope.filter.ExpressionScopeFilter#isRelevant(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevant(ModelLocation location) {
+        return Objects.equals(ProcessPackage.Literals.MULTI_INSTANTIABLE__LOOP_CONDITION, location.getContainingFeature());
+    }
+
+    /* (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.scope.filter.ExpressionScopeFilter#apply(org.bonitasoft.studio.expression.core.scope.ModelLocation, org.bonitasoft.studio.model.expression.Expression)
+     */
+    @Override
+    public boolean apply(ModelLocation location, Expression expression) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
 }

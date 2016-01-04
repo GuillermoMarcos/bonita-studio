@@ -39,6 +39,7 @@ import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.pics.Pics;
@@ -61,6 +62,25 @@ public class QueryExpressionProvider implements IExpressionProvider {
     @Override
     public Set<Expression> getExpressions(final EObject context) {
         return Collections.emptySet();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        return Collections.emptySet();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        final QueryExpressionModel buildQueryExpressionModel = buildQueryExpressionModel();
+        return !buildQueryExpressionModel.getBusinessObjects().isEmpty();
     }
 
     public QueryExpressionModel buildQueryExpressionModel() {
@@ -205,5 +225,6 @@ public class QueryExpressionProvider implements IExpressionProvider {
     public IExpressionEditor getExpressionEditor(final Expression expression, final EObject context) {
         return new QueryExpressionEditor(this);
     }
+
 
 }

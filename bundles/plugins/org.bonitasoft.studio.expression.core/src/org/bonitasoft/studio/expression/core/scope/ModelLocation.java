@@ -21,6 +21,13 @@ public class ModelLocation {
 
     private final EObject modelElement;
     private final EStructuralFeature containingFeature;
+    private ModelLocation parent;
+
+    public ModelLocation(ModelLocation parent, EObject modelElement, EStructuralFeature containgFeature) {
+        this.modelElement = modelElement;
+        this.containingFeature = containgFeature;
+        this.parent = parent;
+    }
 
     public ModelLocation(EObject modelElement, EStructuralFeature containgFeature) {
         this.modelElement = modelElement;
@@ -33,6 +40,14 @@ public class ModelLocation {
 
     public EStructuralFeature getContainingFeature() {
         return containingFeature;
+    }
+
+    public ModelLocation getParent() {
+        return parent;
+    }
+
+    void setParent(ModelLocation parent) {
+        this.parent = parent;
     }
 
 }

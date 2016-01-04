@@ -46,6 +46,7 @@ import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScopeProvider;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScopeResolver;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.ExpressionEditorPlugin;
 import org.bonitasoft.studio.expression.editor.autocompletion.AutoCompletionField;
 import org.bonitasoft.studio.expression.editor.autocompletion.BonitaContentProposalAdapter;
@@ -536,11 +537,15 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
     }
 
     private ExpressionScope getExpressionScope() {
-        //        final Object input = getInput();
-        //        final EObject context = getEditInput(input);
         final Expression selectedExpression = getSelectedExpression();
         if (selectedExpression != null) {
-            return scopeProvider.get(selectedExpression);
+            final ModelLocationFactory modelLocationFactory = new ModelLocationFactory();
+            if (selectedExpression.eResource() != null) {
+                return scopeProvider.get(modelLocationFactory.newLocation(selectedExpression));
+            } else {
+                final EObject context = getEditInput(getInput());
+                return scopeProvider.get(modelLocationFactory.newLocation(context, selectedExpression, selectedExpression.eContainingFeature()));
+            }
         }
         return null;
     }
@@ -687,7 +692,7 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
                 final Set<IExpressionProvider> expressionProviders = expressionEditorService.getExpressionProviders();
                 for (final IExpressionProvider provider : expressionProviders) {
                     exp.setType(provider.getExpressionType());
-                    if (!scopeResolver.applyTo(selectedExpression, exp)) {
+                    if (!scopeResolver.applyTo(new ModelLocationFactory().newLocation(selectedExpression), exp)) {
                         filteredExpressions.add(provider.getExpressionType());
                     }
                 }

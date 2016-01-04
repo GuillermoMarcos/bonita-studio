@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.process.EnumType;
@@ -53,6 +54,15 @@ public class OptionsExpressionNatureProvider implements IExpressionNatureProvide
             result.add(exp) ;
         }
         return result.toArray(new Expression[]{});
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        return getExpressions((EObject) null);
     }
 
 }

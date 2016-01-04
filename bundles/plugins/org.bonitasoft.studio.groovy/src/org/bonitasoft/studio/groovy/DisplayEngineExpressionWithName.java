@@ -16,8 +16,6 @@
  */
 package org.bonitasoft.studio.groovy;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
@@ -33,9 +31,9 @@ public class DisplayEngineExpressionWithName extends ViewerFilter {
 
 	private Set<String> namesToAllow;
 
-	public DisplayEngineExpressionWithName(String[] namesToExclude) {
-		this.namesToAllow = new HashSet<String>(Arrays.asList(namesToExclude))  ;
-	}
+    //	public DisplayEngineExpressionWithName(String[] namesToExclude) {
+    //		this.namesToAllow = new HashSet<String>(Arrays.asList(namesToExclude))  ;
+    //	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)

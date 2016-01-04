@@ -24,6 +24,8 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
@@ -59,6 +61,35 @@ public class MessageIdExpressionProvider implements IExpressionProvider {
                         final ListExpression row = throwMessageContent.getExpressions().get(i);
                         final Expression id = row.getExpressions().get(0);
                         if (id!=null && id.getName() !=null){
+                            messageContentIds.add(createExpression(id.getName()));
+                        }
+                    }
+                    return messageContentIds;
+                }
+            }
+        }
+        return Collections.emptySet();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final AbstractCatchMessageEvent catchMessageEvent = contextFinder.find(AbstractCatchMessageEvent.class);
+        if (catchMessageEvent != null) {
+            final String event = catchMessageEvent.getEvent();
+            if (event != null) {
+                final Message message = ModelHelper.findEvent(catchMessageEvent, event);
+                if (message != null) {
+                    final TableExpression throwMessageContent = message.getMessageContent();
+                    final HashSet<Expression> messageContentIds = new HashSet<Expression>();
+                    for (int i = 0; i < throwMessageContent.getExpressions().size(); i++) {
+                        final ListExpression row = throwMessageContent.getExpressions().get(i);
+                        final Expression id = row.getExpressions().get(0);
+                        if (id != null && id.getName() != null) {
                             messageContentIds.add(createExpression(id.getName()));
                         }
                     }
@@ -116,6 +147,15 @@ public class MessageIdExpressionProvider implements IExpressionProvider {
     @Override
     public boolean isRelevantFor(EObject context) {
         return context instanceof AbstractCatchMessageEvent;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        return new ContextFinder(location).find(AbstractCatchMessageEvent.class) != null;
     }
 
     @Override

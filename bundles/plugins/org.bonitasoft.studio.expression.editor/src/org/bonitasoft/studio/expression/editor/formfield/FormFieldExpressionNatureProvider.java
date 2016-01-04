@@ -24,6 +24,8 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.WidgetHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.form.Form;
@@ -42,7 +44,6 @@ import org.eclipse.emf.ecore.EObject;
  *
  */
 public class FormFieldExpressionNatureProvider implements IExpressionNatureProvider {
-
 
 	private final EAttribute flowType;
 
@@ -99,6 +100,55 @@ public class FormFieldExpressionNatureProvider implements IExpressionNatureProvi
 		return result.toArray(new Expression[result.size()]) ;
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final List<Expression> result = new ArrayList<Expression>();
+        if (ProcessPackage.Literals.PAGE_FLOW__ENTRY_PAGE_FLOW_TYPE.equals(flowType)){
+            final PageFlow pageFlow = contextFinder.find(PageFlow.class);
+            if(pageFlow != null){
+                for (final Form f : pageFlow.getForm()){
+                    for (final Widget w : f.getWidgets()) {
+                        if (w instanceof FormField || w instanceof NextFormButton){
+                            result.add( createExpression(w) ) ;
+                        }
+                    }
+                }
+            }
+        } else {
+            if ( ProcessPackage.Literals.VIEW_PAGE_FLOW__VIEW_PAGE_FLOW_TYPE.equals(flowType)){
+                final ViewPageFlow pageFlow = contextFinder.find(ViewPageFlow.class);
+                if(pageFlow != null){
+                    for (final Form f : pageFlow.getViewForm()){
+                        for (final Widget w : f.getWidgets()) {
+                            if (w instanceof FormField || w instanceof NextFormButton){
+                                result.add( createExpression(w) ) ;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (ProcessPackage.Literals.RECAP_FLOW__RECAP_PAGE_FLOW_TYPE.equals(flowType)){
+                    final RecapFlow pageFlow = contextFinder.find(RecapFlow.class);
+                    if(pageFlow != null){
+                        for (final Form f : pageFlow.getRecapForms()){
+                            for (final Widget w : f.getWidgets()) {
+                                if (w instanceof FormField || w instanceof NextFormButton){
+                                    result.add( createExpression(w) ) ;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result.toArray(new Expression[result.size()]) ;
+    }
 
 	private EObject getRelevantParent(final EObject context) {
 		EObject parent = context ;

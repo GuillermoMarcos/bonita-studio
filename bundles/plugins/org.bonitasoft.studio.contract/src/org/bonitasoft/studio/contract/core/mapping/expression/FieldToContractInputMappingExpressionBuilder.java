@@ -40,6 +40,7 @@ import org.bonitasoft.studio.model.process.BusinessObjectData;
 import org.bonitasoft.studio.model.process.ContractInput;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jdt.core.JavaModelException;
 
 import com.google.common.base.Joiner;
@@ -106,7 +107,7 @@ public class FieldToContractInputMappingExpressionBuilder {
         final List<ScriptVariable> scriptVariables = new ArrayList<ScriptVariable>();
         final IExpressionProvider daoExpressionProvider = expressionEditorService.getExpressionProvider(ExpressionConstants.DAO_TYPE);
         if (daoExpressionProvider != null) {
-            final List<Expression> expressions = newArrayList(daoExpressionProvider.getExpressions(null));
+            final List<Expression> expressions = newArrayList(daoExpressionProvider.getExpressions((EObject) null));
             for (final Expression e : expressions) {
                 scriptVariables.add(new ScriptVariable(e.getName(), e.getReturnType()));
             }

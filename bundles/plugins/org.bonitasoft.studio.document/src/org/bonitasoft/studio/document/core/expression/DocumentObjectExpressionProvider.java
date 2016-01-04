@@ -1,19 +1,16 @@
 /**
  * Copyright (C) 2012 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.bonitasoft.studio.document.core.expression;
@@ -27,6 +24,8 @@ import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.form.Form;
@@ -39,25 +38,23 @@ import org.eclipse.swt.graphics.Image;
 
 /**
  * @author Romain Bioteau
- *
  */
 public class DocumentObjectExpressionProvider implements IExpressionProvider {
 
-
     @Override
     public Set<Expression> getExpressions(final EObject context) {
-        final Set<Expression> result = new HashSet<Expression>() ;
+        final Set<Expression> result = new HashSet<Expression>();
         Pool process = null;
-        if(context instanceof Form && ModelHelper.isAnEntryPageFlowOnAPool((Form) context)){
+        if (context instanceof Form && ModelHelper.isAnEntryPageFlowOnAPool((Form) context)) {
             return result;
-        }else{
+        } else {
             final EObject parent = ModelHelper.getParentProcess(context);
-            if(parent instanceof Pool){
+            if (parent instanceof Pool) {
                 process = (Pool) parent;
             }
         }
-        if(context != null && process != null){
-            for(final Document d : process.getDocuments()){
+        if (context != null && process != null) {
+            for (final Document d : process.getDocuments()) {
                 result.add(createExpression(d));
             }
         }
@@ -80,16 +77,16 @@ public class DocumentObjectExpressionProvider implements IExpressionProvider {
     }
 
     private Expression createExpression(final Document d) {
-        final Expression exp = ExpressionFactory.eINSTANCE.createExpression() ;
-        exp.setType(getExpressionType()) ;
-        exp.setContent(d.getName()) ;
-        exp.setName(d.getName()) ;
+        final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
+        exp.setType(getExpressionType());
+        exp.setContent(d.getName());
+        exp.setName(d.getName());
         if (d.isMultiple()) {
             exp.setReturnType(List.class.getName());
         } else {
             exp.setReturnType(org.bonitasoft.engine.bpm.document.Document.class.getName());
         }
-        exp.getReferencedElements().add(ExpressionHelper.createDependencyFromEObject(d)) ;
+        exp.getReferencedElements().add(ExpressionHelper.createDependencyFromEObject(d));
         return exp;
     }
 
@@ -109,10 +106,38 @@ public class DocumentObjectExpressionProvider implements IExpressionProvider {
     }
 
     @Override
-    public IExpressionEditor getExpressionEditor(final Expression expression,final EObject context) {
+    public IExpressionEditor getExpressionEditor(final Expression expression, final EObject context) {
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final Set<Expression> result = new HashSet<Expression>();
+        final Form form = new ContextFinder(location).find(Form.class);
+        if (form != null && ModelHelper.isAnEntryPageFlowOnAPool(form)) {
+            return result;
+        } else {
+            final Pool process = new ContextFinder(location).find(Pool.class);
+            if (process != null) {
+                for (final Document d : process.getDocuments()) {
+                    result.add(createExpression(d));
+                }
+            }
+        }
+        return result;
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        return true;
+    }
 
 }

@@ -23,7 +23,6 @@ import org.bonitasoft.studio.common.DataTypeLabels;
 import org.bonitasoft.studio.common.DatasourceConstants;
 import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
-import org.bonitasoft.studio.common.emf.tools.WorkingCopyFactory;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.data.DataPlugin;
@@ -31,6 +30,7 @@ import org.bonitasoft.studio.data.i18n.Messages;
 import org.bonitasoft.studio.model.process.Activity;
 import org.bonitasoft.studio.model.process.Data;
 import org.bonitasoft.studio.model.process.DataAware;
+import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.bonitasoft.studio.pics.Pics;
 import org.bonitasoft.studio.refactoring.core.RefactorDataOperation;
@@ -38,6 +38,7 @@ import org.bonitasoft.studio.refactoring.core.RefactoringOperationType;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -82,7 +83,7 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         initDataWizard(dataContainmentFeature, showAutogenerateForm);
         this.editingDomain = editingDomain;
         this.container = container;
-        dataWorkingCopy = createWorkingCopy(container, dataContainmentFeature);
+        dataWorkingCopy = createWorkingCopy(container);
         editMode = false;
         this.featureToCheckForUniqueID = new HashSet<EStructuralFeature>();
         this.featureToCheckForUniqueID.add(dataContainmentFeature);
@@ -95,7 +96,7 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         initDataWizard(dataContainmentFeature, showAutogenerateForm);
         this.editingDomain = editingDomain;
         this.container = container;
-        dataWorkingCopy = createWorkingCopy(container, dataContainmentFeature);
+        dataWorkingCopy = createWorkingCopy(container);
         editMode = false;
         this.featureToCheckForUniqueID = new HashSet<EStructuralFeature>();
         this.featureToCheckForUniqueID.add(dataContainmentFeature);
@@ -103,8 +104,8 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         setWindowTitle(Messages.newVariable);
     }
 
-    private Data createWorkingCopy(final EObject container, final EStructuralFeature feature) {
-        final Data dataWorkingCopy = WorkingCopyFactory.newWorkingCopy(ProcessPackage.Literals.DATA, container, feature);
+    private Data createWorkingCopy(final EObject container) {
+        final Data dataWorkingCopy = ProcessFactory.eINSTANCE.createData();
         dataWorkingCopy.setDataType(ModelHelper.getDataTypeForID(container, DataTypeLabels.stringDataType));
         return dataWorkingCopy;
     }
@@ -117,7 +118,7 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         setNeedsProgressMonitor(true);
         container = data.eContainer();
         originalData = data;
-        dataWorkingCopy = WorkingCopyFactory.newWorkingCopy(originalData);
+        dataWorkingCopy = EcoreUtil.copy(originalData);
         editMode = true;
         this.featureToCheckForUniqueID = featureToCheckForUniqueID;
         setWindowTitle(Messages.editVariable);
@@ -196,10 +197,12 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
                 }
             }
         } else {
-            editingDomain.getCommandStack().execute(AddCommand.create(editingDomain, container, dataContainmentFeature, EcoreUtil.copy(workingCopy)));
+            final Command addCommand = AddCommand.create(editingDomain, container, dataContainmentFeature, workingCopy);
+            editingDomain.getCommandStack().execute(addCommand);
+            System.out.println(addCommand.getResult());
         }
         if (page != null) {
-            page.setWorkingCopy(createWorkingCopy(container, dataContainmentFeature));
+            page.setWorkingCopy(createWorkingCopy(container));
         }
         refreshXtextReferences();
         return true;

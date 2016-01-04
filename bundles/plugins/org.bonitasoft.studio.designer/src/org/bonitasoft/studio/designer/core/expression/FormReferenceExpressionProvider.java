@@ -26,6 +26,8 @@ import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.FormMapping;
 import org.eclipse.emf.ecore.EObject;
@@ -47,6 +49,11 @@ public class FormReferenceExpressionProvider implements IExpressionProvider {
             result.add(ExpressionHelper.createFormReferenceExpression(fStore.getDisplayName(), fStore.getId()));
         }
         return result;
+    }
+
+    @Override
+    public Set<Expression> getExpressions(final ModelLocation location) {
+        return getExpressions((EObject) null);
     }
 
     @Override
@@ -72,6 +79,15 @@ public class FormReferenceExpressionProvider implements IExpressionProvider {
     @Override
     public boolean isRelevantFor(final EObject context) {
         return context instanceof FormMapping;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        return new ContextFinder(location).find(FormMapping.class) != null;
     }
 
     @Override

@@ -22,6 +22,8 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ListExpression;
 import org.bonitasoft.studio.model.expression.TableExpression;
@@ -64,5 +66,36 @@ public class ActionExpressionNatureProvider implements IExpressionNatureProvider
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final AbstractCatchMessageEvent catchMessageEvent = new ContextFinder(location).find(AbstractCatchMessageEvent.class);
+        if (catchMessageEvent != null) {
+            final String event = catchMessageEvent.getEvent();
+            TableExpression throwMessageContent = null;
+            Set<Expression> messageContentIds = null;
+            if (event != null) {
+                final Message message = ModelHelper.findEvent(catchMessageEvent, event);
+                if (message != null) {
+                    throwMessageContent = message.getMessageContent();
+                    messageContentIds = new HashSet<Expression>();
+                    for (int i = 0; i < throwMessageContent.getExpressions().size(); i++) {
+                        final ListExpression row = throwMessageContent.getExpressions().get(i);
+                        final Expression id = row.getExpressions().get(0);
+                        if (id != null && id.getName() != null) {
+                            messageContentIds.add(id);
+                        }
+                    }
+                }
+            }
+            if (messageContentIds != null) {
+                return messageContentIds.toArray(new Expression[messageContentIds.size()]);
+            }
+        }
+        return new Expression[0];
+    }
 
 }

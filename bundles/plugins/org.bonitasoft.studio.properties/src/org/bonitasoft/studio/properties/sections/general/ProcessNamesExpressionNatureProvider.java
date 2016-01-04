@@ -22,6 +22,8 @@ import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.diagram.custom.repository.DiagramRepositoryStore;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.process.AbstractProcess;
@@ -52,6 +54,38 @@ public class ProcessNamesExpressionNatureProvider implements IExpressionNaturePr
             }
         }
         for(final String pName : names){
+            final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
+            exp.setName(pName);
+            exp.setContent(pName);
+            exp.setReturnType(String.class.getName());
+            exp.setReturnTypeFixed(true);
+            exp.setType(ExpressionConstants.CONSTANT_TYPE);
+            result.add(exp);
+        }
+        return result.toArray(new Expression[result.size()]);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final List<Expression> result = new ArrayList<Expression>();
+        final DiagramRepositoryStore diagramStore = RepositoryManager.getInstance().getRepositoryStore(DiagramRepositoryStore.class);
+        final List<String> names = new ArrayList<String>();
+        final MainProcess diagram = new ContextFinder(location).find(MainProcess.class);
+        for (final EObject p : ModelHelper.getAllItemsOfType(diagram, ProcessPackage.Literals.POOL)) {
+            if (!names.contains(((Pool) p).getName())) {
+                names.add(((Pool) p).getName());
+            }
+        }
+        for (final AbstractProcess p : diagramStore.getAllProcesses()) {
+            if (!names.contains(p.getName())) {
+                names.add(p.getName());
+            }
+        }
+        for (final String pName : names) {
             final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
             exp.setName(pName);
             exp.setContent(pName);

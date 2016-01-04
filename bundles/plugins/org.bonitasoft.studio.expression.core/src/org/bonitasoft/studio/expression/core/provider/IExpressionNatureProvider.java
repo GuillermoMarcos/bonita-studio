@@ -17,12 +17,14 @@
 package org.bonitasoft.studio.expression.core.provider;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.ecore.EObject;
 
 public interface IExpressionNatureProvider extends ExpressionConstants {
 
+    @Deprecated
     Expression[] getExpressions(EObject context);
 
-
+    Expression[] getExpressions(ModelLocation location);
 }

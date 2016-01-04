@@ -29,6 +29,8 @@ import org.bonitasoft.studio.data.i18n.Messages;
 import org.bonitasoft.studio.diagram.custom.repository.DiagramRepositoryStore;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.form.Form;
@@ -116,6 +118,25 @@ public class DataExpressionProvider implements IExpressionProvider {
         return result;
     }
 
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        return getExpressions(new ContextFinder(location).findExpressionContext());
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        return true;
+    }
+
     private MainProcess mainProcess(final FlowElement parentFlowElement) {
         final MainProcess mainProcess = ModelHelper.getMainProcess(parentFlowElement);
         return mainProcess != null ? mainProcess : mainProcessFromStore(parentFlowElement);
@@ -180,5 +201,6 @@ public class DataExpressionProvider implements IExpressionProvider {
     public IExpressionEditor getExpressionEditor(final Expression expression, final EObject context) {
         return new DataExpressionEditor();
     }
+
 
 }

@@ -18,6 +18,7 @@ package org.bonitasoft.studio.expression.core.provider;
 
 import java.util.Set;
 
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Image;
@@ -27,8 +28,11 @@ import org.eclipse.swt.graphics.Image;
  */
 public interface IExpressionProvider {
 
+    @Deprecated
 	Set<Expression> getExpressions(EObject context) ;
 	
+    Set<Expression> getExpressions(ModelLocation location);
+
 	String getExpressionType() ;
 	
 	Image getIcon(Expression expression) ;
@@ -37,7 +41,10 @@ public interface IExpressionProvider {
 	
 	String getProposalLabel(Expression expression) ;
 
+    @Deprecated
 	boolean isRelevantFor(EObject context);
+
+    boolean isRelevantFor(ModelLocation location);
 
 	String getTypeLabel();
 

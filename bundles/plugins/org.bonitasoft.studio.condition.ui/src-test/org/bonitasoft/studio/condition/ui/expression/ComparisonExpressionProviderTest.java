@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.decision.DecisionFactory;
+import org.eclipse.emf.ecore.EObject;
 import org.junit.Test;
 
 public class ComparisonExpressionProviderTest {
@@ -34,7 +35,7 @@ public class ComparisonExpressionProviderTest {
 
     @Test
     public void should_not_be_relevant_for_anything_else() {
-        assertThat(new ComparisonExpressionProvider().isRelevantFor(null)).isFalse();
+        assertThat(new ComparisonExpressionProvider().isRelevantFor((EObject) null)).isFalse();
         assertThat(new ComparisonExpressionProvider().isRelevantFor(ProcessFactory.eINSTANCE.createConnection())).isFalse();
     }
 }

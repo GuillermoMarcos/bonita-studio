@@ -16,7 +16,6 @@ package org.bonitasoft.studio.expression.core.scope;
 
 import javax.inject.Singleton;
 
-import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.google.common.base.Preconditions;
@@ -28,14 +27,9 @@ import com.google.common.base.Preconditions;
 @Singleton
 public class ExpressionScopeProvider {
 
-    public ExpressionScope get(final Expression expression) {
-        Preconditions.checkArgument(expression != null, "expression argument is null");
-        Preconditions.checkArgument(expression.eContainer() != null, "expression argument container is null");
-        return resolveScope(expression);
-    }
-
-    private ExpressionScope resolveScope(final Expression expression) {
-        return new ExpressionScopeResolver().resolve(expression);
+    public ExpressionScope get(final ModelLocation location) {
+        Preconditions.checkArgument(location != null, "location argument is null");
+        return new ExpressionScopeResolver().resolve(location);
     }
 
 }

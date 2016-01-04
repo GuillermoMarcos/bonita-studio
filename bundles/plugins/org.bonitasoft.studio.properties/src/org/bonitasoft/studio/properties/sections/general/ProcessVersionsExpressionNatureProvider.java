@@ -22,6 +22,8 @@ import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.diagram.custom.repository.DiagramRepositoryStore;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.process.AbstractProcess;
@@ -66,6 +68,52 @@ public class ProcessVersionsExpressionNatureProvider implements IExpressionNatur
             }
         }
         for(final String version : versions){
+            final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
+            exp.setName(version);
+            exp.setContent(version);
+            exp.setReturnType(String.class.getName());
+            exp.setReturnTypeFixed(true);
+            exp.setType(ExpressionConstants.CONSTANT_TYPE);
+            result.add(exp);
+        }
+        return result.toArray(new Expression[result.size()]);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final List<Expression> result = new ArrayList<Expression>();
+        final DiagramRepositoryStore diagramStore = RepositoryManager.getInstance().getRepositoryStore(DiagramRepositoryStore.class);
+        final List<String> versions = new ArrayList<String>();
+        final MainProcess diagram = new ContextFinder(location).find(MainProcess.class);
+        final CallActivity callActivity = new ContextFinder(location).find(CallActivity.class);
+        if (callActivity != null) {
+            final Expression exp = callActivity.getCalledActivityName();
+            if (exp != null
+                    && ExpressionConstants.CONSTANT_TYPE.equals(exp.getType())
+                    && exp.getContent() != null
+                    && !exp.getContent().isEmpty()) {
+                final String processName = exp.getContent();
+                for (final EObject p : ModelHelper.getAllItemsOfType(diagram, ProcessPackage.Literals.POOL)) {
+                    if (processName.equals(((Pool) p).getName())) {
+                        if (!versions.contains(((Pool) p).getVersion())) {
+                            versions.add(((Pool) p).getVersion());
+                        }
+                    }
+                }
+                for (final AbstractProcess p : diagramStore.getAllProcesses()) {
+                    if (processName.equals(((Pool) p).getName())) {
+                        if (!versions.contains(((Pool) p).getVersion())) {
+                            versions.add(((Pool) p).getVersion());
+                        }
+                    }
+                }
+            }
+        }
+        for (final String version : versions) {
             final Expression exp = ExpressionFactory.eINSTANCE.createExpression();
             exp.setName(version);
             exp.setContent(version);

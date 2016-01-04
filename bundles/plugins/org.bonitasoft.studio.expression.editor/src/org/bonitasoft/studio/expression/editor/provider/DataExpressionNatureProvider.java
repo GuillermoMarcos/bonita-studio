@@ -23,6 +23,7 @@ import java.util.Set;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.process.Data;
@@ -66,7 +67,30 @@ public class DataExpressionNatureProvider implements IExpressionNatureProvider {
         return result.toArray(new Expression[result.size()]);
     }
 
-
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Expression[] getExpressions(ModelLocation location) {
+        final Set<Expression> result = new HashSet<Expression>();
+        ModelLocation currentLocation = location;
+        while (currentLocation.getModelElement() != null) {
+            final EObject modelElement = currentLocation.getModelElement();
+            if (modelElement.eClass().getEAllStructuralFeatures().contains(dataFeature)) {
+                final List<?> data = (List<?>) modelElement.eGet(dataFeature);
+                for (final Object d : data) {
+                    if (d instanceof Data) {
+                        result.add(createExpression((Data) d));
+                    }
+                }
+                currentLocation = null;
+            } else {
+                currentLocation = currentLocation.getParent();
+            }
+        }
+        return result.toArray(new Expression[result.size()]);
+    }
 
     private Expression createExpression(final Data d) {
         final Expression exp = ExpressionFactory.eINSTANCE.createExpression() ;

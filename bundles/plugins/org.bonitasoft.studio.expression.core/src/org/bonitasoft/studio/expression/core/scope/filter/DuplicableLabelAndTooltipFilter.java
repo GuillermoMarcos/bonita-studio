@@ -22,8 +22,11 @@ import java.util.Objects;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.form.FormPackage;
+import org.bonitasoft.studio.model.form.Widget;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 public class DuplicableLabelAndTooltipFilter implements ExpressionScopeFilter {
@@ -33,8 +36,8 @@ public class DuplicableLabelAndTooltipFilter implements ExpressionScopeFilter {
      * @see org.bonitasoft.studio.expression.core.scope.ExpressionScopeResolver#isRelevant(org.eclipse.emf.ecore.EStructuralFeature)
      */
     @Override
-    public boolean isRelevant(final Expression expression) {
-        final EStructuralFeature containingFeature = expression.eContainingFeature();
+    public boolean isRelevant(final ModelLocation location) {
+        final EStructuralFeature containingFeature = location.getContainingFeature();
         return Objects.equals(FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_ADD, containingFeature) ||
                 Objects.equals(FormPackage.Literals.DUPLICABLE__TOOLTIP_FOR_REMOVE, containingFeature) ||
                 Objects.equals(FormPackage.Literals.DUPLICABLE__DISPLAY_LABEL_FOR_REMOVE, containingFeature) ||
@@ -47,16 +50,17 @@ public class DuplicableLabelAndTooltipFilter implements ExpressionScopeFilter {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean apply(final Expression expression, final Expression expressionToTest) {
-        if (ModelHelper.isInEntryPageFlowOnAPool(ModelHelper.getParentWidget(expression))) {
-            return withExpressionType(ExpressionConstants.CONSTANT_TYPE).apply(expressionToTest);
+    public boolean apply(final ModelLocation location, final Expression expression) {
+        final Widget parentWidget = new ContextFinder(location).find(Widget.class);
+        if (ModelHelper.isInEntryPageFlowOnAPool(parentWidget)) {
+            return withExpressionType(ExpressionConstants.CONSTANT_TYPE).apply(expression);
         }
         return or(
                 withVariableType(),
                 withExpressionType(ExpressionConstants.CONSTANT_TYPE),
                 withExpressionType(ExpressionConstants.SCRIPT_TYPE),
                 withExpressionType(ExpressionConstants.PARAMETER_TYPE),
-                withExpressionType(ExpressionConstants.SEARCH_INDEX_TYPE)).apply(expressionToTest);
+                withExpressionType(ExpressionConstants.SEARCH_INDEX_TYPE)).apply(expression);
     }
 
 }

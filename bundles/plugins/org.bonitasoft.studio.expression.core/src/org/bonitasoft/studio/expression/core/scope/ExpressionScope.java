@@ -15,11 +15,12 @@
 package org.bonitasoft.studio.expression.core.scope;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.bonitasoft.studio.common.predicate.ExpressionPredicates.withExpressionType;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.bonitasoft.studio.common.predicate.ExpressionPredicates;
+import org.bonitasoft.studio.expression.core.provider.ProvidedExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.ecore.EObject;
 
@@ -28,15 +29,11 @@ import com.google.common.collect.Iterables;
 public class ExpressionScope {
 
     private final List<Expression> expressions;
-    private final Expression expression;
-    private final List<Expression> providedExpressions;
-    private final EObject context;
+    private final ModelLocation location;
 
-    public ExpressionScope(final EObject context, final Expression expression, final List<Expression> expressions, final List<Expression> providedExpressions) {
-        this.expression = expression;
+    public ExpressionScope(final ModelLocation location, final List<Expression> expressions) {
         this.expressions = expressions;
-        this.providedExpressions = providedExpressions;
-        this.context = context;
+        this.location = location;
     }
 
     public List<Expression> getExpressions() {
@@ -44,19 +41,19 @@ public class ExpressionScope {
     }
 
     public List<Expression> getProvidedExpressions() {
-        return Collections.unmodifiableList(providedExpressions);
+        return Collections.unmodifiableList(new ProvidedExpressionProvider().getExpressions(location));
     }
 
-    public Expression getExpression() {
-        return expression;
+    public ModelLocation getModelLocation() {
+        return location;
     }
 
     public List<Expression> getExpressionsWithType(final String expressionType) {
-        return newArrayList(Iterables.filter(getExpressions(), ExpressionPredicates.withExpressionType(expressionType)));
+        return newArrayList(Iterables.filter(getExpressions(), withExpressionType(expressionType)));
     }
 
     public EObject getContext() {
-        return context;
+        return new ContextFinder(location).findExpressionContext();
     }
 
 }

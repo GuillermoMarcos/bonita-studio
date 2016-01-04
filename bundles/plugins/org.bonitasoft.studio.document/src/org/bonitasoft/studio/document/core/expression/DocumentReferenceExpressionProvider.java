@@ -23,6 +23,8 @@ import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.form.Form;
 import org.bonitasoft.studio.model.process.Document;
@@ -57,6 +59,29 @@ public class DocumentReferenceExpressionProvider implements IExpressionProvider 
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final Set<Expression> result = new HashSet<Expression>();
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final Form form = contextFinder.find(Form.class);
+        if (form != null && ModelHelper.isAnEntryPageFlowOnAPool(form)) {
+            return result;
+        } else {
+            final Pool process = contextFinder.find(Pool.class);
+            if (process != null) {
+                for (final Document d : process.getDocuments()) {
+                    result.add(ExpressionHelper.createDocumentReferenceExpression(d));
+                }
+            }
+        }
+        return result;
+    }
+
+
     @Override
     public String getExpressionType() {
         return ExpressionConstants.DOCUMENT_REF_TYPE;
@@ -90,6 +115,15 @@ public class DocumentReferenceExpressionProvider implements IExpressionProvider 
     @Override
     public IExpressionEditor getExpressionEditor(final Expression expression, final EObject context) {
         return new DocumentExpressionEditor();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        return !getExpressions(location).isEmpty();
     }
 
 }

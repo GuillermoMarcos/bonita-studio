@@ -296,7 +296,7 @@ public class GroovyViewer implements IDocumentListener {
         }
         final IExpressionProvider daoExpressionProvider = ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.DAO_TYPE);
         if (daoExpressionProvider != null) {
-            final List<Expression> expressions = newArrayList(daoExpressionProvider.getExpressions(null));
+            final List<Expression> expressions = newArrayList(daoExpressionProvider.getExpressions(scope.getModelLocation()));
             Collections.sort(expressions, new ExpressionComparator());
             for (final Expression e : expressions) {
                 final ScriptVariable scriptVariable = new ScriptVariable(e.getName(), e.getReturnType());

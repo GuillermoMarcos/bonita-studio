@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bonitasoft.studio.model.process.ProcessPackage;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 public class PageFlowContextResolver {
@@ -32,12 +31,26 @@ public class PageFlowContextResolver {
         OVERVIEW_CONTEXT_FEATURES.add(ProcessPackage.Literals.RECAP_FLOW__RECAP_PAGE_FLOW_REDIRECTION_URL);
     }
 
-    public boolean isPageFlowContext(final EObject context) {
-        return PAGE_FLOW_CONTEXT_FEATURES.contains(context.eContainingFeature());
+    public boolean isPageFlowContext(final ModelLocation location) {
+        ModelLocation currentLocation = location;
+        while (currentLocation != null) {
+            if (PAGE_FLOW_CONTEXT_FEATURES.contains(currentLocation.getContainingFeature())) {
+                return true;
+            }
+            currentLocation = currentLocation.getParent();
+        }
+        return false;
     }
 
-    public boolean isOverviewContext(final EObject context) {
-        return OVERVIEW_CONTEXT_FEATURES.contains(context.eContainingFeature());
+    public boolean isOverviewContext(final ModelLocation location) {
+        ModelLocation currentLocation = location;
+        while (currentLocation != null) {
+            if (OVERVIEW_CONTEXT_FEATURES.contains(currentLocation.getContainingFeature())) {
+                return true;
+            }
+            currentLocation = currentLocation.getParent();
+        }
+        return false;
     }
 
 }

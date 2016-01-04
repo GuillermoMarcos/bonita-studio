@@ -26,6 +26,8 @@ import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.form.Form;
@@ -150,6 +152,96 @@ public class FormFieldExpressionProvider implements IExpressionProvider {
                 }
             }
         }
+        return result;
+    }
+
+    @Override
+    public Set<Expression> getExpressions(final ModelLocation location) {
+        final Set<Expression> result = new HashSet<Expression>();
+        final ContextFinder contextFinder = new ContextFinder(location);
+        if (contextFinder.find(Widget.class) != null) {
+            final Widget widget = contextFinder.find(Widget.class);
+            result.add(ExpressionHelper.createWidgetExpression(widget));
+            for (final WidgetDependency dep : widget.getDependOn()) {
+                if (dep.getWidget() != null) {
+                    result.add(ExpressionHelper.createWidgetExpression(dep.getWidget()));
+                }
+            }
+            // for the Submit button only, add fields of other widgets
+            if (widget instanceof SubmitFormButton) {
+                if (widget.eContainer() != null &&
+                        (widget.eContainer() instanceof Form || widget.eContainer() instanceof Group)) {
+                    final Form f = ModelHelper.getParentForm(widget);
+                    for (final Widget w : ModelHelper.getAllAccessibleWidgetInsideForm(f)) {
+                        if (w instanceof FormField || w instanceof Group) {
+                            result.add(ExpressionHelper.createWidgetExpression(w));
+                        }
+                    }
+                }
+            }
+
+            //Add all widgets from the pageflow not in the same form
+            final AbstractPageFlow pageFlow = ModelHelper.getPageFlow(widget);
+            if (pageFlow != null) {
+                final List<? extends Form> forms = getForms(pageFlow, ModelHelper.getForm(widget));
+                final Form parentForm = ModelHelper.getParentForm(widget);
+                for (final Form f : forms) {
+                    if (!f.equals(parentForm)) {
+                        for (final Widget w : ModelHelper.getAllAccessibleWidgetInsideForm(f)) {
+                            if (w instanceof FormField || w instanceof NextFormButton || w instanceof Group) {
+                                result.add(ExpressionHelper.createWidgetExpression(w));
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (contextFinder.find(Form.class) != null && contextFinder.find(Form.class).eContainer() != null) {
+            final Form form = contextFinder.find(Form.class);
+            if (form.eContainer() instanceof AbstractPageFlow) {
+                // get all fields from pageflow
+                final AbstractPageFlow pageFlow = (AbstractPageFlow) form.eContainer();
+                if (pageFlow != null) {
+                    final List<? extends Form> forms = getForms(pageFlow, form);
+                    for (final Form f : forms) {
+                        for (final Widget w : ModelHelper.getAllAccessibleWidgetInsideForm(f)) {
+                            if (w instanceof FormField || w instanceof FormButton || w instanceof Group) {
+                                result.add(ExpressionHelper.createWidgetExpression(w));
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (contextFinder.find(AbstractPageFlow.class) != null) {
+            // get all fields from pageflow
+            if (contextFinder.find(PageFlow.class) != null) {
+                final PageFlow pageFlow = contextFinder.find(PageFlow.class);
+                for (final Form f : pageFlow.getForm()) {
+                        for (final Widget w : ModelHelper.getAllAccessibleWidgetInsideForm(f)) {
+                            if (w instanceof FormField || w instanceof NextFormButton || w instanceof Group) {
+                                result.add(ExpressionHelper.createWidgetExpression(w));
+                            }
+                        }
+                    }
+                if (pageFlow instanceof ViewPageFlow) {
+                    for (final Form f : ((ViewPageFlow) pageFlow).getViewForm()) {
+                            for (final Widget w : ModelHelper.getAllAccessibleWidgetInsideForm(f)) {
+                                if (w instanceof FormField || w instanceof NextFormButton || w instanceof Group) {
+                                    result.add(ExpressionHelper.createWidgetExpression(w));
+                                }
+                            }
+                        }
+                    }
+                if (pageFlow instanceof RecapFlow) {
+                    for (final Form f : ((RecapFlow) pageFlow).getRecapForms()) {
+                            for (final Widget w : ModelHelper.getAllAccessibleWidgetInsideForm(f)) {
+                                if (w instanceof FormField || w instanceof NextFormButton || w instanceof Group) {
+                                    result.add(ExpressionHelper.createWidgetExpression(w));
+                                }
+                            }
+                        }
+                    }
+                }
+        }
 
 
         return result;
@@ -197,6 +289,15 @@ public class FormFieldExpressionProvider implements IExpressionProvider {
     @Override
     public boolean isRelevantFor(final EObject context) {
         return context instanceof EObject;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        return location.getModelElement() != null;
     }
 
     @Override

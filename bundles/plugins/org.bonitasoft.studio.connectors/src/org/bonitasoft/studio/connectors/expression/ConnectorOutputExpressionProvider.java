@@ -29,6 +29,8 @@ import org.bonitasoft.studio.connectors.i18n.Messages;
 import org.bonitasoft.studio.connectors.repository.ConnectorDefRepositoryStore;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.Connector;
 import org.bonitasoft.studio.pics.Pics;
@@ -41,10 +43,6 @@ import org.eclipse.swt.graphics.Image;
  */
 public class ConnectorOutputExpressionProvider implements IExpressionProvider {
 
-
-    public ConnectorOutputExpressionProvider(){
-
-    }
 
     @Override
     public Set<Expression> getExpressions(final EObject context) {
@@ -66,6 +64,43 @@ public class ConnectorOutputExpressionProvider implements IExpressionProvider {
             }
         }
         return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final Set<Expression> result = new HashSet<Expression>();
+        final ConnectorDefRepositoryStore store = RepositoryManager.getInstance().getRepositoryStore(ConnectorDefRepositoryStore.class);
+        ConnectorDefinition definition = null;
+        final EObject context = new ContextFinder(location).findExpressionContext();
+        if (context instanceof ConnectorDefinition) {
+            definition = (ConnectorDefinition) context;
+        } else if (context instanceof Connector) {
+            final String defId = ((Connector) context).getDefinitionId();
+            final String defVersion = ((Connector) context).getDefinitionVersion();
+            definition = store.getDefinition(defId, defVersion);
+        } else {
+            definition = (ConnectorDefinition) getConnectorDefinition(context, store);
+        }
+        if (definition != null) {
+            for (final Output output : definition.getOutput()) {
+                result.add(ExpressionHelper.createConnectorOutputExpression(output));
+            }
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        final EObject context = new ContextFinder(location).findExpressionContext();
+        return context instanceof EObject && !getExpressions(context).isEmpty();
     }
 
     private EObject getConnectorDefinition(final EObject context, final ConnectorDefRepositoryStore store) {
@@ -121,7 +156,5 @@ public class ConnectorOutputExpressionProvider implements IExpressionProvider {
     public IExpressionEditor getExpressionEditor(final Expression expression,final EObject context) {
         return new ConnectorOutputExpressionEditor();
     }
-
-
 
 }

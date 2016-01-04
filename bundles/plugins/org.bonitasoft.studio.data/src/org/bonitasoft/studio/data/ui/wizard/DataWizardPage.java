@@ -41,7 +41,6 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
-import org.bonitasoft.studio.common.emf.tools.WorkingCopyFactory;
 import org.bonitasoft.studio.common.extension.BonitaStudioExtensionRegistryManager;
 import org.bonitasoft.studio.common.extension.IWidgetContribtution;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
@@ -73,6 +72,7 @@ import org.bonitasoft.studio.model.process.JavaObjectData;
 import org.bonitasoft.studio.model.process.JavaType;
 import org.bonitasoft.studio.model.process.MultiInstantiable;
 import org.bonitasoft.studio.model.process.Pool;
+import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.bonitasoft.studio.model.process.Task;
 import org.bonitasoft.studio.model.process.XMLData;
@@ -255,20 +255,19 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
         public void handleValueChange(final ValueChangeEvent event) {
             final DataType newType = (DataType) event.diff.getNewValue();
             if (newType instanceof JavaType && !(data instanceof JavaObjectData)) {
-                final JavaObjectData javaData = WorkingCopyFactory.newWorkingCopy(ProcessPackage.Literals.JAVA_OBJECT_DATA, data.eContainer(),
-                        data.eContainingFeature());
+                final JavaObjectData javaData = ProcessFactory.eINSTANCE.createJavaObjectData();
                 javaData.setDataType(newType);
                 javaData.setClassName(List.class.getName());
                 copyDataFeature(javaData);
                 data = javaData;
                 updateDatabinding();
             } else if (newType instanceof XMLType && !(data instanceof XMLData)) {
-                final XMLData xmlData = WorkingCopyFactory.newWorkingCopy(ProcessPackage.Literals.XML_DATA, data.eContainer(), data.eContainingFeature());
+                final XMLData xmlData = ProcessFactory.eINSTANCE.createXMLData();
                 xmlData.setDataType(newType);
                 copyDataFeature(xmlData);
                 data = xmlData;
             } else {
-                final Data simpleData = WorkingCopyFactory.newWorkingCopy(ProcessPackage.Literals.DATA, data.eContainer(), data.eContainingFeature());
+                final Data simpleData = ProcessFactory.eINSTANCE.createData();
                 simpleData.setDataType(newType);
                 copyDataFeature(simpleData);
                 data = simpleData;

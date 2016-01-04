@@ -25,12 +25,16 @@ import org.bonitasoft.studio.contract.i18n.Messages;
 import org.bonitasoft.studio.contract.ui.expression.ContractInputExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
+import org.bonitasoft.studio.model.form.Form;
 import org.bonitasoft.studio.model.process.Contract;
 import org.bonitasoft.studio.model.process.ContractContainer;
 import org.bonitasoft.studio.model.process.ContractInput;
 import org.bonitasoft.studio.model.process.Data;
 import org.bonitasoft.studio.model.process.FlowElement;
+import org.bonitasoft.studio.model.process.Pool;
 import org.bonitasoft.studio.pics.Pics;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
@@ -70,6 +74,43 @@ public class ContractInputExpressionProvider implements IExpressionProvider {
             result.add(ExpressionHelper.createContractInputExpression(input));
         }
         return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#getExpressions(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public Set<Expression> getExpressions(ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final ContractContainer contractContainer = contextFinder.find(ContractContainer.class);
+        Assert.isLegal(contractContainer != null);
+
+        final Contract contract = contractContainer.getContract();
+        Assert.isLegal(contract != null);
+
+        final Set<Expression> result = new HashSet<Expression>();
+        for (final ContractInput input : contract.getInputs()) {
+            result.add(ExpressionHelper.createContractInputExpression(input));
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.provider.IExpressionProvider#isRelevantFor(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public boolean isRelevantFor(ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final FlowElement parentFlowElement = contextFinder.find(FlowElement.class);
+        final Form parentForm = contextFinder.find(Form.class);
+
+        if (parentFlowElement != null) {//check if on an Activity
+            return parentFlowElement instanceof ContractContainer && parentForm == null;
+        } else {// we are at Pool Level
+            return contextFinder.find(Data.class) != null || contextFinder.find(Pool.class) != null && parentForm == null;
+        }
     }
 
     /*
