@@ -17,11 +17,11 @@
 package org.bonitasoft.studio.connector.model.definition.wizard;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.connector.model.definition.ConnectorDefinition;
 import org.bonitasoft.studio.connector.model.definition.Input;
 import org.bonitasoft.studio.connector.model.definition.Page;
 import org.bonitasoft.studio.connector.model.i18n.DefinitionResourceProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.model.connectorconfiguration.ConnectorConfiguration;
 import org.bonitasoft.studio.model.connectorconfiguration.ConnectorConfigurationFactory;
@@ -30,7 +30,6 @@ import org.bonitasoft.studio.model.expression.AbstractExpression;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -43,17 +42,16 @@ import org.eclipse.swt.widgets.Control;
  * @author Romain Bioteau
  *
  */
-public abstract class AbstractConnectorConfigurationWizardPage extends WizardPage implements IBonitaVariableContext {
+public abstract class AbstractConnectorConfigurationWizardPage extends WizardPage {
 
     private ConnectorConfiguration configuration;
     private Page page;
-    private EObject elementContainer;
+    private ModelLocation location;
     private ConnectorDefinition definition;
     private final EMFDataBindingContext context;
     private WizardPageSupport supportPage;
     private DefinitionResourceProvider messageProvider;
     private AvailableExpressionTypeFilter connectorExpressionContentTypeFilter ;
-    private boolean isPageFlowContext = false;
 
     public AbstractConnectorConfigurationWizardPage(){
         this(AbstractConnectorConfigurationWizardPage.class.getName()) ;
@@ -109,13 +107,12 @@ public abstract class AbstractConnectorConfigurationWizardPage extends WizardPag
         }
     }
 
-
-    public EObject getElementContainer() {
-        return elementContainer;
+    public ModelLocation getModelLocation() {
+        return location;
     }
 
-    public void setElementContainer(final EObject elementContainer) {
-        this.elementContainer = elementContainer;
+    public void setModelLocation(final ModelLocation location) {
+        this.location = location;
     }
 
     public ConnectorDefinition getDefinition() {
@@ -189,31 +186,4 @@ public abstract class AbstractConnectorConfigurationWizardPage extends WizardPag
 		this.connectorExpressionContentTypeFilter = connectorExpressionContentTypeFilter;
 	}
 
-	@Override
-	public boolean isPageFlowContext() {
-
-		return isPageFlowContext;
-	}
-
-	@Override
-	public void setIsPageFlowContext(final boolean isPageFlowContext) {
-		this.isPageFlowContext = isPageFlowContext;
-	}
-
-
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-	 */
-	@Override
-	public boolean isOverViewContext() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-	 */
-	@Override
-	public void setIsOverviewContext(final boolean isOverviewContext) {
-	}
 }

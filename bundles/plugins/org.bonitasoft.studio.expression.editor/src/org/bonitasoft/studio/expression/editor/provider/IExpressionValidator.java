@@ -16,9 +16,9 @@
  */
 package org.bonitasoft.studio.expression.editor.provider;
 
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.core.databinding.validation.IValidator;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 /**
@@ -31,7 +31,7 @@ public interface IExpressionValidator extends IValidator {
 
 	public void setDomain(EditingDomain domain);
 
-	public void setContext(EObject context);
-
     public boolean isRelevantForExpressionType(String type);
+
+    public void setModelLocation(ModelLocation modelLocation);
 }

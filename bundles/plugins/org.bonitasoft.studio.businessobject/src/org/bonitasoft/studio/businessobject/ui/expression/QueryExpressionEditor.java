@@ -431,24 +431,4 @@ public class QueryExpressionEditor extends SelectionAwareExpressionEditor implem
         return null;
     }
 
-    @Override
-    public boolean isPageFlowContext() {
-        return false;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-
-    }
-
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-
-    }
-
 }

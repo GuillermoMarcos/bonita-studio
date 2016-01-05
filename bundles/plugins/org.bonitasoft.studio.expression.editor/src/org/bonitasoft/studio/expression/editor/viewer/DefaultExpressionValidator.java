@@ -16,9 +16,9 @@
  */
 package org.bonitasoft.studio.expression.editor.viewer;
 
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.model.expression.Expression;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 
@@ -44,11 +44,8 @@ public abstract class DefaultExpressionValidator implements IExpressionValidator
         //Intended to be implement in children
     }
 
-    /* (non-Javadoc)
-     * @see org.bonitasoft.studio.expression.editor.provider.IExpressionValidator#setContext(org.eclipse.emf.ecore.EObject)
-     */
     @Override
-    public void setContext(final EObject context) {
+    public void setModelLocation(final ModelLocation location) {
         //Intended to be implement in children
     }
 

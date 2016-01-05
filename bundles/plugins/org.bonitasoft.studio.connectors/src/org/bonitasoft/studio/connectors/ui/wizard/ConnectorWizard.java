@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.bonitasoft.engine.bpm.connector.ConnectorEvent;
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.ModelVersion;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
@@ -63,6 +62,9 @@ import org.bonitasoft.studio.connectors.ui.wizard.page.DatabaseConnectorOutputWi
 import org.bonitasoft.studio.connectors.ui.wizard.page.SelectAdvancedConnectorDefinitionWizardPage;
 import org.bonitasoft.studio.connectors.ui.wizard.page.SelectDatabaseOutputTypeWizardPage;
 import org.bonitasoft.studio.connectors.ui.wizard.page.SelectEventConnectorNameAndDescWizardPage;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.model.connectorconfiguration.ConnectorConfiguration;
 import org.bonitasoft.studio.model.connectorconfiguration.ConnectorConfigurationFactory;
@@ -75,9 +77,8 @@ import org.bonitasoft.studio.model.expression.Operation;
 import org.bonitasoft.studio.model.expression.TableExpression;
 import org.bonitasoft.studio.model.form.Form;
 import org.bonitasoft.studio.model.form.SubmitFormButton;
-import org.bonitasoft.studio.model.process.AbstractProcess;
+import org.bonitasoft.studio.model.process.ConnectableElement;
 import org.bonitasoft.studio.model.process.Connector;
-import org.bonitasoft.studio.model.process.Element;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.pics.Pics;
 import org.bonitasoft.studio.preferences.BonitaPreferenceConstants;
@@ -104,7 +105,7 @@ import com.google.common.base.Preconditions;
  * @author Romain Bioteau
  */
 public class ConnectorWizard extends ExtensibleWizard implements
-		IConnectorDefinitionContainer, IBonitaVariableContext {
+        IConnectorDefinitionContainer {
 
 	private static final String CUSTOM_WIZARD_ID = "org.bonitasoft.studio.connectors.connectorWizard";
 
@@ -112,7 +113,9 @@ public class ConnectorWizard extends ExtensibleWizard implements
 
 	private static final String DATASOURCE_CONNECTOR_D = "database-datasource";
 
-	protected final EObject container;
+    //	protected final EObject container;
+
+    protected ModelLocation location;
 
 	protected Connector connectorWorkingCopy;
 
@@ -132,8 +135,6 @@ public class ConnectorWizard extends ExtensibleWizard implements
 
 	protected CustomWizardExtension extension;
 
-	private boolean isPageFlowContext = false;
-
 	private List<CustomWizardExtension> contributions;
 
 	private boolean useEvents = true;
@@ -149,15 +150,17 @@ public class ConnectorWizard extends ExtensibleWizard implements
 
 	protected List<ConnectorDefinition> definitions;
 
+
 	public ConnectorWizard(final EObject container,
 			final EStructuralFeature connectorContainmentFeature,
 			final Set<EStructuralFeature> featureToCheckForUniqueID) {
-		this.container = container;
+        //		this.container = container;
 		connectorWorkingCopy = ProcessFactory.eINSTANCE.createConnector();
 		final ConnectorConfiguration configuration = ConnectorConfigurationFactory.eINSTANCE
 				.createConnectorConfiguration();
 		configuration.setModelVersion(ModelVersion.CURRENT_VERSION);
 		connectorWorkingCopy.setConfiguration(configuration);
+        location = new ModelLocationFactory().newLocation(container, connectorWorkingCopy, connectorContainmentFeature);
 		editMode = false;
 		this.connectorContainmentFeature = connectorContainmentFeature;
 		this.featureToCheckForUniqueID = new HashSet<EStructuralFeature>();
@@ -171,27 +174,22 @@ public class ConnectorWizard extends ExtensibleWizard implements
 			final EStructuralFeature connectorContainmentFeature,
 			final Set<EStructuralFeature> featureToCheckForUniqueID) {
 		Assert.isNotNull(connector);
-		container = connector.eContainer();
+        //		container = connector.eContainer();
 		originalConnector = connector;
 		this.connectorContainmentFeature = connectorContainmentFeature;
 		connectorWorkingCopy = EcoreUtil.copy(connector);
+        location = new ModelLocationFactory().newLocation(connector);
 		editMode = true;
 		this.featureToCheckForUniqueID = featureToCheckForUniqueID;
 		setNeedsProgressMonitor(false);
 	}
 
-	/**
-	 * @param eObject
-	 * @param connectorFeature
-	 * @param connectorFeatureToCheckUniqueID
-	 * @param connectorEvent
-	 */
-	public ConnectorWizard(final EObject eObject,
+
+    public ConnectorWizard(final EObject container,
 			final EStructuralFeature connectorFeature,
 			final Set<EStructuralFeature> connectorFeatureToCheckUniqueID,
 			final String connectorEvent) {
-
-		this(eObject, connectorFeature, connectorFeatureToCheckUniqueID);
+        this(container, connectorFeature, connectorFeatureToCheckUniqueID);
 		Preconditions.checkArgument(connectorEvent
 				.equals(ConnectorEvent.ON_FINISH.name())
 				|| connectorEvent.equals(ConnectorEvent.ON_ENTER.name()));
@@ -207,7 +205,7 @@ public class ConnectorWizard extends ExtensibleWizard implements
 		setNeedsProgressMonitor(true);
 		messageProvider = initMessageProvider();
 
-		initializeContainment();
+        //		initializeContainment();
 
 		contributions = new ArrayList<CustomWizardExtension>();
 		for (final IConfigurationElement element : BonitaStudioExtensionRegistryManager
@@ -228,32 +226,32 @@ public class ConnectorWizard extends ExtensibleWizard implements
 					+ ")");
 		}
 	}
-
-	protected void initializeContainment() {
-		if (container instanceof Element) {
-			final AbstractProcess process = ModelHelper
-					.getParentProcess(container);
-			final EObject processCopy = EcoreUtil.copy(process);
-			EObject containerCopy = null;
-			for (final EObject element : ModelHelper.getAllItemsOfType(
-					processCopy, container.eClass())) {
-				if (element instanceof Element && container instanceof Element) {
-					final String containerName = ((Element) container)
-							.getName();
-					if (((Element) element).getName().equals(containerName)) {
-						containerCopy = element;
-						break;
-					}
-				}
-			}
-
-			@SuppressWarnings("unchecked")
-			final List<EObject> connectors = (List<EObject>) containerCopy
-					.eGet(connectorContainmentFeature);
-			connectors.clear();
-			connectors.add(connectorWorkingCopy);
-		}
-	}
+    //
+    //	protected void initializeContainment() {
+    //		if (container instanceof Element) {
+    //			final AbstractProcess process = ModelHelper
+    //					.getParentProcess(container);
+    //			final EObject processCopy = EcoreUtil.copy(process);
+    //			EObject containerCopy = null;
+    //			for (final EObject element : ModelHelper.getAllItemsOfType(
+    //					processCopy, container.eClass())) {
+    //				if (element instanceof Element && container instanceof Element) {
+    //					final String containerName = ((Element) container)
+    //							.getName();
+    //					if (((Element) element).getName().equals(containerName)) {
+    //						containerCopy = element;
+    //						break;
+    //					}
+    //				}
+    //			}
+    //
+    //			@SuppressWarnings("unchecked")
+    //			final List<EObject> connectors = (List<EObject>) containerCopy
+    //					.eGet(connectorContainmentFeature);
+    //			connectors.clear();
+    //			connectors.add(connectorWorkingCopy);
+    //		}
+    //	}
 
 	protected DefinitionResourceProvider initMessageProvider() {
 		final IRepositoryStore<? extends IRepositoryFileStore> store = RepositoryManager
@@ -366,11 +364,11 @@ public class ConnectorWizard extends ExtensibleWizard implements
 
 	protected IWizardPage getNameAndDescriptionPage() {
 		if (useEvents) {
-			namePage = new SelectEventConnectorNameAndDescWizardPage(container,
+            namePage = new SelectEventConnectorNameAndDescWizardPage(location,
 					connectorWorkingCopy, originalConnector,
 					featureToCheckForUniqueID);
 		} else {
-			namePage = new SelectNameAndDescWizardPage(container,
+            namePage = new SelectNameAndDescWizardPage(location,
 					connectorWorkingCopy, originalConnector,
 					featureToCheckForUniqueID);
 		}
@@ -416,7 +414,7 @@ public class ConnectorWizard extends ExtensibleWizard implements
 				}
 
 			}
-			outputPage.setElementContainer(container);
+            outputPage.setModelLocation(location);
 			outputPage.setConnector(connectorWorkingCopy);
 			outputPage.setDefinition(definition);
 		}
@@ -630,7 +628,6 @@ public class ConnectorWizard extends ExtensibleWizard implements
 			final List<AbstractConnectorConfigurationWizardPage> advancedPages = extension
 					.getPages();
 			for (final AbstractConnectorConfigurationWizardPage p : advancedPages) {
-				p.setIsPageFlowContext(isPageFlowContext);
 				p.setMessageProvider(messageProvider);
 				p.setConfiguration(connectorWorkingCopy.getConfiguration());
 				p.setDefinition(definition);
@@ -638,7 +635,7 @@ public class ConnectorWizard extends ExtensibleWizard implements
 				if (definition.getPage().size() > i) {
 					p.setPage(definition.getPage().get(i));
 				}
-				p.setElementContainer(container);
+                p.setModelLocation(location);
 				p.setExpressionTypeFilter(getExpressionTypeFilter());
 				result.add(p);
 			}
@@ -711,12 +708,11 @@ public class ConnectorWizard extends ExtensibleWizard implements
 			final ConnectorDefinition definition) {
 		final SelectDatabaseOutputTypeWizardPage selectOutputPage = new SelectDatabaseOutputTypeWizardPage(
 				isEditMode());
-		selectOutputPage.setIsPageFlowContext(isPageFlowContext);
 		selectOutputPage.setMessageProvider(messageProvider);
 		selectOutputPage.setConfiguration(connectorWorkingCopy
 				.getConfiguration());
 		selectOutputPage.setDefinition(definition);
-		selectOutputPage.setElementContainer(container);
+        selectOutputPage.setModelLocation(location);
 		selectOutputPage.setExpressionTypeFilter(getExpressionTypeFilter());
 		return selectOutputPage;
 	}
@@ -724,17 +720,17 @@ public class ConnectorWizard extends ExtensibleWizard implements
 	protected IWizardPage createDefaultConnectorPage(
 			final ConnectorDefinition def, final Page page) {
 		final AbstractConnectorConfigurationWizardPage wizPage = new GeneratedConnectorWizardPage();
-		wizPage.setIsPageFlowContext(isPageFlowContext);
 		wizPage.setMessageProvider(messageProvider);
 		wizPage.setConfiguration(connectorWorkingCopy.getConfiguration());
 		wizPage.setDefinition(def);
-		wizPage.setElementContainer(container);
+        wizPage.setModelLocation(location);
 		wizPage.setPage(page);
 		wizPage.setExpressionTypeFilter(getExpressionTypeFilter());
 		return wizPage;
 	}
 
 	protected AvailableExpressionTypeFilter getExpressionTypeFilter() {
+        final ConnectableElement container = new ContextFinder(location).find(ConnectableElement.class);
 		if (container instanceof Form || container instanceof SubmitFormButton) {
 			return formExpressionTypeFilter;
 		}
@@ -748,6 +744,7 @@ public class ConnectorWizard extends ExtensibleWizard implements
 	 */
 	@Override
 	public boolean performFinish() {
+        final ConnectableElement container = new ContextFinder(location).find(ConnectableElement.class);
 		final EditingDomain editingDomain = AdapterFactoryEditingDomain
 				.getEditingDomainFor(container);
 		if (editMode) {
@@ -762,6 +759,7 @@ public class ConnectorWizard extends ExtensibleWizard implements
 
 	protected CompoundCommand createPerformFinishCommandOnCreation(
 			final EditingDomain editingDomain) {
+        final ConnectableElement container = new ContextFinder(location).find(ConnectableElement.class);
 		final CompoundCommand cc = new CompoundCommand("Add Connector");
 		cc.append(AddCommand.create(editingDomain, container,
 				connectorContainmentFeature, connectorWorkingCopy));
@@ -770,6 +768,7 @@ public class ConnectorWizard extends ExtensibleWizard implements
 
 	protected CompoundCommand createPerformFinishCommandOnEdition(
 			final EditingDomain editingDomain) {
+        final ConnectableElement container = new ContextFinder(location).find(ConnectableElement.class);
 		final List<?> connectorsList = (List<?>) container
 				.eGet(connectorContainmentFeature);
 		final int index = connectorsList.indexOf(originalConnector);
@@ -829,39 +828,6 @@ public class ConnectorWizard extends ExtensibleWizard implements
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public boolean isPageFlowContext() {
-		return isPageFlowContext;
-	}
-
-	@Override
-	public void setIsPageFlowContext(final boolean isPageFlowContext) {
-		this.isPageFlowContext = isPageFlowContext;
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-	 */
-	@Override
-	public boolean isOverViewContext() {
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext
-	 * (boolean)
-	 */
-	@Override
-	public void setIsOverviewContext(final boolean isOverviewContext) {
 	}
 
 }

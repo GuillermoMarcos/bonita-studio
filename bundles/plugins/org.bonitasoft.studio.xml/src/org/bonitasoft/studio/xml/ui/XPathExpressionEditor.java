@@ -100,8 +100,6 @@ public class XPathExpressionEditor extends SelectionAwareExpressionEditor implem
 
     private Text text;
 
-    private boolean isPageFlowContext = false;
-
     /*
      * (non-Javadoc)
      * @see org.bonitasoft.studio.expression.editor.provider.IExpressionEditor#createExpressionEditor(org.eclipse.swt.widgets.Composite)
@@ -515,35 +513,6 @@ public class XPathExpressionEditor extends SelectionAwareExpressionEditor implem
     @Override
     public Control getTextControl() {
         return null;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
 }

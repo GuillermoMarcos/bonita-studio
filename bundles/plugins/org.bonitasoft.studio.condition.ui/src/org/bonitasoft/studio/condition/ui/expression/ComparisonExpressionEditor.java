@@ -108,8 +108,6 @@ public class ComparisonExpressionEditor extends SelectionAwareExpressionEditor i
 
     private XtextResource resource;
 
-    private boolean isPageFlowContext = false;
-
     public ComparisonExpressionEditor(final EObject context) {
         this.context = context;
         adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
@@ -369,35 +367,6 @@ public class ComparisonExpressionEditor extends SelectionAwareExpressionEditor i
     @Override
     public Control getTextControl() {
         return comparisonEditor.getViewer().getTextWidget();
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
 }

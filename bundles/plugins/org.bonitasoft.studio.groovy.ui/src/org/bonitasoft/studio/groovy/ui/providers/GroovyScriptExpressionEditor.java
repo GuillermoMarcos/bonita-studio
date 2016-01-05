@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.jface.databinding.converter.BooleanInverserConverter;
 import org.bonitasoft.studio.common.jface.databinding.observables.DocumentObservable;
 import org.bonitasoft.studio.common.jface.databinding.validator.InputLengthValidator;
@@ -91,7 +90,7 @@ import org.eclipse.ui.forms.widgets.Section;
 /**
  * @author Romain Bioteau
  */
-public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor implements IExpressionEditor, IBonitaVariableContext {
+public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor implements IExpressionEditor {
 
     protected Composite mainComposite;
 
@@ -124,8 +123,6 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
     private Section depndencySection;
 
     protected TableComboViewer bonitaDataCombo;
-
-    private boolean isPageFlowContext = false;
 
     private final ViewerSorter comboSorter = new ViewerSorter() {
 
@@ -387,8 +384,7 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
     }
 
     protected void createGroovyEditor(final Composite parent) {
-
-        groovyViewer = new GroovyViewer(mainComposite, isPageFlowContext);
+        groovyViewer = new GroovyViewer(mainComposite);
         groovyViewer.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 300).create());
         sourceViewer = groovyViewer.getSourceViewer();
         document = groovyViewer.getDocument();
@@ -641,31 +637,4 @@ public class GroovyScriptExpressionEditor extends SelectionAwareExpressionEditor
         return new DocumentObservable(sourceViewer);
     }
 
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-    }
 }

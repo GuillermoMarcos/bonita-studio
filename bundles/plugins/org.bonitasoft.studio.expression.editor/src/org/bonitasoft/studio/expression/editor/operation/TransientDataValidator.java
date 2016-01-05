@@ -17,6 +17,7 @@
 package org.bonitasoft.studio.expression.editor.operation;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -70,12 +71,8 @@ public class TransientDataValidator implements IExpressionValidator {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.expression.editor.provider.IExpressionValidator#setContext(org.eclipse.emf.ecore.EObject)
-     */
     @Override
-    public void setContext(final EObject context) {
+    public void setModelLocation(final ModelLocation location) {
 
     }
 

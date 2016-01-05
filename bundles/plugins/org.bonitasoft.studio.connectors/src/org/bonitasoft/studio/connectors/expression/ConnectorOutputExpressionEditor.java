@@ -72,12 +72,6 @@ public class ConnectorOutputExpressionEditor extends SelectionAwareExpressionEdi
 
     private Text typeText;
 
-    private boolean isPageFlowContext = false;
-
-    public ConnectorOutputExpressionEditor() {
-
-    }
-
     /*
      * (non-Javadoc)
      * @see org.bonitasoft.studio.expression.editor.provider.IExpressionEditor#createExpressionEditor(org.eclipse.swt.widgets.Composite)
@@ -266,35 +260,6 @@ public class ConnectorOutputExpressionEditor extends SelectionAwareExpressionEdi
     @Override
     public Control getTextControl() {
         return null;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(boolean isOverviewContext) {
     }
 
 }

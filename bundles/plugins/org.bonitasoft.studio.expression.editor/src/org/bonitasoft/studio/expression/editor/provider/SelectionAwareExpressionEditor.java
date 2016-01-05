@@ -106,34 +106,6 @@ public abstract class SelectionAwareExpressionEditor implements IExpressionEdito
     }
 
     @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return isOverviewContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-        this.isOverviewContext = isOverviewContext;
-    }
-
-    @Override
     public void okPressed() {
         //Implement behavior in subclasses
     }

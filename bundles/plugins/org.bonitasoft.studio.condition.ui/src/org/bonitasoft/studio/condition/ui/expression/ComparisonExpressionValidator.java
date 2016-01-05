@@ -26,6 +26,8 @@ import org.bonitasoft.studio.condition.conditionModel.Expression_ProcessRef;
 import org.bonitasoft.studio.condition.conditionModel.Operation_Compare;
 import org.bonitasoft.studio.condition.ui.internal.ConditionModelActivator;
 import org.bonitasoft.studio.condition.validation.ConditionModelJavaValidator;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.ExpressionEditorPlugin;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -56,7 +58,7 @@ public class ComparisonExpressionValidator implements IExpressionValidator {
 
 	private Expression inputExpression;
 	private EditingDomain domain;
-	private EObject context;
+    private ModelLocation location;
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.databinding.validation.IValidator#validate(java.lang.Object)
@@ -70,7 +72,7 @@ public class ComparisonExpressionValidator implements IExpressionValidator {
         final XtextComparisonExpressionLoader xtextComparisonExpressionLoader = getXtextExpressionLoader(injector);
         Resource resource = null;
         try {
-            resource = xtextComparisonExpressionLoader.loadResource(value.toString(), context);
+            resource = xtextComparisonExpressionLoader.loadResource(value.toString(), new ContextFinder(location).findExpressionContext());
         } catch (final ComparisonExpressionLoadException e) {
             BonitaStudioLog.error(e);
             return ValidationStatus.error(e.getMessage());
@@ -116,17 +118,20 @@ public class ComparisonExpressionValidator implements IExpressionValidator {
      * @return
      */
     public ResourceSet getContextResourceSet() {
-        final ResourceSet resourceSet = context.eResource().getResourceSet();
+        final ResourceSet resourceSet = new ContextFinder(location).findExpressionContext().eResource().getResourceSet();
         return resourceSet;
     }
 
     private void updateDependencies(final Resource resource) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final EObject context = contextFinder.findExpressionContext();
 		if(domain != null && inputExpression != null){
 			domain.getCommandStack().execute(new RemoveCommand(domain, inputExpression, ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS, inputExpression.getReferencedElements()));
 			final Operation_Compare compareOp = (Operation_Compare) resource.getContents().get(0);
 			if(compareOp != null){
 				final List<Expression_ProcessRef> references = ModelHelper.getAllItemsOfType(compareOp, ConditionModelPackage.Literals.EXPRESSION_PROCESS_REF);
 				for(final Expression_ProcessRef ref : references){
+
                     final EObject dep = ComparisonExpressionUtil.getResolvedDependency(context, ref);
 					domain.getCommandStack().execute(new AddCommand(domain, inputExpression, ExpressionPackage.Literals.EXPRESSION__REFERENCED_ELEMENTS, EcoreUtil.copy(dep)));
 				}
@@ -147,14 +152,18 @@ public class ComparisonExpressionValidator implements IExpressionValidator {
 		this.domain = domain;
 	}
 
-	@Override
-	public void setContext(final EObject context) {
-		this.context = context;
-	}
-
     @Override
     public boolean isRelevantForExpressionType(final String type) {
         return ExpressionConstants.CONDITION_TYPE.equals(type);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.editor.provider.IExpressionValidator#setModelLocation(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public void setModelLocation(ModelLocation location) {
+        this.location = location;
     }
 
 }

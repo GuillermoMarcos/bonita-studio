@@ -28,36 +28,24 @@ public class DataWizardFactory {
     private final EStructuralFeature dataFeature;
     private final Set<EStructuralFeature> dataFeatureToCheckUniqueID;
     private final boolean showAutoGenerateForm;
-    private final boolean isPageFlowContext;
-    private final boolean isOverviewContext;
 
     public DataWizardFactory(final EStructuralFeature dataFeature,
             final Set<EStructuralFeature> dataFeatureToCheckUniqueID,
-            final boolean showAutoGenerateForm,
-            final boolean isPageFlowContext,
-            final boolean isOverviewContext) {
+            final boolean showAutoGenerateForm) {
         this.dataFeature = dataFeature;
         this.dataFeatureToCheckUniqueID = dataFeatureToCheckUniqueID;
         this.showAutoGenerateForm = showAutoGenerateForm;
-        this.isPageFlowContext = isPageFlowContext;
-        this.isOverviewContext = isOverviewContext;
     }
 
     public DataWizardFactory(final EStructuralFeature dataFeature) {
-        this(dataFeature, Collections.singleton(dataFeature), true, false, false);
+        this(dataFeature, Collections.singleton(dataFeature), true);
     }
 
     public DataWizard createAddWizard(final TransactionalEditingDomain domain, final DataAware container) {
-        final DataWizard wizard = new DataWizard(domain, container, dataFeature, dataFeatureToCheckUniqueID, showAutoGenerateForm);
-        wizard.setIsPageFlowContext(isPageFlowContext);
-        wizard.setIsOverviewContext(isOverviewContext);
-        return wizard;
+        return new DataWizard(domain, container, dataFeature, dataFeatureToCheckUniqueID, showAutoGenerateForm);
     }
 
     public DataWizard createEditWizard(final TransactionalEditingDomain domain, final Data data) {
-        final DataWizard wizard = new DataWizard(domain, data, dataFeature, dataFeatureToCheckUniqueID, showAutoGenerateForm);
-        wizard.setIsPageFlowContext(isPageFlowContext);
-        wizard.setIsOverviewContext(isOverviewContext);
-        return wizard;
+        return new DataWizard(domain, data, dataFeature, dataFeatureToCheckUniqueID, showAutoGenerateForm);
     }
 }

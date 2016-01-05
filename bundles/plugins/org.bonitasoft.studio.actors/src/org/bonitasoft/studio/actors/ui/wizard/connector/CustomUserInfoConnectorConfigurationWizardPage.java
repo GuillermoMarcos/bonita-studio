@@ -66,7 +66,7 @@ public class CustomUserInfoConnectorConfigurationWizardPage extends AbstractConn
         final Composite pageComposite = createInputsComposite(mainComposite);
         final Composite cuiComposite = createComposite(pageComposite, 2, 20);
 
-        final PageComponentSwitchBuilder componentSwitchBuilder = new PageComponentSwitchBuilder(getElementContainer(), getDefinition(),
+        final PageComponentSwitchBuilder componentSwitchBuilder = new PageComponentSwitchBuilder(getModelLocation(), getDefinition(),
                 getConfiguration(), context, getMessageProvider(), getExpressionTypeFilter(), LABEL_WIDTH);
         createCustomExpressionViewerWithCustomInfo(componentSwitchBuilder, cuiComposite, cuiNameInput);
 

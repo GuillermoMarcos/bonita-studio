@@ -22,7 +22,7 @@ import java.util.List;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.connectors.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
-import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
+import org.bonitasoft.studio.expression.editor.viewer.DefaultExpressionValidator;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -31,8 +31,6 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -75,62 +73,34 @@ AbstractConnectorOutputWizardPage {
 			final ExpressionViewer outputExpressionViewer = new ExpressionViewer(mainComposite, SWT.BORDER, ExpressionPackage.Literals.OPERATION__RIGHT_OPERAND);
 			outputExpressionViewer.getControl().setLayoutData( GridDataFactory.fillDefaults().grab(true, false).create());
 			outputExpressionViewer.addFilter(connectorOutputFilter);
-			outputExpressionViewer.setContext(getConnector());
+            outputExpressionViewer.setLocation(getModelLocation());
 			outputExpressionViewer.setMessage(Messages.connectorExpressionViewerMessage, IStatus.INFO);
 			outputExpressionViewer.setExternalDataBindingContext(context);
 			outputExpressionViewer.setInput(output);
-            outputExpressionViewer.addExpressionValidator(new IExpressionValidator() {
-
-				private Expression inputExpression;
-
-				@Override
-				public IStatus validate(final Object value) {
-					final Expression exp = inputExpression;
-					if(exp.getType().equals(ExpressionConstants.SCRIPT_TYPE) || exp.getType().equals(ExpressionConstants.CONNECTOR_OUTPUT_TYPE)) {
-						return ValidationStatus.ok();
-					}
-					return ValidationStatus.error(Messages.connectorTypeValidationMessage);
-				}
-
-				@Override
-				public void setInputExpression(final Expression inputExpression) {
-					this.inputExpression = inputExpression;
-				}
-
-				@Override
-				public void setDomain(final EditingDomain domain) {
-
-				}
-
-				@Override
-				public void setContext(final EObject context) {
-
-				}
+            outputExpressionViewer.addExpressionValidator(new DefaultExpressionValidator() {
+                
+                private Expression inputExpression;
 
                 @Override
-                public boolean isRelevantForExpressionType(final String type) {
-                    return true;
+                public IStatus validate(Object value) {
+                    final Expression exp = inputExpression;
+                    if(exp.getType().equals(ExpressionConstants.SCRIPT_TYPE) || exp.getType().equals(ExpressionConstants.CONNECTOR_OUTPUT_TYPE)) {
+                        return ValidationStatus.ok();
+                    }
+                    return ValidationStatus.error(Messages.connectorTypeValidationMessage);
                 }
-			});
+                
+                @Override
+                public void setInputExpression(final Expression inputExpression) {
+                    this.inputExpression = inputExpression;
+                }
+
+            });
 
 			context.bindValue(ViewersObservables.observeSingleSelection(outputExpressionViewer), EMFObservables.observeValue(output, ExpressionPackage.Literals.OPERATION__RIGHT_OPERAND));
 			outputExpressionViewer.setProposalsFiltering(false);
 		}
 		return mainComposite ;
-	}
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-	 */
-	@Override
-	public boolean isOverViewContext() {
-		return false;
-	}
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-	 */
-	@Override
-	public void setIsOverviewContext(final boolean isOverviewContext) {
-
 	}
 
 }

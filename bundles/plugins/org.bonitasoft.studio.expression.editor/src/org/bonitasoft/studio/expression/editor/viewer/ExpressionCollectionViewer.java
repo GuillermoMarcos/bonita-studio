@@ -17,7 +17,6 @@ package org.bonitasoft.studio.expression.editor.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.widgets.MagicComposite;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.editor.autocompletion.IExpressionProposalLabelProvider;
@@ -80,7 +79,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 /**
  * @author Romain Bioteau
  */
-public class ExpressionCollectionViewer implements IBonitaVariableContext {
+public class ExpressionCollectionViewer {
 
     private Composite viewerComposite;
     private TableViewer viewer;
@@ -113,7 +112,7 @@ public class ExpressionCollectionViewer implements IBonitaVariableContext {
     private List<ViewerFilter> viewerFilters = new ArrayList<ViewerFilter>();
     private final List<IExpressionNatureProvider> viewerExprProviders = new ArrayList<IExpressionNatureProvider>();
     private boolean withConnectors = false;
-    private boolean isPageFlowContext = false;
+    private final boolean isPageFlowContext = false;
     private final SelectionAdapter removeRowListener = new SelectionAdapter() {
 
         @Override
@@ -337,7 +336,6 @@ public class ExpressionCollectionViewer implements IBonitaVariableContext {
                 .grab(true, false).create());
         expressionEditor = new ExpressionViewer(expressionComposite,
                 SWT.BORDER, widgetFactory, null, null, withConnectors);
-        expressionEditor.setIsPageFlowContext(isPageFlowContext);
         expressionEditor.getControl().setLayoutData(
                 GridDataFactory.fillDefaults().grab(true, false).create());
 
@@ -1158,38 +1156,10 @@ public class ExpressionCollectionViewer implements IBonitaVariableContext {
         }
     }
 
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-    }
-
     public void setMandatoryField(final String label, final EMFDataBindingContext context) {
         expressionEditor.setMandatoryField(label, context);
         mandatoryLabel = label;
         validationContext = context;
-
     }
 
 }

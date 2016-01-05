@@ -22,6 +22,7 @@ import org.bonitasoft.engine.bpm.document.DocumentValue;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.platform.tools.PlatformUtil;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionTypeLabelProvider;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
@@ -378,7 +379,7 @@ public class OperationReturnTypesValidator implements IExpressionValidator {
     }
 
     @Override
-    public void setContext(final EObject context) {
+    public void setModelLocation(final ModelLocation location) {
     }
 
     @Override

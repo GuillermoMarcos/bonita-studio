@@ -38,7 +38,6 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.DateUtil;
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.extension.BonitaStudioExtensionRegistryManager;
@@ -54,12 +53,15 @@ import org.bonitasoft.studio.data.ui.wizard.provider.NowDateExpressionNatureProv
 import org.bonitasoft.studio.data.ui.wizard.provider.OptionsExpressionNatureProvider;
 import org.bonitasoft.studio.data.util.DataUtil;
 import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
 import org.bonitasoft.studio.model.form.Form;
 import org.bonitasoft.studio.model.process.AbstractProcess;
+import org.bonitasoft.studio.model.process.Activity;
 import org.bonitasoft.studio.model.process.BooleanType;
 import org.bonitasoft.studio.model.process.BusinessObjectType;
 import org.bonitasoft.studio.model.process.Data;
@@ -70,11 +72,10 @@ import org.bonitasoft.studio.model.process.Element;
 import org.bonitasoft.studio.model.process.EnumType;
 import org.bonitasoft.studio.model.process.JavaObjectData;
 import org.bonitasoft.studio.model.process.JavaType;
+import org.bonitasoft.studio.model.process.MainProcess;
 import org.bonitasoft.studio.model.process.MultiInstantiable;
-import org.bonitasoft.studio.model.process.Pool;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.ProcessPackage;
-import org.bonitasoft.studio.model.process.Task;
 import org.bonitasoft.studio.model.process.XMLData;
 import org.bonitasoft.studio.model.process.XMLType;
 import org.bonitasoft.studio.model.process.util.ProcessSwitch;
@@ -168,13 +169,13 @@ import com.google.common.collect.Sets;
 /**
  * @author Romain Bioteau
  */
-public class DataWizardPage extends WizardPage implements IBonitaVariableContext {
+public class DataWizardPage extends WizardPage {
 
     private static final String GENERATE_DATA_CONTRIBUTION_ID = "org.bonitasoft.studio.propertiies.generateData";
 
     private Data data;
 
-    final EObject container;
+    private final ModelLocation location;
 
     private EMFDataBindingContext emfDatabindingContext;
 
@@ -225,12 +226,6 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
     private WizardPageSupport pageSupport;
 
     private final String fixedReturnType;
-
-    private boolean isPageFlowContext = false;
-
-    private boolean isOverviewContext = false;
-
-    final private Set<String> availableDataNames = new HashSet<String>();
 
     private final ViewerFilter typeViewerFilter = new ViewerFilter() {
 
@@ -298,29 +293,28 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
 
     private CLabel transientDataWarning;
 
-    public DataWizardPage(final Data data, final EObject container, final boolean allowXML, final boolean allowEnum, final boolean showIsTransient,
+    public DataWizardPage(final Data data, final ModelLocation location, final boolean allowXML, final boolean allowEnum,
             final boolean showAutoGenerateform, final Set<EStructuralFeature> featureToCheckForUniqueID, final String fixedReturnType) {
         super(DataWizardPage.class.getName());
-        this.container = container;
+        this.location = location;
         setTitle(Messages.bind(Messages.addDataWizardTitle, getCurrentDataAwareContextName()));
         setDescription(Messages.addDataWizardDescription);
         this.data = data;
         this.featureToCheckForUniqueID = featureToCheckForUniqueID;
         this.allowXML = allowXML;
         this.allowEnum = allowEnum;
-        this.showIsTransient = showIsTransient;
+        this.showIsTransient = location.getParent().getModelElement() instanceof Activity;
         this.showAutoGenerateform = showAutoGenerateform;
         this.fixedReturnType = fixedReturnType;
     }
 
     private String getCurrentDataAwareContextName() {
         String name = "---";
-        EObject context = container;
-        if (context == null) {
+        if (location == null) {
             return "---- Error, please check Studio logs";
         }
-
-        while (!(context instanceof DataAware) || context instanceof Form) {
+        EObject context = location.getParent().getModelElement();
+        if (context instanceof DataAware || context instanceof Form) {
             context = context.eContainer();
         }
         if (context instanceof Element) {
@@ -413,7 +407,8 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
                 protected IStatus validate() {
                     final IViewerObservableValue selectedType = ViewersObservables.observeSingleSelection(typeCombo);
                     final DataType type = (DataType) selectedType.getValue();
-                    String technicalTypeFor = DataUtil.getTechnicalTypeFor(ModelHelper.getMainProcess(container), type.getName()).replace(
+                    final MainProcess mainProcess = new ContextFinder(location).find(MainProcess.class);
+                    String technicalTypeFor = DataUtil.getTechnicalTypeFor(mainProcess, type.getName()).replace(
                             Messages.dataTechnicalTypeLabel + " ", "");
                     if (data instanceof JavaObjectData) {
                         technicalTypeFor = ((JavaObjectData) data).getClassName();
@@ -571,6 +566,7 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
 
     private Iterable<Data> findDataInScope() {
         final Set<Data> dataInScope = new HashSet<Data>();
+        final EObject container = location.getParent().getModelElement();
         //Data in same scope
         for (final EStructuralFeature featureToCheck : featureToCheckForUniqueID) {
             final Object eGet = container.eGet(featureToCheck);
@@ -582,11 +578,12 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
                 }
             }
         }
-        dataInScope.addAll(allAboveDataNotContainedInAnExpression(container));
+        dataInScope.addAll(allAboveDataNotContainedInAnExpression());
         return dataInScope;
     }
 
-    private Set<Data> allAboveDataNotContainedInAnExpression(final EObject container) {
+    private Set<Data> allAboveDataNotContainedInAnExpression() {
+        final EObject container = location.getParent().getModelElement();
         final List<Data> allData = ModelHelper.getAllItemsOfType(container, ProcessPackage.Literals.DATA);
         final Set<Data> allAboveData = Sets.newHashSet(filter(allData,
                 notInAnExpression()));
@@ -604,7 +601,7 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
 
             @Override
             public Data apply(final MultiInstantiable input) {
-                return ExpressionHelper.dataFromIteratorExpression(input, input.getIteratorExpression(), ModelHelper.getMainProcess(container));
+                return ExpressionHelper.dataFromIteratorExpression(input, input.getIteratorExpression(), new ContextFinder(location).find(MainProcess.class));
             }
         };
     }
@@ -620,7 +617,7 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
     }
 
     protected void bindDataTypeCombo() {
-        final AbstractProcess process = ModelHelper.getMainProcess(container);
+        final AbstractProcess process = new ContextFinder(location).find(MainProcess.class);
         emfDatabindingContext.bindValue(ViewersObservables.observeInput(typeCombo),
                 EMFObservables.observeValue(process, ProcessPackage.Literals.ABSTRACT_PROCESS__DATATYPES));
         final IObservableValue modelObservable = EMFObservables.observeValue(data, ProcessPackage.Literals.DATA__DATA_TYPE);
@@ -672,7 +669,7 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
             }
             return className;
         } else if (type != null) {
-            final String technicalTypeFor = DataUtil.getTechnicalTypeFor(ModelHelper.getMainProcess(container), type.getName()).replace(
+            final String technicalTypeFor = DataUtil.getTechnicalTypeFor(new ContextFinder(location).find(MainProcess.class), type.getName()).replace(
                     Messages.dataTechnicalTypeLabel + " ", "");
             if (technicalTypeFor.isEmpty()) {
                 return String.class.getName();
@@ -833,10 +830,8 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
         defaultValueComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).hint(300, SWT.DEFAULT).span(2, 1).create());
 
         defaultValueViewer = new ExpressionViewer(defaultValueComposite, SWT.BORDER, ProcessPackage.Literals.DATA__DEFAULT_VALUE);
-        defaultValueViewer.setIsPageFlowContext(isPageFlowContext);
-        defaultValueViewer.setIsOverviewContext(isOverviewContext);
         defaultValueViewer.getControl().setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).create());
-        defaultValueViewer.setContext(container);
+        defaultValueViewer.setLocation(location);
 
         final ToolItem eraseItem = defaultValueViewer.getEraseControl();
         eraseItem.addSelectionListener(new SelectionAdapter() {
@@ -854,8 +849,6 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
                 }
             }
         });
-
-        refreshDataNames();
 
         //  defaultValueViewer.addFilter(new DataDefaultValueExpressionFilter(this, container, isOverViewContext()));
         defaultValueViewer.setInput(data);
@@ -970,7 +963,8 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
 
                 @Override
                 public void widgetSelected(final SelectionEvent e) {
-                    final EnumDataTypeDialog dialog = new EnumDataTypeDialog(Display.getDefault().getActiveShell(), ModelHelper.getMainProcess(container));
+                    final EnumDataTypeDialog dialog = new EnumDataTypeDialog(Display.getDefault().getActiveShell(),
+                            new ContextFinder(location).find(MainProcess.class));
                     if (dialog.open() == Window.OK) {
                         final EnumType type = dialog.getSelectedEnum();
                         updateDatabinding();
@@ -1297,65 +1291,13 @@ public class DataWizardPage extends WizardPage implements IBonitaVariableContext
     }
 
     protected String getXMLInstanceLabel(final EObject container2) {
-        final AbstractProcess process = ModelHelper.getMainProcess(container);
+        final AbstractProcess process = new ContextFinder(location).find(MainProcess.class);
         for (final DataType dataType : process.getDatatypes()) {
             if (dataType instanceof XMLType) {
                 return dataType.getName();
             }
         }
         return null;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    public Set<String> refreshDataNames() {
-        if (!(container instanceof AbstractProcess)) {
-            final List<Data> availableData = ModelHelper.getAccessibleData(ModelHelper.getParentProcess(container));
-            if (isPageFlowContext && container instanceof Task) {
-                availableData.addAll(((Task) container).getData());
-            }
-            for (final Data d : availableData) {
-                availableDataNames.add(d.getName());
-            }
-        } else {
-            if (container instanceof Pool && isOverviewContext) {
-                final List<Data> availableData = ModelHelper.getAccessibleData(ModelHelper.getParentProcess(container));
-                availableData.addAll(((Pool) container).getData());
-                for (final Data d : availableData) {
-                    availableDataNames.add(d.getName());
-                }
-            }
-        }
-        return availableDataNames;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return isOverviewContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-        this.isOverviewContext = isOverviewContext;
-
     }
 
     public void setWorkingCopy(final Data workingCopy) {

@@ -150,7 +150,7 @@ public class TransitionConditionContribution implements IExtensibleGridPropertyS
             expression.setType(ExpressionConstants.CONDITION_TYPE);
             editingDomain.getCommandStack().execute(SetCommand.create(editingDomain, transition, ProcessPackage.Literals.SEQUENCE_FLOW__CONDITION, expression));
         }
-        conditionViewer.setContext(transition);
+        conditionViewer.setLocation(transition);
         conditionViewer.setInput(transition);
         conditionViewer.getControl().setLayoutData(
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(350, SWT.DEFAULT).create());

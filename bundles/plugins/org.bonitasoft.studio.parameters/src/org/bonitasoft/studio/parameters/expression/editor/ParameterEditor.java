@@ -85,8 +85,6 @@ public class ParameterEditor extends SelectionAwareExpressionEditor implements
 
     private Button addExpressionButton;
 
-    private boolean isPageFlowContext = false;
-
     @Override
     public Control createExpressionEditor(final Composite parent, final EMFDataBindingContext ctx) {
 
@@ -332,35 +330,6 @@ public class ParameterEditor extends SelectionAwareExpressionEditor implements
     @Override
     public Control getTextControl() {
         return null;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
 }

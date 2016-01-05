@@ -62,14 +62,14 @@ public class ConnectorOutputWizardPage extends AbstractConnectorOutputWizardPage
         final Composite mainComposite = new Composite(scrolledComposite, SWT.NONE);
         mainComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         mainComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).create());
-        lineComposite = new WizardPageOperationsComposite(null, mainComposite, rightFilter, leftFilter, isPageFlowContext());
+        lineComposite = new WizardPageOperationsComposite(null, mainComposite, rightFilter, leftFilter);
         lineComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 280).create());
         final IExpressionNatureProvider storageExpressionProvider = getStorageExpressionProvider();
         if (storageExpressionProvider != null) {
             lineComposite.setStorageExpressionNatureContentProvider(storageExpressionProvider);
         }
         lineComposite.setContext(context);
-        lineComposite.setContext(getElementContainer());
+        lineComposite.setModelLocation(getModelLocation());
         lineComposite.setEObject(getConnector());
         lineComposite.fillTable();
 
@@ -86,23 +86,6 @@ public class ConnectorOutputWizardPage extends AbstractConnectorOutputWizardPage
         if (visible) {
             scrolledComposite.getParent().layout(true, true);
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
 }

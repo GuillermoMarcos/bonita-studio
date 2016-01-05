@@ -62,9 +62,8 @@ public class GroovyScriptConfigurationWizardPage extends AbstractConnectorConfig
         pageComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).margins(10, 10).spacing(3, 10).create());
         pageComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
-        final PageComponentSwitchBuilder builder = new PageComponentSwitchBuilder(getElementContainer(), getDefinition(), getConfiguration(), context,
+        final PageComponentSwitchBuilder builder = new PageComponentSwitchBuilder(getModelLocation(), getDefinition(), getConfiguration(), context,
                 getMessageProvider(), getExpressionTypeFilter());
-        builder.setIsPageFlowContext(isPageFlowContext());
         createScriptEditorControl(pageComposite, context, builder);
 
 
@@ -75,9 +74,8 @@ public class GroovyScriptConfigurationWizardPage extends AbstractConnectorConfig
         final ConnectorParameter parameter = getScriptConnectorParameter();
         builder.createFieldLabel(composite, SWT.CENTER, SCRIPT_INPUT_NAME, true);
         final ExpressionViewer viewer = new GroovyOnlyExpressionViewer(composite, SWT.BORDER);
-        viewer.setIsPageFlowContext(isPageFlowContext());
         viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        viewer.setContext(getElementContainer());
+        viewer.setLocation(getModelLocation());
         final String fieldName = builder.getLabel("script");
         viewer.setMandatoryField(fieldName, context);
         viewer.addFilter(getExpressionTypeFilter());

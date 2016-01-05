@@ -90,7 +90,7 @@ public class SelectDatabaseOutputTypeWizardPage extends AbstractConnectorConfigu
 		createSelectModeLabelControl(mainComposite);
 
 		scriptExpression = (Expression) getConnectorParameter(getInput(SCRIPT_KEY)).getExpression();
-		IObservableValue scriptContentValue = EMFObservables.observeValue(scriptExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
+		final IObservableValue scriptContentValue = EMFObservables.observeValue(scriptExpression, ExpressionPackage.Literals.EXPRESSION__CONTENT);
 		scriptContentValue.addValueChangeListener(this);
 		outputTypeExpression = (Expression) getConnectorParameter(getInput(OUTPUT_TYPE_KEY)).getExpression();
 		outputTypeExpression.setName(OUTPUT_TYPE_KEY);
@@ -160,7 +160,7 @@ public class SelectDatabaseOutputTypeWizardPage extends AbstractConnectorConfigu
 
 			@Override
 			public void handleValueChange(ValueChangeEvent event) {
-				IWizardPage p = getNextPage();
+				final IWizardPage p = getNextPage();
 				if(p instanceof DatabaseConnectorOutputWizardPage){
 					((DatabaseConnectorOutputWizardPage)p).updateOutputs((String) event.getObservableValue().getValue());
 				}
@@ -208,7 +208,7 @@ public class SelectDatabaseOutputTypeWizardPage extends AbstractConnectorConfigu
 
 	protected void parseQuery() {
 		if(graphicalModeSelectionValue != null){
-			IObservableValue enableGraphicalMode = SWTObservables.observeEnabled(gModeRadio);
+			final IObservableValue enableGraphicalMode = SWTObservables.observeEnabled(gModeRadio);
 			if(SQLQueryUtil.isGraphicalModeSupportedFor(scriptExpression)){
 				enableGraphicalMode.setValue(true);
 				if(!editing){
@@ -233,7 +233,7 @@ public class SelectDatabaseOutputTypeWizardPage extends AbstractConnectorConfigu
 
 
 	protected void updateEnabledChoices() {
-		String content = outputTypeExpression.getContent();
+		final String content = outputTypeExpression.getContent();
 		if(content != null){
 			if(SQLQueryUtil.getSelectedColumns(scriptExpression).size() != 1 && !SQLQueryUtil.useWildcard(scriptExpression)){
 				singleModeRadioObserveEnabled.setValue(false);
@@ -265,7 +265,7 @@ public class SelectDatabaseOutputTypeWizardPage extends AbstractConnectorConfigu
 
 	protected void updateQuery() {
 		if(graphicalModeSelectionValue != null){
-			IObservableValue enableGraphicalMode = SWTObservables.observeEnabled(gModeRadio);
+			final IObservableValue enableGraphicalMode = SWTObservables.observeEnabled(gModeRadio);
 			if(SQLQueryUtil.isGraphicalModeSupportedFor(scriptExpression)){
 				enableGraphicalMode.setValue(true);
 				updateEnabledChoices();
@@ -477,29 +477,11 @@ public class SelectDatabaseOutputTypeWizardPage extends AbstractConnectorConfigu
 			return previousPageBackup;
 		}
 
-		IWizard wizard = getWizard();
+		final IWizard wizard = getWizard();
 		if(wizard != null){
 			return wizard.getPreviousPage(this);
 		}
 		return super.getPreviousPage();
 	}
-
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-	 */
-	@Override
-	public boolean isOverViewContext() {
-		return false;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-	 */
-	@Override
-	public void setIsOverviewContext(boolean isOverviewContext) {
-	}
-
 
 }

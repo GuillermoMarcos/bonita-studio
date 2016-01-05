@@ -37,6 +37,7 @@ import org.bonitasoft.studio.connector.model.definition.TextArea;
 import org.bonitasoft.studio.connector.model.definition.WidgetComponent;
 import org.bonitasoft.studio.connector.model.i18n.DefinitionResourceProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.viewer.CheckBoxExpressionViewer;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionCollectionViewer;
@@ -58,7 +59,6 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -92,7 +92,7 @@ public class PageComponentSwitchBuilder {
 
     private boolean isPageFlowContext = false;
 
-    protected EObject container;
+    protected ModelLocation location;
 
     protected EMFDataBindingContext context;
 
@@ -102,22 +102,22 @@ public class PageComponentSwitchBuilder {
 
     private int labelWidth = DEFAULT_WITH_VALUE;
 
-    public PageComponentSwitchBuilder(final EObject container, final ConnectorDefinition definition,
+    public PageComponentSwitchBuilder(final ModelLocation location, final ConnectorDefinition definition,
             final ConnectorConfiguration connectorConfiguration, final EMFDataBindingContext context, final DefinitionResourceProvider messageProvider,
             final AvailableExpressionTypeFilter connectorExpressionContentTypeFilter) {
         super();
         this.definition = definition;
         this.connectorConfiguration = connectorConfiguration;
         this.messageProvider = messageProvider;
-        this.container = container;
+        this.location = location;
         this.context = context;
         this.connectorExpressionContentTypeFilter = connectorExpressionContentTypeFilter;
     }
 
-    public PageComponentSwitchBuilder(final EObject container, final ConnectorDefinition definition,
+    public PageComponentSwitchBuilder(final ModelLocation location, final ConnectorDefinition definition,
             final ConnectorConfiguration connectorConfiguration, final EMFDataBindingContext context, final DefinitionResourceProvider messageProvider,
             final AvailableExpressionTypeFilter connectorExpressionContentTypeFilter, final int labelWidth) {
-        this(container, definition, connectorConfiguration, context, messageProvider, connectorExpressionContentTypeFilter);
+        this(location, definition, connectorConfiguration, context, messageProvider, connectorExpressionContentTypeFilter);
         this.labelWidth = labelWidth;
     }
 
@@ -140,9 +140,8 @@ public class PageComponentSwitchBuilder {
     private ExpressionViewer buildExpressionViewer(final Composite composite, final Text object, final IExpressionNatureProvider expressionProvider,
             final Input input, final ConnectorParameter parameter, final LabelProvider autoCompletionLabelProvider) {
         final ExpressionViewer viewer = new ExpressionViewer(composite, SWT.BORDER);
-        viewer.setIsPageFlowContext(isPageFlowContext);
         viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        viewer.setContext(container);
+        viewer.setLocation(location);
         if (autoCompletionLabelProvider != null) {
             viewer.setAutocomplitionLabelProvider(autoCompletionLabelProvider);
         }
@@ -318,9 +317,8 @@ public class PageComponentSwitchBuilder {
             final CheckBoxExpressionViewer viewer = new CheckBoxExpressionViewer(composite, fieldLabel, SWT.BORDER,
                     ConnectorConfigurationPackage.Literals.CONNECTOR_PARAMETER__EXPRESSION);
             viewer.getCheckboxControl().setText(fieldLabel.getText());
-            viewer.setIsPageFlowContext(isPageFlowContext);
             viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-            viewer.setContext(container);
+            viewer.setLocation(location);
 
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
@@ -421,7 +419,7 @@ public class PageComponentSwitchBuilder {
             if (desc != null && !desc.isEmpty()) {
                 viewer.setHint(desc);
             }
-            viewer.setContextInput(container);
+            viewer.setLocation(location);
             viewer.setInput(parameter);
             final UpdateValueStrategy startegy = new UpdateValueStrategy();
             if (input.isMandatory()) {
@@ -445,9 +443,8 @@ public class PageComponentSwitchBuilder {
         if (parameter != null) {
             createFieldLabel(composite, SWT.CENTER, object.getId(), input.isMandatory());
             final ExpressionViewer viewer = new GroovyOnlyExpressionViewer(composite, SWT.BORDER | SWT.SHORT);
-            viewer.setIsPageFlowContext(isPageFlowContext);
             viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-            viewer.setContext(container);
+            viewer.setLocation(location);
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
             }
@@ -620,9 +617,8 @@ public class PageComponentSwitchBuilder {
         if (parameter != null) {
             createFieldLabel(composite, SWT.CENTER, object.getId(), input.isMandatory());
             final ExpressionViewer viewer = new ExpressionViewer(composite, SWT.BORDER | SWT.PASSWORD);
-            viewer.setIsPageFlowContext(isPageFlowContext);
             viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-            viewer.setContext(container);
+            viewer.setLocation(location);
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
             }

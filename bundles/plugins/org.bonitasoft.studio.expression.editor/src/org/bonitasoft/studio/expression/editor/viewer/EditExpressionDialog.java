@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.jface.FileActionDialog;
 import org.bonitasoft.studio.common.jface.databinding.DialogSupport;
 import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
@@ -73,7 +72,7 @@ import org.eclipse.swt.widgets.ToolItem;
 /**
  * @author Romain Bioteau
  */
-public class EditExpressionDialog extends TrayDialog implements IBonitaVariableContext {
+public class EditExpressionDialog extends TrayDialog {
 
     protected Expression inputExpression;
 
@@ -339,7 +338,6 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
         }
 
         currentExpressionEditor = provider.getExpressionEditor(inputExpression, scope.getContext());
-        currentExpressionEditor.setIsPageFlowContext(isPageFlowContext);
         if (currentExpressionEditor != null) {
             if (dataBindingContext != null) {
                 dataBindingContext.dispose();
@@ -443,38 +441,6 @@ public class EditExpressionDialog extends TrayDialog implements IBonitaVariableC
 
     public Expression getExpression() {
         return inputExpression;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-        if (currentExpressionEditor != null) {
-            currentExpressionEditor.setIsPageFlowContext(isPageFlowContext);
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
     public void setEditorFilters(final Set<String> filteredEditor) {

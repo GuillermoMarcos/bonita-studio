@@ -42,8 +42,6 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class CreateVariableProposalListener implements IDataProposalListener {
 
-    private boolean isPageFlowContext = true;
-
     private EStructuralFeature feature = ProcessPackage.Literals.DATA_AWARE__DATA;
 
     private boolean multipleData = false;
@@ -58,7 +56,6 @@ public class CreateVariableProposalListener implements IDataProposalListener {
         final DataWizard newWizard = new DataWizard(TransactionUtil.getEditingDomain(context), dataContainer, dataWorkingCopy, feature,
                 Collections.singleton(feature), true,
                 fixedReturnType);
-        newWizard.setIsPageFlowContext(isPageFlowContext);
         final CustomWizardDialog wizardDialog = new CustomWizardDialog(activeShell(), newWizard, IDialogConstants.FINISH_LABEL);
         if (wizardDialog.open() == Dialog.OK) {
             final Data newData = newWizard.getNewData();
@@ -97,23 +94,6 @@ public class CreateVariableProposalListener implements IDataProposalListener {
         return Messages.createVariable;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isPageFlowContext()
-     */
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsPageFlowContext(boolean)
-     */
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-    }
 
     /*
      * (non-Javadoc)
@@ -122,24 +102,6 @@ public class CreateVariableProposalListener implements IDataProposalListener {
     @Override
     public void setEStructuralFeature(final EStructuralFeature feature) {
         this.feature = feature;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
     @Override

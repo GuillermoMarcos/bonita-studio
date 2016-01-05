@@ -322,9 +322,9 @@ public class ValidatorsPropertySection extends AbstractBonitaDescriptionSection 
 
                     }
                     if(currentValidator != null){
-                        parameterExpressionViewer.setContext(currentValidator);
+                        parameterExpressionViewer.setLocation(currentValidator);
                     }else{
-                        parameterExpressionViewer.setContext(getValidable());
+                        parameterExpressionViewer.setLocation(getValidable());
                     }
 
                     parameterExpressionViewer.setInput(currentValidator) ;
@@ -343,9 +343,9 @@ public class ValidatorsPropertySection extends AbstractBonitaDescriptionSection 
                         getEditingDomain().getCommandStack().execute(SetCommand.create(getEditingDomain(), currentValidator, FormPackage.Literals.VALIDATOR__DISPLAY_NAME, selection)) ;
                     }
                     if(currentValidator != null){
-                        labelExpressionViewer.setContext(currentValidator);
+                        labelExpressionViewer.setLocation(currentValidator);
                     }else{
-                        labelExpressionViewer.setContext(getValidable());
+                        labelExpressionViewer.setLocation(getValidable());
                     }
 
                     labelExpressionViewer.setInput(currentValidator) ;

@@ -86,8 +86,6 @@ public class ScriptExpressionEditor extends SelectionAwareExpressionEditor imple
 
     private IObservableValue returnTypeModelObservable = null;
 
-    private boolean isPageFlowContext = false;
-
     public ScriptExpressionEditor(final Expression expression) {
         if (expression != null) {
             if (expression.getInterpreter() == null || expression.getInterpreter().isEmpty()) {
@@ -140,7 +138,6 @@ public class ScriptExpressionEditor extends SelectionAwareExpressionEditor imple
 
         final IScriptLanguageProvider provider = ScriptLanguageService.getInstance().getScriptLanguageProvider(languageId);
         editor = provider.getExpressionEditor();
-        editor.setIsPageFlowContext(isPageFlowContext);
         final Composite editorComposite = new Composite(mainComposite, SWT.NONE);
         editorComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).span(4, 1).create());
         layout = new GridLayout(1, false);
@@ -313,35 +310,6 @@ public class ScriptExpressionEditor extends SelectionAwareExpressionEditor imple
     @Override
     public Control getTextControl() {
         return editor.getTextControl();
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
 }

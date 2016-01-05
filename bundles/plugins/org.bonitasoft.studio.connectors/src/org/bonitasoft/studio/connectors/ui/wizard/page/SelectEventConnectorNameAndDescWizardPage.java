@@ -19,30 +19,28 @@ package org.bonitasoft.studio.connectors.ui.wizard.page;
 
 import java.util.Set;
 
-import org.bonitasoft.engine.bpm.connector.ConnectorEvent;
 import org.bonitasoft.studio.common.widgets.LifeCycleWidget;
 import org.bonitasoft.studio.connector.model.definition.ConnectorDefinition;
 import org.bonitasoft.studio.connector.model.definition.wizard.SelectNameAndDescWizardPage;
 import org.bonitasoft.studio.connectors.i18n.Messages;
 import org.bonitasoft.studio.connectors.ui.wizard.ConnectorWizard;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.form.Form;
 import org.bonitasoft.studio.model.form.FormPackage;
 import org.bonitasoft.studio.model.form.SubmitFormButton;
+import org.bonitasoft.studio.model.process.ConnectableElement;
 import org.bonitasoft.studio.model.process.Connector;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -58,8 +56,9 @@ public class SelectEventConnectorNameAndDescWizardPage extends SelectNameAndDesc
     private LifeCycleWidget lifeCycle;
 
 
-    public SelectEventConnectorNameAndDescWizardPage(final EObject container, final Connector connectorWorkingCopy,final Connector originalConnector, final Set<EStructuralFeature> featureToCheckForUniqueID) {
-        super(container,connectorWorkingCopy, originalConnector,featureToCheckForUniqueID);
+    public SelectEventConnectorNameAndDescWizardPage(final ModelLocation location, final Connector connectorWorkingCopy, final Connector originalConnector,
+            final Set<EStructuralFeature> featureToCheckForUniqueID) {
+        super(location, connectorWorkingCopy, originalConnector, featureToCheckForUniqueID);
     }
 
 
@@ -76,9 +75,9 @@ public class SelectEventConnectorNameAndDescWizardPage extends SelectNameAndDesc
         final Label connectorFailsLabel = new Label(composite, SWT.NONE);
         connectorFailsLabel.setText(Messages.connectorCrashLabel);
         connectorFailsLabel.setLayoutData(GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).create());
-
-        if(connector.eContainingFeature() == ProcessPackage.Literals.PAGE_FLOW__PAGE_FLOW_CONNECTORS || container instanceof Form || container instanceof SubmitFormButton ){
-
+        final ConnectableElement connectableElement = new ContextFinder(location).find(ConnectableElement.class);
+        if (connector.eContainingFeature() == ProcessPackage.Literals.PAGE_FLOW__PAGE_FLOW_CONNECTORS || connectableElement instanceof Form
+                || connectableElement instanceof SubmitFormButton) {
             final Label connectorFailText = new Label(composite, SWT.NONE);
             connectorFailText.setText(Messages.connectorFails_throwException);
             connectorFailText.setLayoutData(GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).create());
@@ -94,7 +93,7 @@ public class SelectEventConnectorNameAndDescWizardPage extends SelectNameAndDesc
             connectorFailsCombo.add(Messages.connectorFails_ignore);
 
             // Throw Event are not allowed in Connector in forms
-            if (!(container instanceof Form || container instanceof SubmitFormButton)) {
+            if (!(connectableElement instanceof Form || connectableElement instanceof SubmitFormButton)) {
                 connectorFailsCombo.add(Messages.connectorFails_throwEvent);
             }
 
@@ -191,12 +190,13 @@ public class SelectEventConnectorNameAndDescWizardPage extends SelectNameAndDesc
 
 
     private boolean activityHasLifecycle() {
-        return !container.eClass().equals(ProcessPackage.Literals.TIMER_EVENT) &&
-                !container.eClass().equals(ProcessPackage.Literals.CATCH_MESSAGE_EVENT) &&
-                !container.eClass().equals(ProcessPackage.Literals.CATCH_SIGNAL_EVENT) &&
-                !container.eClass().equals(ProcessPackage.Literals.ERROR_EVENT) &&
-                !container.eClass().equals(FormPackage.Literals.FORM) &&
-                !FormPackage.Literals.WIDGET.isSuperTypeOf(container.eClass());
+        final ConnectableElement connectableElement = new ContextFinder(location).find(ConnectableElement.class);
+        return !connectableElement.eClass().equals(ProcessPackage.Literals.TIMER_EVENT) &&
+                !connectableElement.eClass().equals(ProcessPackage.Literals.CATCH_MESSAGE_EVENT) &&
+                !connectableElement.eClass().equals(ProcessPackage.Literals.CATCH_SIGNAL_EVENT) &&
+                !connectableElement.eClass().equals(ProcessPackage.Literals.ERROR_EVENT) &&
+                !connectableElement.eClass().equals(FormPackage.Literals.FORM) &&
+                !FormPackage.Literals.WIDGET.isSuperTypeOf(connectableElement.eClass());
     }
 
 

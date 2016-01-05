@@ -17,13 +17,12 @@
  */
 package org.bonitasoft.studio.connectors.ui.wizard.page;
 
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.connector.model.definition.ConnectorDefinition;
 import org.bonitasoft.studio.connectors.i18n.Messages;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.process.Connector;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -35,16 +34,15 @@ import org.eclipse.swt.widgets.Control;
  * @author Romain Bioteau
  *
  */
-public abstract class AbstractConnectorOutputWizardPage extends WizardPage implements IBonitaVariableContext {
+public abstract class AbstractConnectorOutputWizardPage extends WizardPage {
 
-    private EObject elementContainer;
     private ConnectorDefinition definition;
     protected final EMFDataBindingContext context;
     private Connector connector;
     private WizardPageSupport pageSupport;
 	private IWizardPage previousPageBackup;
-	private boolean isPageFlowContext = false;
 	private IExpressionNatureProvider storageExpressionProvider;
+    private ModelLocation location;
 
 
 	public AbstractConnectorOutputWizardPage(){
@@ -53,7 +51,6 @@ public abstract class AbstractConnectorOutputWizardPage extends WizardPage imple
         setDescription(Messages.outputMappingDesc);
         context = new EMFDataBindingContext() ;
     }
-
 
     protected abstract Control doCreateControl(Composite parent,EMFDataBindingContext context) ;
 
@@ -91,12 +88,12 @@ public abstract class AbstractConnectorOutputWizardPage extends WizardPage imple
         this.connector = connector;
     }
 
-    public EObject getElementContainer() {
-        return elementContainer;
+    public ModelLocation getModelLocation() {
+        return location;
     }
 
-    public void setElementContainer(EObject elementContainer) {
-        this.elementContainer = elementContainer;
+    public void setModelLocation(ModelLocation location) {
+        this.location = location;
     }
 
     @Override
@@ -118,18 +115,6 @@ public abstract class AbstractConnectorOutputWizardPage extends WizardPage imple
     	super.setPreviousPage(page);
     }
     
-    @Override
-    public boolean isPageFlowContext() {
-    	return isPageFlowContext;
-    }
-
-    
-    @Override
-    public void setIsPageFlowContext(boolean isPageFlowContext) {
-    	this.isPageFlowContext=isPageFlowContext;
-    	
-    }
-
     public IExpressionNatureProvider getStorageExpressionProvider() {
   		return storageExpressionProvider;
   	}

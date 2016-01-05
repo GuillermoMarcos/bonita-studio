@@ -63,11 +63,8 @@ public class MessageIdExpressionEditor extends SelectionAwareExpressionEditor im
 
     private TableViewer viewer;
 
-    private boolean isPageFlowContext = false;
-
     @Override
     public Control createExpressionEditor(Composite parent, EMFDataBindingContext ctx) {
-
         final Composite mainComposite = new Composite(parent, SWT.NONE);
         mainComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         mainComposite.setLayout(new GridLayout(2, false));
@@ -162,34 +159,6 @@ public class MessageIdExpressionEditor extends SelectionAwareExpressionEditor im
     @Override
     public Control getTextControl() {
         return valueText;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(boolean isOverviewContext) {
     }
 
 }

@@ -1418,8 +1418,6 @@ public class BonitaContentProposalAdapter implements SWTBotConstants {
 
     protected List<String> filteredExpressionType;
 
-    private boolean isPageFlowContext;
-
     private boolean createShortcutZone;
 
     /**
@@ -2376,7 +2374,6 @@ public class BonitaContentProposalAdapter implements SWTBotConstants {
             final IContentProposalListener listener = (IContentProposalListener) listenerArray[i];
             if (listener instanceof ExpressionViewer) {
                 final ExpressionViewer expViewer = (ExpressionViewer) listener;
-                isPageFlowContext = expViewer.isPageFlowContext();
                 final IExpressionNatureProvider expressionNatureProvider = expViewer.getExpressionNatureProvider();
                 if (expressionNatureProvider instanceof DataExpressionNatureProvider) {
                     dataFeature = ((DataExpressionNatureProvider) expressionNatureProvider).getDataFeature();
@@ -2394,7 +2391,6 @@ public class BonitaContentProposalAdapter implements SWTBotConstants {
                 }
             }
         }
-        proposalListener.setIsPageFlowContext(isPageFlowContext);
         if (dataFeature != null) {
             proposalListener.setEStructuralFeature(dataFeature);
         }

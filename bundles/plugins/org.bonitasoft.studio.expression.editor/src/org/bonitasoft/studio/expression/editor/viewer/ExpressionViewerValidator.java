@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.core.databinding.ValidationStatusProvider;
@@ -32,7 +33,6 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 
 
@@ -43,10 +43,10 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
 public class ExpressionViewerValidator extends ValidationStatusProvider implements IValidator {
 
     private final List<IExpressionValidator> validators = new ArrayList<IExpressionValidator>();
-    private EObject context;
     private final List<IExpressionValidationListener> listeners = new ArrayList<IExpressionValidationListener>();
     private Expression expression;
     private WritableValue validationStatus = new WritableValue(Status.OK_STATUS, IStatus.class);
+    private ModelLocation location;
 
     public void addValidator(final IExpressionValidator expressionValidator){
         if(!validators.contains(expressionValidator)){
@@ -69,12 +69,12 @@ public class ExpressionViewerValidator extends ValidationStatusProvider implemen
         return expression;
     }
 
-    public void setContext(final EObject context) {
-        this.context = context;
+    public void setModelLocation(final ModelLocation location) {
+        this.location = location;
     }
 
-    public EObject getContext() {
-        return context;
+    public ModelLocation getModelLocation() {
+        return location;
     }
 
     public void setExpression(final Expression expression) {
@@ -105,7 +105,7 @@ public class ExpressionViewerValidator extends ValidationStatusProvider implemen
         final IExpressionValidator delagateValidator = getExpressionValidator(expression);
         if (delagateValidator != null) {
             delagateValidator.setDomain(TransactionUtil.getEditingDomain(expression));
-            delagateValidator.setContext(getContext());
+            delagateValidator.setModelLocation(getModelLocation());
             delagateValidator.setInputExpression(expression);
             Object toValidate = value;
             if (toValidate == null) {

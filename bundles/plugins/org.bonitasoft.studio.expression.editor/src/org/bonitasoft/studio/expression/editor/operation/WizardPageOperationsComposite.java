@@ -39,13 +39,6 @@ public class WizardPageOperationsComposite extends OperationsComposite {
 				storageExpressionFilter);
 	}
 
-	public WizardPageOperationsComposite(final TabbedPropertySheetPage tabbedPropertySheetPage,
-			final Composite mainComposite, final ViewerFilter actionExpressionFilter,
-			final ViewerFilter storageExpressionFilter,final boolean isPageFlowContext) {
-		super(tabbedPropertySheetPage, mainComposite, actionExpressionFilter,
-				storageExpressionFilter,isPageFlowContext);
-	}
-
 	/* (non-Javadoc)
 	 * @see org.bonitasoft.studio.expression.editor.operation.OperationsComposite#refresh()
 	 */
@@ -76,24 +69,6 @@ public class WizardPageOperationsComposite extends OperationsComposite {
 		if (tabbedPropertySheetPage != null) {
 			tabbedPropertySheetPage.resizeScrolledComposite();
 		}
-	}
-
-
-
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-	 */
-	@Override
-	public boolean isOverViewContext() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-	 */
-	@Override
-	public void setIsOverviewContext(final boolean isOverviewContext) {
 	}
 
 }

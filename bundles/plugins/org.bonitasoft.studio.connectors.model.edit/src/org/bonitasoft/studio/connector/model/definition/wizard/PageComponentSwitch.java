@@ -19,7 +19,6 @@ package org.bonitasoft.studio.connector.model.definition.wizard;
 import java.util.ArrayList;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.connector.model.definition.Array;
 import org.bonitasoft.studio.connector.model.definition.Checkbox;
 import org.bonitasoft.studio.connector.model.definition.Component;
@@ -36,6 +35,7 @@ import org.bonitasoft.studio.connector.model.definition.TextArea;
 import org.bonitasoft.studio.connector.model.definition.WidgetComponent;
 import org.bonitasoft.studio.connector.model.definition.util.ConnectorDefinitionSwitch;
 import org.bonitasoft.studio.connector.model.i18n.DefinitionResourceProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.viewer.CheckBoxExpressionViewer;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionCollectionViewer;
@@ -49,7 +49,6 @@ import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.expression.ListExpression;
 import org.bonitasoft.studio.model.expression.TableExpression;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizardContainer;
@@ -69,7 +68,7 @@ import org.eclipse.ui.forms.widgets.Section;
  * @author Romain Bioteau
  *
  */
-public class PageComponentSwitch extends ConnectorDefinitionSwitch<Component> implements IBonitaVariableContext {
+public class PageComponentSwitch extends ConnectorDefinitionSwitch<Component> {
 
 
     private final Composite parent;
@@ -83,10 +82,11 @@ public class PageComponentSwitch extends ConnectorDefinitionSwitch<Component> im
         this.componentBuilder = componentBuilder;
     }
 
-    public PageComponentSwitch(final IWizardContainer iWizardContainer, final Composite parent, final EObject container, final ConnectorDefinition definition,
+    public PageComponentSwitch(final IWizardContainer iWizardContainer, final Composite parent, final ModelLocation location,
+            final ConnectorDefinition definition,
             final ConnectorConfiguration connectorConfiguration, final EMFDataBindingContext context, final DefinitionResourceProvider messageProvider,
             final AvailableExpressionTypeFilter connectorExpressionContentTypeFilter) {
-        this(iWizardContainer, parent, new PageComponentSwitchBuilder(container, definition, connectorConfiguration, context, messageProvider,
+        this(iWizardContainer, parent, new PageComponentSwitchBuilder(location, definition, connectorConfiguration, context, messageProvider,
                 connectorExpressionContentTypeFilter));
     }
 
@@ -281,37 +281,12 @@ public class PageComponentSwitch extends ConnectorDefinitionSwitch<Component> im
         }
     }
 
-    @Override
-    public boolean isPageFlowContext() {
-        return componentBuilder.isPageFlowContext();
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        componentBuilder.setIsPageFlowContext(isPageFlowContext);
-    }
-
-    /* (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-    }
-
     protected AvailableExpressionTypeFilter getConnectorExpressionContentTypeFilter() {
         return componentBuilder.connectorExpressionContentTypeFilter;
     }
 
-    protected EObject getContainer() {
-        return componentBuilder.container;
+    protected ModelLocation getLocation() {
+        return componentBuilder.location;
     }
 
     protected DefinitionResourceProvider getMessageProvider() {

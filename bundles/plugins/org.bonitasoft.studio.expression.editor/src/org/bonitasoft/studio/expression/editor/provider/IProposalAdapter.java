@@ -22,29 +22,10 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  */
 public abstract class IProposalAdapter implements IProposalListener {
 
-    @Override
-    public boolean isPageFlowContext() {
-        return false;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-
-    }
 
     @Override
     public String handleEvent(final EObject context, final String fixedReturnType) {
         return null;
-    }
-
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-
     }
 
     @Override

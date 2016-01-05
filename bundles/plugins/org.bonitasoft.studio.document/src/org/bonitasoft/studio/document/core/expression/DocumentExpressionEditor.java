@@ -77,8 +77,6 @@ public class DocumentExpressionEditor extends SelectionAwareExpressionEditor
 
     private IObservableValue returnTypeObservable = null;
 
-    private boolean isPageFlowContext = false;
-
     @Override
     public Control createExpressionEditor(final Composite parent, final EMFDataBindingContext ctx) {
         mainComposite = new Composite(parent, SWT.NONE);
@@ -326,30 +324,4 @@ public class DocumentExpressionEditor extends SelectionAwareExpressionEditor
         }
     }
 
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-    }
 }

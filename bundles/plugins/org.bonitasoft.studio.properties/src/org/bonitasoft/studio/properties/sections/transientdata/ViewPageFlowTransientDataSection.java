@@ -34,14 +34,5 @@ public class ViewPageFlowTransientDataSection extends ApplicationTransientDataSe
 		return ProcessPackage.Literals.VIEW_PAGE_FLOW__VIEW_TRANSIENT_DATA;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.data.ui.property.section.AbstractDataSection#isOverViewContext()
-	 */
-	@Override
-	public boolean isOverViewContext() {
-		return true;
-	}
-
 }
 

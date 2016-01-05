@@ -67,9 +67,4 @@ public class ApplicationTransientDataSection extends AbstractDataSection {
 		return null;
 	}
 
-	@Override
-	public boolean isPageFlowContext() {
-		return true;
-	}
-
 }

@@ -144,7 +144,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 			targetDataExpressionViewer.setExpressionNatureProvider(storageExpressionProvider) ;
 		}
 		targetDataExpressionViewer.addFilter(leftFilter);
-		targetDataExpressionViewer.setContext(getElementContainer());
+        targetDataExpressionViewer.setLocation(getModelLocation());
 		targetDataExpressionViewer.setInput(singleModeOuputOperation);
 
 
@@ -185,7 +185,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 			targetDataExpressionViewer.setExpressionNatureProvider(storageExpressionProvider) ;
 		}
 		targetDataExpressionViewer.addFilter(leftFilter);
-		targetDataExpressionViewer.setContext(getElementContainer());
+        targetDataExpressionViewer.setLocation(getModelLocation());
 		targetDataExpressionViewer.setInput(singleModeOuputOperation);
 
 		context.bindValue(ViewersObservables.observeSingleSelection(targetDataExpressionViewer), EMFObservables.observeValue(singleModeOuputOperation, ExpressionPackage.Literals.OPERATION__LEFT_OPERAND)) ;
@@ -232,7 +232,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 				targetDataExpressionViewer.setExpressionNatureProvider(storageExpressionProvider) ;
 			}
 			targetDataExpressionViewer.addFilter(leftFilter);
-			targetDataExpressionViewer.setContext(getElementContainer());
+            targetDataExpressionViewer.setLocation(getModelLocation());
 			targetDataExpressionViewer.setInput(op);
 
 
@@ -345,7 +345,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 			targetDataExpressionViewer.setExpressionNatureProvider(storageExpressionProvider) ;
 		}
 		targetDataExpressionViewer.addFilter(leftFilter);
-		targetDataExpressionViewer.setContext(getElementContainer());
+        targetDataExpressionViewer.setLocation(getModelLocation());
 		targetDataExpressionViewer.setInput(singleModeOuputOperation);
 
 
@@ -386,7 +386,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 			lineComposite.setStorageExpressionNatureContentProvider(storageExpressionProvider) ;
 		}
 		lineComposite.setContext(context) ;
-		lineComposite.setContext(getElementContainer());
+        lineComposite.setModelLocation(getModelLocation());
 
 		return mainComposite;
 	}
@@ -578,18 +578,4 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 		updateStackLayout();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-	 */
-	@Override
-	public boolean isOverViewContext() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-	 */
-	@Override
-	public void setIsOverviewContext(final boolean isOverviewContext) {
-	}
 }

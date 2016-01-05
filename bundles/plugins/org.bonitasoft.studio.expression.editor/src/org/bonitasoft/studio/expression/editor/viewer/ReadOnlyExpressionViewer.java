@@ -24,6 +24,7 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.extension.BonitaStudioExtensionRegistryManager;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.provider.DataExpressionNatureProvider;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -126,9 +127,10 @@ public class ReadOnlyExpressionViewer extends ExpressionViewer {
                 return true;
             }
         }
-        if (context != null) {
-            if (context instanceof Operation && context.eContainer() instanceof Connector) {
-                return context.eContainer().eContainmentFeature().equals(ProcessPackage.Literals.PAGE_FLOW__PAGE_FLOW_CONNECTORS);
+        if (location != null) {
+            final Operation op = new ContextFinder(location).find(Operation.class);
+            if (op != null && op.eContainer() instanceof Connector) {
+                return op.eContainer().eContainmentFeature().equals(ProcessPackage.Literals.PAGE_FLOW__PAGE_FLOW_CONNECTORS);
             }
         }
         return false;
@@ -150,12 +152,13 @@ public class ReadOnlyExpressionViewer extends ExpressionViewer {
     @Override
     protected void sideModificationOnProposalAccepted(final CompoundCommand cc, final Expression copy) {
         super.sideModificationOnProposalAccepted(cc, copy);
-        if (context instanceof Operation) {
+        final Operation op = new ContextFinder(location).find(Operation.class);
+        if (op != null) {
             final Expression selectedExpression = getSelectedExpression();
             if (selectedExpression != null && ExpressionPackage.Literals.OPERATION__LEFT_OPERAND.equals(selectedExpression.eContainingFeature())) {
-                final Operator operator = ((Operation) context).getOperator();
+                final Operator operator = op.getOperator();
                 final String newOperatorType = updateOperatorType(cc, operator, copy);
-                updateRightOperand(cc, (Operation) context, newOperatorType, copy);
+                updateRightOperand(cc, op, newOperatorType, copy);
             }
         }
     }

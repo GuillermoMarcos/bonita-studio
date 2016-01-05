@@ -16,6 +16,7 @@ package org.bonitasoft.studio.expression.core.scope;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 public class ModelLocationFactory {
 
@@ -31,12 +32,43 @@ public class ModelLocationFactory {
         return result;
     }
 
-    public ModelLocation newLocation(EObject container, EObject modelElement, EStructuralFeature feature) {
-        final ModelLocation result = new ModelLocation(modelElement, feature);
-        result.setParent(new ModelLocation(container, container.eContainingFeature()));
-        ModelLocation current = result.getParent();
+    public ModelLocation newLocation(EObject container, EObject modelElement) {
+        final ModelLocation result = new ModelLocation(modelElement, modelElement.eContainingFeature());
+        ModelLocation current = result;
+        EObject eContainer = modelElement.eContainer();
+        while (eContainer != null && !EcoreUtil.equals(container, eContainer)) {
+            current.setParent(new ModelLocation(eContainer, eContainer.eContainingFeature()));
+            eContainer = eContainer.eContainer();
+            current = current.getParent();
+        }
+        current.setParent(new ModelLocation(container, container.eContainingFeature()));
+        current = current.getParent();
         while (current.getModelElement().eContainer() != null) {
-            final EObject eContainer = current.getModelElement().eContainer();
+            eContainer = current.getModelElement().eContainer();
+            final ModelLocation parent = new ModelLocation(eContainer, eContainer.eContainingFeature());
+            current.setParent(parent);
+            current = parent;
+        }
+        return result;
+    }
+
+    public ModelLocation newLocation(ModelLocation location, EObject modelElement) {
+        return new ModelLocation(location, modelElement, modelElement.eContainingFeature());
+    }
+
+    public ModelLocation newLocation(EObject container, EObject modelElement, EStructuralFeature modelElementContainingFeature) {
+        final ModelLocation result = new ModelLocation(modelElement, modelElementContainingFeature);
+        ModelLocation current = result;
+        EObject eContainer = modelElement.eContainer();
+        while (eContainer != null && !EcoreUtil.equals(container, eContainer)) {
+            current.setParent(new ModelLocation(eContainer, eContainer.eContainingFeature()));
+            eContainer = eContainer.eContainer();
+            current = current.getParent();
+        }
+        current.setParent(new ModelLocation(container, container.eContainingFeature()));
+        current = current.getParent();
+        while (current.getModelElement().eContainer() != null) {
+            eContainer = current.getModelElement().eContainer();
             final ModelLocation parent = new ModelLocation(eContainer, eContainer.eContainingFeature());
             current.setParent(parent);
             current = parent;

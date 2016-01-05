@@ -94,8 +94,6 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
 
     private Button addExpressionButton;
 
-    private boolean isPageFlowContext = false;
-
     @Override
     public Control createExpressionEditor(final Composite parent, final EMFDataBindingContext ctx) {
         mainComposite = new Composite(parent, SWT.NONE);
@@ -188,8 +186,6 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
                     if (getDataFeature() != null) {
                         proposalListener.setEStructuralFeature(getDataFeature());
                     }
-                    proposalListener.setIsOverviewContext(isOverViewContext());
-                    proposalListener.setIsPageFlowContext(isPageFlowContext());
                     proposalListener.handleEvent(context, fixedReturnType);
                     fillViewerData(context, scope);
                     return;
@@ -400,34 +396,6 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
         if (returnTypeObservable != null) {
             returnTypeObservable.dispose();
         }
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
 }

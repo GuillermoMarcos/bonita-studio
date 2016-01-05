@@ -502,7 +502,7 @@ public class AddMessageEventWizardPage extends WizardPage implements
 				IStatus.INFO);
 		elementExpressionViewer.setMandatoryField(Messages.eventNameLabel,
 				databindingContext);
-		elementExpressionViewer.setContext(element);
+		elementExpressionViewer.setLocation(element);
 		catchEventNatureProvider = new CatchMessageEventNamesExpressionNatureProvider();
 		catchEventNatureProvider.setThrowMessage(element);
 		elementExpressionViewer
@@ -551,7 +551,7 @@ public class AddMessageEventWizardPage extends WizardPage implements
 				IStatus.INFO);
 		final IExpressionNatureProvider provider = new ProcessNamesExpressionNatureProviderForMessage();
 		processExpressionViewer.setExpressionNatureProvider(provider);
-		processExpressionViewer.setContext(element);
+		processExpressionViewer.setLocation(element);
 		if (workingCopyMessage.getTargetProcessExpression() == null) {
 			final Expression createExpression = ExpressionFactory.eINSTANCE
 					.createExpression();

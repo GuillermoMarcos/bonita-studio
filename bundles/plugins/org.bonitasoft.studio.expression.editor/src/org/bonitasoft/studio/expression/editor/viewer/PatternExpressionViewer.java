@@ -28,6 +28,7 @@ import org.bonitasoft.studio.common.jface.databinding.validator.EmptyInputValida
 import org.bonitasoft.studio.common.widgets.MagicComposite;
 import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -91,10 +92,10 @@ public class PatternExpressionViewer extends Composite {
     private final MagicComposite mc;
     private EMFDataBindingContext context;
     protected String mandatoryFieldLabel;
-    private EObject contextInput;
     private Binding patternBinding;
     private ControlDecoration helpDecoration;
     private Object input;
+    private ModelLocation location;
     private static Set<String> compatibleTypes;
     static {
         compatibleTypes = new HashSet<String>();
@@ -203,7 +204,7 @@ public class PatternExpressionViewer extends Composite {
     }
 
     private void bindExpressionViewer() {
-        expressionViewer.setContext(contextInput);
+        expressionViewer.setLocation(location);
         expressionViewer.setInput(input);
         if(mandatoryFieldLabel != null){
             expressionViewer.setMandatoryField(mandatoryFieldLabel, context);
@@ -326,18 +327,18 @@ public class PatternExpressionViewer extends Composite {
         }
     }
 
-    public void setContextInput(final EObject input){
-        contextInput = input;
+    public void setLocation(final ModelLocation location) {
+        this.location = location;
     }
 
     public void setExpression(final Expression expression){
         this.expression = expression;
-        manageNatureProviderAndAutocompletionProposal(contextInput);
+        manageNatureProviderAndAutocompletionProposal();
         initializeEditorType();
     }
 
 
-    protected void manageNatureProviderAndAutocompletionProposal(final Object input) {
+    protected void manageNatureProviderAndAutocompletionProposal() {
         filteredExpressions =  getFilteredExpressions() ;
         final Set<Expression> expressionSet = new HashSet<Expression>(filteredExpressions);
         contentAssisProcessor.setExpressions(expressionSet);
@@ -377,21 +378,19 @@ public class PatternExpressionViewer extends Composite {
 
     private List<Expression> getFilteredExpressions() {
         final List<Expression> filteredExpressions = new ArrayList<Expression>() ;
-        final Expression[] expressions = expressionNatureProvider.getExpressions(contextInput);
+        final Expression[] expressions = expressionNatureProvider.getExpressions(location);
         if(expressions != null){
             filteredExpressions.addAll(Arrays.asList(expressions)) ;
-            if (contextInput != null) {
                 for(final Expression exp : expressions) {
-                    for(final ViewerFilter filter : filters){
-                        if (filter != null && !filter.select(expressionViewer, input, exp)) {
-                            filteredExpressions.remove(exp) ;
-                        }
+                //                    for(final ViewerFilter filter : filters){
+                //                        if (filter != null && !filter.select(expressionViewer, input, exp)) {
+                //                            filteredExpressions.remove(exp) ;
+                //                        }
                         if (!compatibleTypes.contains(exp.getReturnType())) {
                             filteredExpressions.remove(exp);
                         }
                     }
-                }
-            }
+            //                }
         }
         return filteredExpressions ;
     }

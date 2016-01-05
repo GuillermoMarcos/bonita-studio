@@ -21,15 +21,17 @@ import java.util.Set;
 
 import org.bonitasoft.studio.common.DataTypeLabels;
 import org.bonitasoft.studio.common.DatasourceConstants;
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.data.DataPlugin;
 import org.bonitasoft.studio.data.i18n.Messages;
-import org.bonitasoft.studio.model.process.Activity;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.process.Data;
 import org.bonitasoft.studio.model.process.DataAware;
+import org.bonitasoft.studio.model.process.MainProcess;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.bonitasoft.studio.pics.Pics;
@@ -38,7 +40,6 @@ import org.bonitasoft.studio.refactoring.core.RefactoringOperationType;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -49,9 +50,9 @@ import org.eclipse.jface.wizard.Wizard;
 /**
  * @author Romain Bioteau
  */
-public class DataWizard extends Wizard implements IBonitaVariableContext {
+public class DataWizard extends Wizard {
 
-    private final EObject container;
+    private final ModelLocation location;
 
     private Data dataWorkingCopy;
 
@@ -71,10 +72,6 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
 
     private final TransactionalEditingDomain editingDomain;
 
-    private boolean isPageFlowContext = false;
-
-    private boolean isOverviewContext = false;
-
     private static final String XTEXT_BUILDER_ID = "org.eclipse.xtext.ui.shared.xtextBuilder";
 
     public DataWizard(final TransactionalEditingDomain editingDomain, final EObject container, final EStructuralFeature dataContainmentFeature,
@@ -82,9 +79,9 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
             final boolean showAutogenerateForm) {
         initDataWizard(dataContainmentFeature, showAutogenerateForm);
         this.editingDomain = editingDomain;
-        this.container = container;
         dataWorkingCopy = createWorkingCopy(container);
         editMode = false;
+        location = new ModelLocationFactory().newLocation(container, dataWorkingCopy, dataContainmentFeature);
         this.featureToCheckForUniqueID = new HashSet<EStructuralFeature>();
         this.featureToCheckForUniqueID.add(dataContainmentFeature);
         setWindowTitle(Messages.newVariable);
@@ -95,8 +92,8 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
             final boolean showAutogenerateForm, final String fixedReturnType) {
         initDataWizard(dataContainmentFeature, showAutogenerateForm);
         this.editingDomain = editingDomain;
-        this.container = container;
         dataWorkingCopy = createWorkingCopy(container);
+        location = new ModelLocationFactory().newLocation(container, dataWorkingCopy, dataContainmentFeature);
         editMode = false;
         this.featureToCheckForUniqueID = new HashSet<EStructuralFeature>();
         this.featureToCheckForUniqueID.add(dataContainmentFeature);
@@ -116,9 +113,9 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         Assert.isNotNull(data);
         this.editingDomain = editingDomain;
         setNeedsProgressMonitor(true);
-        container = data.eContainer();
         originalData = data;
         dataWorkingCopy = EcoreUtil.copy(originalData);
+        location = new ModelLocationFactory().newLocation(originalData);
         editMode = true;
         this.featureToCheckForUniqueID = featureToCheckForUniqueID;
         setWindowTitle(Messages.editVariable);
@@ -148,19 +145,14 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
     protected DataWizardPage getWizardPage() {
         DataWizardPage page = null;
         if (!dataContainmentFeature.equals(ProcessPackage.Literals.DATA_AWARE__DATA)) {
-            page = new DataWizardPage(dataWorkingCopy, container, false, false, false, showAutogenerateForm, featureToCheckForUniqueID, fixedReturnType);
-            page.setIsPageFlowContext(isPageFlowContext);
-            page.setIsOverviewContext(isOverviewContext);
+            page = new DataWizardPage(dataWorkingCopy, location, false, false, showAutogenerateForm, featureToCheckForUniqueID, fixedReturnType);
             if (editMode) {
                 page.setTitle(Messages.editVariableTitle);
                 page.setDescription(Messages.editVariableDescription);
             }
             return page;
         } else {
-            final boolean isOnActivity = container instanceof Activity;
-            page = new DataWizardPage(dataWorkingCopy, container, true, true, isOnActivity, showAutogenerateForm, featureToCheckForUniqueID, fixedReturnType);
-            page.setIsPageFlowContext(isPageFlowContext);
-            page.setIsOverviewContext(isOverviewContext);
+            page = new DataWizardPage(dataWorkingCopy, location, true, true, showAutogenerateForm, featureToCheckForUniqueID, fixedReturnType);
         }
         if (editMode) {
             page.setTitle(Messages.editVariableTitle);
@@ -197,12 +189,11 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
                 }
             }
         } else {
-            final Command addCommand = AddCommand.create(editingDomain, container, dataContainmentFeature, workingCopy);
-            editingDomain.getCommandStack().execute(addCommand);
-            System.out.println(addCommand.getResult());
+            editingDomain.getCommandStack()
+                    .execute(AddCommand.create(editingDomain, location.getParent().getModelElement(), dataContainmentFeature, workingCopy));
         }
         if (page != null) {
-            page.setWorkingCopy(createWorkingCopy(container));
+            page.setWorkingCopy(createWorkingCopy(new ContextFinder(location).find(MainProcess.class)));
         }
         refreshXtextReferences();
         return true;
@@ -230,7 +221,7 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
         final RefactorDataOperation op = new RefactorDataOperation(RefactoringOperationType.UPDATE);
         op.setEditingDomain(editingDomain);
         op.addItemToRefactor(workingCopy, originalData);
-        op.setDataContainer((DataAware) container);
+        op.setDataContainer((DataAware) location.getParent().getModelElement());
         op.setDataContainmentFeature(dataContainmentFeature);
         op.setAskConfirmation(true);
         return op;
@@ -258,36 +249,6 @@ public class DataWizard extends Wizard implements IBonitaVariableContext {
 
     public Data getOriginalData() {
         return originalData;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return isOverviewContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-        this.isOverviewContext = isOverviewContext;
-
     }
 
 }

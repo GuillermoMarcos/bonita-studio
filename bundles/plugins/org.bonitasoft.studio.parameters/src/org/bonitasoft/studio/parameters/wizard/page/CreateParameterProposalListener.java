@@ -31,11 +31,6 @@ import org.eclipse.swt.widgets.Display;
  */
 public class CreateParameterProposalListener implements IProposalListener {
 
-    private boolean isPageFlowContext = false;
-
-    public CreateParameterProposalListener() {
-    }
-
     @Override
     public String handleEvent(final EObject context, final String fixedReturnType) {
         Assert.isNotNull(context);
@@ -55,48 +50,11 @@ public class CreateParameterProposalListener implements IProposalListener {
 
     /*
      * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isPageFlowContext()
-     */
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsPageFlowContext(boolean)
-     */
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.bonitasoft.studio.expression.editor.provider.IProposalListener#setEStructuralFeature(org.eclipse.emf.ecore.EStructuralFeature)
      */
     @Override
     public void setEStructuralFeature(final EStructuralFeature feature) {
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
     @Override

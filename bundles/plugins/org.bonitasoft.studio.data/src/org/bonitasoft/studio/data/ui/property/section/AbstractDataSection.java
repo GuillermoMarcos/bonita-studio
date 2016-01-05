@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bonitasoft.studio.common.IBonitaVariableContext;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.jface.CustomWizardDialog;
 import org.bonitasoft.studio.common.jface.DataStyledTreeLabelProvider;
@@ -83,7 +82,7 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * @author Romain Bioteau
  */
-public abstract class AbstractDataSection extends AbstractBonitaDescriptionSection implements IDoubleClickListener, IBonitaVariableContext, IAddData {
+public abstract class AbstractDataSection extends AbstractBonitaDescriptionSection implements IDoubleClickListener, IAddData {
 
     private Button updateDataButton;
 
@@ -95,11 +94,7 @@ public abstract class AbstractDataSection extends AbstractBonitaDescriptionSecti
 
     private TableViewer dataTableViewer;
 
-    private boolean isPageFlowContext = false;
-
     protected EMFDataBindingContext context;
-
-    private boolean isOverviewContext = false;
 
     @Override
     protected void createContent(final Composite parent) {
@@ -263,8 +258,6 @@ public abstract class AbstractDataSection extends AbstractBonitaDescriptionSecti
     @Override
     public void addData() {
         final DataWizard wizard = new DataWizard(getEditingDomain(), getEObject(), getDataFeature(), getDataFeatureToCheckUniqueID(), getShowAutoGenerateForm());
-        wizard.setIsPageFlowContext(isPageFlowContext());
-        wizard.setIsOverviewContext(isOverViewContext());
         if (new DataWizardDialog(Display.getCurrent().getActiveShell(), wizard, this).open() == Dialog.OK) {
             dataTableViewer.refresh();
         }
@@ -299,8 +292,6 @@ public abstract class AbstractDataSection extends AbstractBonitaDescriptionSecti
 
             final DataWizard wizard = new DataWizard(getEditingDomain(), selectedData, getDataFeature(),
                     getDataFeatureToCheckUniqueID(), getShowAutoGenerateForm());
-            wizard.setIsPageFlowContext(isPageFlowContext());
-            wizard.setIsOverviewContext(isOverViewContext());
             new CustomWizardDialog(Display.getDefault().getActiveShell(), wizard, IDialogConstants.OK_LABEL).open();
             dataTableViewer.refresh();
         }
@@ -415,31 +406,4 @@ public abstract class AbstractDataSection extends AbstractBonitaDescriptionSecti
         return Messages.localVariableDecsription;
     }
 
-    @Override
-    public boolean isPageFlowContext() {
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(final boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return isOverviewContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
-        this.isOverviewContext = isOverviewContext;
-    }
 }

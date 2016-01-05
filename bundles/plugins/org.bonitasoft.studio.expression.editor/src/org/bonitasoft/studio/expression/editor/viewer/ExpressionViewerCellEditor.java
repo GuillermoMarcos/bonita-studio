@@ -17,11 +17,11 @@
 package org.bonitasoft.studio.expression.editor.viewer;
 
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.autocompletion.IExpressionProposalLabelProvider;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.pics.Pics;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -302,8 +302,8 @@ public class ExpressionViewerCellEditor extends CellEditor {
         viewer.addFilter(filter);
     }
 
-    public void setContext(final EObject context) {
-        viewer.setContext(context);
+    public void setLocation(final ModelLocation location) {
+        viewer.setLocation(location);
     }
 
     public void setExpressionNatureProvider(

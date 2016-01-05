@@ -76,8 +76,6 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
 
     private Text typeText;
 
-    private boolean isPageFlowContext = false;
-
     public FormFieldExpressionEditor() {
         adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
         adapterLabelProvider = new AdapterFactoryLabelProvider(adapterFactory);
@@ -266,35 +264,6 @@ public class FormFieldExpressionEditor extends SelectionAwareExpressionEditor im
     @Override
     public Control getTextControl() {
         return null;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(boolean isOverviewContext) {
     }
 
 }

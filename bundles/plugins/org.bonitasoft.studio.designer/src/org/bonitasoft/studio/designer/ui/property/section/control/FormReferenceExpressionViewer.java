@@ -19,6 +19,7 @@ import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.designer.core.command.UpdateFormMappingCommand;
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.viewer.EditExpressionDialog;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
@@ -100,13 +101,14 @@ public class FormReferenceExpressionViewer extends ExpressionViewer {
      */
     @Override
     protected void editControlSelected(final ToolBar tb, final Event event, final EditingDomain editingDomain) {
-        Preconditions.checkState(context instanceof FormMapping);
-        final String newPageId = createOrEditFormListener.handleEvent(context, null);
+        final FormMapping formMapping = new ContextFinder(location).find(FormMapping.class);
+        Preconditions.checkState(formMapping != null);
+        final String newPageId = createOrEditFormListener.handleEvent(formMapping, null);
         if (newPageId != null) {
             pageStore.refresh();
             final WebPageFileStore webPageFileStore = pageStore.getChild(newPageId);
             if (webPageFileStore != null) {
-                editingDomain.getCommandStack().execute(new UpdateFormMappingCommand(editingDomain, (FormMapping) context,
+                editingDomain.getCommandStack().execute(new UpdateFormMappingCommand(editingDomain, formMapping,
                         ExpressionHelper.createFormReferenceExpression(webPageFileStore.getDisplayName(), newPageId)));
             }
         }

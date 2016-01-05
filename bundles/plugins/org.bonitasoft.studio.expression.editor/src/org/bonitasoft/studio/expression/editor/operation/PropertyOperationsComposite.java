@@ -40,30 +40,13 @@ public class PropertyOperationsComposite extends OperationsComposite {
 	 */
 	@Override
 	public void refresh() {
-		Composite shell = parent.getParent().getParent().getParent().getParent();
+		final Composite shell = parent.getParent().getParent().getParent().getParent();
 		shell.layout(true,true);
 		parent.layout(true,true);
 		layout(true,true);
 		if (tabbedPropertySheetPage != null) {
 			tabbedPropertySheetPage.resizeScrolledComposite();
 		}
-	}
-
-
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-	 */
-	@Override
-	public boolean isOverViewContext() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-	 */
-	@Override
-	public void setIsOverviewContext(boolean isOverviewContext) {
 	}
 
 }

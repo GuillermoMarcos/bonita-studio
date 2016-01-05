@@ -52,8 +52,6 @@ public class GeneratedConnectorWizardPage extends AbstractConnectorConfiguration
         pageComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         final Page page = getPage();
         final PageComponentSwitch componentSwitch = getPageComponentSwitch(context, pageComposite);
-        componentSwitch.setIsPageFlowContext(isPageFlowContext());
-
         for(final Component component : page.getWidget()){
             componentSwitch.doSwitch(component) ;
         }
@@ -66,26 +64,11 @@ public class GeneratedConnectorWizardPage extends AbstractConnectorConfiguration
     protected PageComponentSwitch getPageComponentSwitch(
             final EMFDataBindingContext context, final Composite pageComposite) {
         if(componentSwitch == null){
-            final PageComponentSwitchBuilder builder = new PageComponentSwitchBuilder(getElementContainer(), getDefinition(), getConfiguration(), context,
+            final PageComponentSwitchBuilder builder = new PageComponentSwitchBuilder(getModelLocation(), getDefinition(), getConfiguration(), context,
                     getMessageProvider(), getExpressionTypeFilter());
             componentSwitch = new PageComponentSwitch(getContainer(), pageComposite, builder);
         }
         return componentSwitch;
-    }
-
-    /* (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(final boolean isOverviewContext) {
     }
 
 }

@@ -46,10 +46,10 @@ public class TestConnectorWizard extends ConnectorWizard {
         setWindowTitle(Messages.testConnectorTitle);
     }
 
-    @Override
-    protected void initializeContainment() {
-        //KEEP IT EMPTY
-    }
+    //    @Override
+    //    protected void initializeContainment() {
+    //        //KEEP IT EMPTY
+    //    }
 
     @Override
     protected void addOuputPage(final ConnectorDefinition definition) {
@@ -61,7 +61,7 @@ public class TestConnectorWizard extends ConnectorWizard {
                 outputPage = new TestConnectorOutputWizardPage();
                 createDefaultOutputs(definition);
             }
-            outputPage.setElementContainer(container);
+            outputPage.setModelLocation(location);
             outputPage.setConnector(connectorWorkingCopy);
             outputPage.setDefinition(definition);
             addAdditionalPage(outputPage);

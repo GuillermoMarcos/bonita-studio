@@ -55,8 +55,6 @@ public class ConstantExpressionEditor extends SelectionAwareExpressionEditor imp
 
     private Expression inputExpression;
 
-    private boolean isPageFlowContext = false;
-
     @Override
     public Control createExpressionEditor(Composite parent, EMFDataBindingContext ctx) {
         return createExpressionEditor(parent, ctx, false);
@@ -157,35 +155,6 @@ public class ConstantExpressionEditor extends SelectionAwareExpressionEditor imp
     @Override
     public Control getTextControl() {
         return valueText;
-    }
-
-    @Override
-    public boolean isPageFlowContext() {
-
-        return isPageFlowContext;
-    }
-
-    @Override
-    public void setIsPageFlowContext(boolean isPageFlowContext) {
-        this.isPageFlowContext = isPageFlowContext;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#isOverViewContext()
-     */
-    @Override
-    public boolean isOverViewContext() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.bonitasoft.studio.common.IBonitaVariableContext#setIsOverviewContext(boolean)
-     */
-    @Override
-    public void setIsOverviewContext(boolean isOverviewContext) {
     }
 
 }

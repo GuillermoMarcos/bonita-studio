@@ -298,9 +298,9 @@ public class DecisionTableWizardPage extends WizardPage {
                 }
 
             });
-            op1widget.setContext(container);
+            op1widget.setLocation(container);
             op1widget.addFilter(new AvailableExpressionTypeFilter(ExpressionConstants.CONDITION_TYPE));
-            op1widget.setContext(container);
+            op1widget.setLocation(container);
             op1widget.setInput(lineWorkingCopy);
             op1widget.setSelection(new StructuredSelection(cond));
             op1widget.getEraseControl().addListener(SWT.Selection, new Listener() {
