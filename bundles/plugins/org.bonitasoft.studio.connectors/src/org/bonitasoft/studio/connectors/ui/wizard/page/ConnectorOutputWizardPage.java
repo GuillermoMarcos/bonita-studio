@@ -68,9 +68,8 @@ public class ConnectorOutputWizardPage extends AbstractConnectorOutputWizardPage
         if (storageExpressionProvider != null) {
             lineComposite.setStorageExpressionNatureContentProvider(storageExpressionProvider);
         }
-        lineComposite.setContext(context);
-        lineComposite.setModelLocation(getModelLocation());
-        lineComposite.setEObject(getConnector());
+        lineComposite.setDatabindingContext(context);
+        lineComposite.setInput(getModelLocation());
         lineComposite.fillTable();
 
         scrolledComposite.setContent(mainComposite);

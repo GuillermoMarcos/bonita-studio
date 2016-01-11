@@ -23,6 +23,7 @@ import java.util.List;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.properties.ExtensibleGridPropertySection;
 import org.bonitasoft.studio.common.properties.IExtensibleGridPropertySectionContribution;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
@@ -120,12 +121,12 @@ public class InitialValueContribution implements IExtensibleGridPropertySectionC
 
 				}
 
-				public void setContext(final EObject context) {
-
-				}
-
                 public boolean isRelevantForExpressionType(final String type) {
                     return true;
+                }
+
+                public void setModelLocation(ModelLocation modelLocation) {
+
                 }
 			});
 		}

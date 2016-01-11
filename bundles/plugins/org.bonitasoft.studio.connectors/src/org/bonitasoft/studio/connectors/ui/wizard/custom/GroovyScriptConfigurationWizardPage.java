@@ -75,11 +75,10 @@ public class GroovyScriptConfigurationWizardPage extends AbstractConnectorConfig
         builder.createFieldLabel(composite, SWT.CENTER, SCRIPT_INPUT_NAME, true);
         final ExpressionViewer viewer = new GroovyOnlyExpressionViewer(composite, SWT.BORDER);
         viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        viewer.setLocation(getModelLocation());
         final String fieldName = builder.getLabel("script");
         viewer.setMandatoryField(fieldName, context);
         viewer.addFilter(getExpressionTypeFilter());
-        viewer.setInput(parameter);
+        viewer.setInput(getModelLocation());
         final String desc = builder.getDescription(SCRIPT_INPUT_NAME);
         if (desc != null && !desc.isEmpty()) {
             viewer.setMessage(desc, IStatus.INFO);

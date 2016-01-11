@@ -19,13 +19,13 @@
 package org.bonitasoft.studio.properties.sections.general;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.properties.i18n.Messages;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 
@@ -34,11 +34,6 @@ import org.eclipse.emf.edit.domain.EditingDomain;
  *
  */
 public class ExpressionNotEmptyValidator implements IExpressionValidator {
-
-
-	public ExpressionNotEmptyValidator(){
-
-	}
 
 	@Override
 	public IStatus validate(final Object value) {
@@ -60,15 +55,19 @@ public class ExpressionNotEmptyValidator implements IExpressionValidator {
 
 	}
 
-	@Override
-	public void setContext(final EObject context) {
-
-
-	}
 
     @Override
     public boolean isRelevantForExpressionType(final String type) {
         return ExpressionConstants.CONSTANT_TYPE.equals(type);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.editor.provider.IExpressionValidator#setModelLocation(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public void setModelLocation(ModelLocation modelLocation) {
+
     }
 
 }

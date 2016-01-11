@@ -19,12 +19,12 @@ import java.util.List;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.condition.ui.expression.ComparisonExpressionValidator;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.expression.editor.viewer.IExpressionValidationListener;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
-import org.bonitasoft.studio.model.process.Element;
 import org.bonitasoft.studio.model.process.decision.DecisionFactory;
 import org.bonitasoft.studio.model.process.decision.DecisionTable;
 import org.bonitasoft.studio.model.process.decision.DecisionTableAction;
@@ -84,17 +84,17 @@ public class DecisionTableWizardPage extends WizardPage {
     private DecisionTableLine lineWorkingCopy;
     private DecisionTableLine toEditLine;
 
-    private final Element container;
+    private final ModelLocation location;
     private final DecisionTableWizard wizard;
 
     /**
      * @param container
      * @param pageName
      */
-    protected DecisionTableWizardPage(final DecisionTableWizard wizard, final Element container, final DecisionTable decisionTable) {
+    protected DecisionTableWizardPage(final DecisionTableWizard wizard, final ModelLocation location, final DecisionTable decisionTable) {
         super("Decision Table");
         this.wizard = wizard;
-        this.container = container;
+        this.location = location;
         this.decisionTable = decisionTable;
         setTitle(Messages.wizardPageTitle);
         setDescription(Messages.wizardPageDesc);
@@ -298,10 +298,8 @@ public class DecisionTableWizardPage extends WizardPage {
                 }
 
             });
-            op1widget.setLocation(container);
             op1widget.addFilter(new AvailableExpressionTypeFilter(ExpressionConstants.CONDITION_TYPE));
-            op1widget.setLocation(container);
-            op1widget.setInput(lineWorkingCopy);
+            op1widget.setInput(location);
             op1widget.setSelection(new StructuredSelection(cond));
             op1widget.getEraseControl().addListener(SWT.Selection, new Listener() {
 

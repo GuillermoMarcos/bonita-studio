@@ -29,6 +29,7 @@ import org.bonitasoft.studio.common.widgets.MagicComposite;
 import org.bonitasoft.studio.expression.core.provider.ExpressionContentProvider;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -95,7 +96,7 @@ public class PatternExpressionViewer extends Composite {
     private Binding patternBinding;
     private ControlDecoration helpDecoration;
     private Object input;
-    private ModelLocation location;
+    private ModelLocation modelLocation;
     private static Set<String> compatibleTypes;
     static {
         compatibleTypes = new HashSet<String>();
@@ -204,7 +205,6 @@ public class PatternExpressionViewer extends Composite {
     }
 
     private void bindExpressionViewer() {
-        expressionViewer.setLocation(location);
         expressionViewer.setInput(input);
         if(mandatoryFieldLabel != null){
             expressionViewer.setMandatoryField(mandatoryFieldLabel, context);
@@ -327,10 +327,6 @@ public class PatternExpressionViewer extends Composite {
         }
     }
 
-    public void setLocation(final ModelLocation location) {
-        this.location = location;
-    }
-
     public void setExpression(final Expression expression){
         this.expression = expression;
         manageNatureProviderAndAutocompletionProposal();
@@ -339,6 +335,14 @@ public class PatternExpressionViewer extends Composite {
 
 
     protected void manageNatureProviderAndAutocompletionProposal() {
+        final ModelLocationFactory modelLocationFactory = new ModelLocationFactory();
+        if (input instanceof ModelLocation) {
+            this.modelLocation = modelLocationFactory.newLocation((ModelLocation) input, expression);
+        } else if (input instanceof EObject) {
+            this.modelLocation = modelLocationFactory.newLocation((EObject) input, expression);
+        }else{
+            throw new IllegalStateException("PatternExpression input is not qn EObject nor a ModelLocation: " + input);
+        }
         filteredExpressions =  getFilteredExpressions() ;
         final Set<Expression> expressionSet = new HashSet<Expression>(filteredExpressions);
         contentAssisProcessor.setExpressions(expressionSet);
@@ -378,7 +382,7 @@ public class PatternExpressionViewer extends Composite {
 
     private List<Expression> getFilteredExpressions() {
         final List<Expression> filteredExpressions = new ArrayList<Expression>() ;
-        final Expression[] expressions = expressionNatureProvider.getExpressions(location);
+        final Expression[] expressions = expressionNatureProvider.getExpressions(modelLocation);
         if(expressions != null){
             filteredExpressions.addAll(Arrays.asList(expressions)) ;
                 for(final Expression exp : expressions) {

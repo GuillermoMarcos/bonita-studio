@@ -21,13 +21,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
-import org.bonitasoft.studio.common.emf.tools.ModelHelper;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.form.AbstractTable;
 import org.bonitasoft.studio.model.form.MultipleValuatedFormField;
 import org.bonitasoft.studio.model.form.SingleValuatedFormField;
 import org.bonitasoft.studio.model.form.Widget;
-import org.eclipse.emf.ecore.EObject;
 
 /**
  * @author Romain Bioteau
@@ -39,8 +39,8 @@ public class SQLQueryUtil {
 	private static final String SELECT_QUERY_PREFIX = "select ";
 
 	public static boolean isGraphicalModeSupportedFor(Expression sqlQuery){
-		String query = sqlQuery.getContent();
-		String expressionType = sqlQuery.getType();
+		final String query = sqlQuery.getContent();
+		final String expressionType = sqlQuery.getType();
 		if(ExpressionConstants.CONSTANT_TYPE.equals(expressionType) ){
 			if(query != null && !query.isEmpty()){
 				if(query.trim().toLowerCase().startsWith(SELECT_QUERY_PREFIX)){
@@ -50,9 +50,9 @@ public class SQLQueryUtil {
 		}else if(ExpressionConstants.PATTERN_TYPE.equals(expressionType)){
 			if(query != null && !query.isEmpty()){
 				if(query.trim().toLowerCase().startsWith(SELECT_QUERY_PREFIX)){
-					int indexOfFromClause = query.toLowerCase().indexOf(FROM_CLAUSE);
+					final int indexOfFromClause = query.toLowerCase().indexOf(FROM_CLAUSE);
 					if(indexOfFromClause != -1){
-						String columns = query.trim().toLowerCase().substring(SELECT_QUERY_PREFIX.length(),indexOfFromClause);
+						final String columns = query.trim().toLowerCase().substring(SELECT_QUERY_PREFIX.length(),indexOfFromClause);
 						if(!columns.contains("${")){
 							return true;
 						}
@@ -68,12 +68,12 @@ public class SQLQueryUtil {
 	}
 
 	public static String getSelectedColumn(Expression sqlQuery) {
-		String query = sqlQuery.getContent();
+		final String query = sqlQuery.getContent();
 		if(query != null && !query.isEmpty()){
 			if(query.trim().toLowerCase().startsWith(SELECT_QUERY_PREFIX)){
-				int indexOfFromClause = query.toLowerCase().indexOf(FROM_CLAUSE);
+				final int indexOfFromClause = query.toLowerCase().indexOf(FROM_CLAUSE);
 				if(indexOfFromClause != -1){
-					String columns = query.trim().toLowerCase().substring(SELECT_QUERY_PREFIX.length(),indexOfFromClause);
+					final String columns = query.trim().toLowerCase().substring(SELECT_QUERY_PREFIX.length(),indexOfFromClause);
 					return columns.trim();
 				}
 			}
@@ -82,12 +82,12 @@ public class SQLQueryUtil {
 	}
 
 	public static List<String> getSelectedColumns(Expression sqlQuery) {
-		String columns = getSelectedColumn(sqlQuery);
+		final String columns = getSelectedColumn(sqlQuery);
 		final List<String> result = new ArrayList<String>();
 		if(columns != null){
 			if(columns.indexOf(",") != -1){
-				String[] cols = columns.split(",");
-				for(String col : cols){
+				final String[] cols = columns.split(",");
+				for(final String col : cols){
 					result.add(col.trim());
 				}
 			}else{
@@ -98,30 +98,32 @@ public class SQLQueryUtil {
 	}
 
 	public static boolean isGraphicalModeSupportedFor(
-			Expression scriptExpression, EObject container) {
-		if(isSingleOutput(container)){
+            Expression scriptExpression, ModelLocation location) {
+        if (isSingleOutput(location)) {
 			if(isGraphicalModeSupportedFor(scriptExpression)){
 				return getSelectedColumns(scriptExpression).size() == 1 && !useWildcard(scriptExpression);
 			}
-		}else if(isListOutput(container)){
+        } else if (isListOutput(location)) {
 			if(isGraphicalModeSupportedFor(scriptExpression)){
 				return !useWildcard(scriptExpression);
 			}
-		}else if(isTableOutput(container)){
+        } else if (isTableOutput(location)) {
 			return isGraphicalModeSupportedFor(scriptExpression);
 		}
 		return false;
 	}
 	
-	public static boolean isTableOutput(EObject container) {
-		Widget widget =  ModelHelper.getParentWidget(container);
-		if(container instanceof Expression){
-			String returnType = ((Expression) container).getReturnType();
+    public static boolean isTableOutput(ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final Expression expression = contextFinder.find(Expression.class);
+        final Widget widget = contextFinder.find(Widget.class);
+        if (expression != null) {
+            final String returnType = expression.getReturnType();
 			if(returnType != null){
 				try{
-					Class<?> returnTypeClass = Class.forName(returnType);
+					final Class<?> returnTypeClass = Class.forName(returnType);
 					return Collection.class.isAssignableFrom(returnTypeClass) && (widget instanceof AbstractTable);
-				}catch(Exception e){
+				}catch(final Exception e){
 					
 				}
 			}
@@ -130,26 +132,29 @@ public class SQLQueryUtil {
 		return  widget instanceof MultipleValuatedFormField && (widget instanceof AbstractTable);
 	}
 	
-	public static boolean isListOutput(EObject container) {
-		Widget widget =  ModelHelper.getParentWidget(container);
-		if(container instanceof Expression){
-			String returnType = ((Expression) container).getReturnType();
+    public static boolean isListOutput(ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final Expression expression = contextFinder.find(Expression.class);
+        final Widget widget = contextFinder.find(Widget.class);
+        if (expression != null) {
+            final String returnType = expression.getReturnType();
 			if(returnType != null){
 				try{
-					Class<?> returnTypeClass = Class.forName(returnType);
+					final Class<?> returnTypeClass = Class.forName(returnType);
 					return Collection.class.isAssignableFrom(returnTypeClass) && !(widget instanceof AbstractTable);
-				}catch(Exception e){
+				}catch(final Exception e){
 					
 				}
 			}
 		}
-	
 		return  widget instanceof MultipleValuatedFormField && !(widget instanceof AbstractTable);
 	}
 
-	public static boolean isSingleOutput(EObject container) {
-		if(container instanceof Expression){
-			String returnType = ((Expression) container).getReturnType();
+    public static boolean isSingleOutput(ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final Expression expression = contextFinder.find(Expression.class);
+        if (expression != null) {
+            final String returnType = expression.getReturnType();
 			if(returnType != null){
 				if (returnType.equals(String.class.getName())
 						  || returnType.equals(Byte.class.getName())
@@ -164,7 +169,7 @@ public class SQLQueryUtil {
 				}
 			}
 		}
-		Widget widget = ModelHelper.getParentWidget(container);
+        final Widget widget = contextFinder.find(Widget.class);
 		return widget instanceof SingleValuatedFormField;
 	}
 

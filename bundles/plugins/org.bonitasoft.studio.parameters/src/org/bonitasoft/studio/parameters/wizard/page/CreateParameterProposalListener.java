@@ -14,12 +14,12 @@
  */
 package org.bonitasoft.studio.parameters.wizard.page;
 
-import org.bonitasoft.studio.common.emf.tools.ModelHelper;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IProposalListener;
 import org.bonitasoft.studio.model.parameter.Parameter;
-import org.bonitasoft.studio.model.process.AbstractProcess;
+import org.bonitasoft.studio.model.process.Pool;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jface.dialogs.Dialog;
@@ -32,10 +32,10 @@ import org.eclipse.swt.widgets.Display;
 public class CreateParameterProposalListener implements IProposalListener {
 
     @Override
-    public String handleEvent(final EObject context, final String fixedReturnType) {
-        Assert.isNotNull(context);
-        final AbstractProcess parentProcess = ModelHelper.getParentProcess(context);
-        final AddParameterWizard parameterWizard = new AddParameterWizard(parentProcess, TransactionUtil.getEditingDomain(context));
+    public String handleEvent(final ModelLocation location, final String fixedReturnType) {
+        Assert.isNotNull(location);
+        final Pool parentProcess = new ContextFinder(location).find(Pool.class);
+        final AddParameterWizard parameterWizard = new AddParameterWizard(parentProcess, TransactionUtil.getEditingDomain(parentProcess));
         final ParameterWizardDialog parameterDialog = new ParameterWizardDialog(
                 Display.getCurrent().getActiveShell().getParent().getShell(),
                 parameterWizard);
@@ -58,8 +58,8 @@ public class CreateParameterProposalListener implements IProposalListener {
     }
 
     @Override
-    public boolean isRelevant(final EObject context) {
-        return true;
+    public boolean isRelevant(final ModelLocation location) {
+        return new ContextFinder(location).find(Pool.class) != null;
     }
 
 }

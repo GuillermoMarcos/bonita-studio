@@ -144,8 +144,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 			targetDataExpressionViewer.setExpressionNatureProvider(storageExpressionProvider) ;
 		}
 		targetDataExpressionViewer.addFilter(leftFilter);
-        targetDataExpressionViewer.setLocation(getModelLocation());
-		targetDataExpressionViewer.setInput(singleModeOuputOperation);
+        targetDataExpressionViewer.setInput(getModelLocation());
 
 
 		context.bindValue(ViewersObservables.observeSingleSelection(targetDataExpressionViewer), EMFObservables.observeValue(singleModeOuputOperation, ExpressionPackage.Literals.OPERATION__LEFT_OPERAND)) ;
@@ -185,8 +184,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 			targetDataExpressionViewer.setExpressionNatureProvider(storageExpressionProvider) ;
 		}
 		targetDataExpressionViewer.addFilter(leftFilter);
-        targetDataExpressionViewer.setLocation(getModelLocation());
-		targetDataExpressionViewer.setInput(singleModeOuputOperation);
+        targetDataExpressionViewer.setInput(getModelLocation());
 
 		context.bindValue(ViewersObservables.observeSingleSelection(targetDataExpressionViewer), EMFObservables.observeValue(singleModeOuputOperation, ExpressionPackage.Literals.OPERATION__LEFT_OPERAND)) ;
 
@@ -232,8 +230,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 				targetDataExpressionViewer.setExpressionNatureProvider(storageExpressionProvider) ;
 			}
 			targetDataExpressionViewer.addFilter(leftFilter);
-            targetDataExpressionViewer.setLocation(getModelLocation());
-			targetDataExpressionViewer.setInput(op);
+            targetDataExpressionViewer.setInput(getModelLocation());
 
 
 			context.bindValue(ViewersObservables.observeSingleSelection(targetDataExpressionViewer), EMFObservables.observeValue(op, ExpressionPackage.Literals.OPERATION__LEFT_OPERAND)) ;
@@ -345,8 +342,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 			targetDataExpressionViewer.setExpressionNatureProvider(storageExpressionProvider) ;
 		}
 		targetDataExpressionViewer.addFilter(leftFilter);
-        targetDataExpressionViewer.setLocation(getModelLocation());
-		targetDataExpressionViewer.setInput(singleModeOuputOperation);
+        targetDataExpressionViewer.setInput(getModelLocation());
 
 
 		context.bindValue(ViewersObservables.observeSingleSelection(targetDataExpressionViewer), EMFObservables.observeValue(singleModeOuputOperation, ExpressionPackage.Literals.OPERATION__LEFT_OPERAND)) ;
@@ -385,9 +381,8 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 		if(storageExpressionProvider != null){
 			lineComposite.setStorageExpressionNatureContentProvider(storageExpressionProvider) ;
 		}
-		lineComposite.setContext(context) ;
-        lineComposite.setModelLocation(getModelLocation());
-
+		lineComposite.setDatabindingContext(context) ;
+        lineComposite.setInput(getModelLocation());
 		return mainComposite;
 	}
 
@@ -428,7 +423,7 @@ public class DatabaseConnectorOutputWizardPage extends AbstractConnectorOutputWi
 			setDescription(Messages.nRowsNColsDatabaseOutputDescription);
 		}else{
 			updateDefaultOutput();
-			lineComposite.setEObject(getConnector());
+            lineComposite.setInput(getModelLocation());
 			if(lineComposite.getNbLines() > 0){
 				lineComposite.removeLinesUI();
 				lineComposite.fillTable();

@@ -73,10 +73,9 @@ AbstractConnectorOutputWizardPage {
 			final ExpressionViewer outputExpressionViewer = new ExpressionViewer(mainComposite, SWT.BORDER, ExpressionPackage.Literals.OPERATION__RIGHT_OPERAND);
 			outputExpressionViewer.getControl().setLayoutData( GridDataFactory.fillDefaults().grab(true, false).create());
 			outputExpressionViewer.addFilter(connectorOutputFilter);
-            outputExpressionViewer.setLocation(getModelLocation());
 			outputExpressionViewer.setMessage(Messages.connectorExpressionViewerMessage, IStatus.INFO);
 			outputExpressionViewer.setExternalDataBindingContext(context);
-			outputExpressionViewer.setInput(output);
+            outputExpressionViewer.setInput(getModelLocation());
             outputExpressionViewer.addExpressionValidator(new DefaultExpressionValidator() {
                 
                 private Expression inputExpression;

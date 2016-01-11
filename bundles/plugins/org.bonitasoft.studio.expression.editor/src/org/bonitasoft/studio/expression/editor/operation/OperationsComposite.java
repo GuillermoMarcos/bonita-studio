@@ -15,11 +15,14 @@
 package org.bonitasoft.studio.expression.editor.operation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
 import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.model.expression.ExpressionFactory;
@@ -30,14 +33,14 @@ import org.bonitasoft.studio.model.form.FormPackage;
 import org.bonitasoft.studio.model.form.SubmitFormButton;
 import org.bonitasoft.studio.model.process.AbstractCatchMessageEvent;
 import org.bonitasoft.studio.model.process.Connector;
-import org.bonitasoft.studio.model.process.Lane;
 import org.bonitasoft.studio.model.process.OperationContainer;
 import org.bonitasoft.studio.model.process.ProcessPackage;
+import org.bonitasoft.studio.model.process.ReceiveTask;
 import org.bonitasoft.studio.pics.Pics;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -65,12 +68,10 @@ public abstract class OperationsComposite extends Composite {
     protected List<OperationViewer> operationViewers = new ArrayList<OperationViewer>();
     protected ArrayList<Button> removes = new ArrayList<Button>();
     protected TabbedPropertySheetPage tabbedPropertySheetPage;
-    protected EMFDataBindingContext context;
+    protected EMFDataBindingContext dbc;
     protected ArrayList<List<Binding>> bindings = new ArrayList<List<Binding>>();
     private TabbedPropertySheetWidgetFactory widgetFactory;
-    private EObject eObject;
     protected final Composite parent;
-    private EReference operationContainmentFeature;
     private final ViewerFilter storageExpressionFilter;
     private final ViewerFilter actionExpressionFilter;
     private IExpressionNatureProvider storageExpressionNatureProvider;
@@ -78,6 +79,7 @@ public abstract class OperationsComposite extends Composite {
     private final List<IExpressionValidator> validators = new ArrayList<IExpressionValidator>();
     private final Composite operationComposite;
     private ModelLocation location;
+    private EStructuralFeature operationContainerFeature;
 
     public OperationsComposite(final TabbedPropertySheetPage tabbedPropertySheetPage,
             final Composite mainComposite, final ViewerFilter actionExpressionFilter,
@@ -147,6 +149,10 @@ public abstract class OperationsComposite extends Composite {
         return TransactionUtil.getEditingDomain(getEObject());
     }
 
+    private EObject getEObject() {
+        return location.getModelElement();
+    }
+
     public int getNbLines() {
         return operationViewers.size();
     }
@@ -198,11 +204,8 @@ public abstract class OperationsComposite extends Composite {
         final OperationViewer viewer = new OperationViewer(operationComposite, widgetFactory, getEditingDomain(), actionExpressionFilter,
                 storageExpressionFilter);
         viewer.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        if (context != null) {
-            viewer.setContext(context);
-        }
-        if (location != null) {
-            viewer.setModelLocation(location);
+        if (dbc != null) {
+            viewer.setDatabindingContext(dbc);
         }
         if (storageExpressionNatureProvider != null) {
             viewer.setStorageExpressionNatureProvider(storageExpressionNatureProvider);
@@ -213,15 +216,8 @@ public abstract class OperationsComposite extends Composite {
         for (final IExpressionValidator validator : validators) {
             viewer.addActionExpressionValidator(validator);
         }
-
-        viewer.setOperation(action);
-        viewer.setEObject(eObject);
-
+        viewer.setInput(new ModelLocationFactory().newLocation(location, action));
         return viewer;
-    }
-
-    public void setModelLocation(final ModelLocation location) {
-        this.location = location;
     }
 
     public void addActionExpressionValidator(final IExpressionValidator validator) {
@@ -282,47 +278,52 @@ public abstract class OperationsComposite extends Composite {
         }
     }
 
-    public void setContext(final EMFDataBindingContext emfDataBindingContext) {
-        context = emfDataBindingContext;
-    }
-
-    public void setEObject(final EObject eObject) {
-        this.eObject = eObject;
-        if (eObject instanceof Form) {
-            setOperationContainmentFeature(FormPackage.Literals.FORM__ACTIONS);
-        } else if (eObject instanceof SubmitFormButton) {
-            setOperationContainmentFeature(FormPackage.Literals.SUBMIT_FORM_BUTTON__ACTIONS);
-        } else if (eObject instanceof AbstractCatchMessageEvent) {
-            setOperationContainmentFeature(ProcessPackage.Literals.ABSTRACT_CATCH_MESSAGE_EVENT__MESSAGE_CONTENT);
-        } else if (eObject instanceof Connector) {
-            setOperationContainmentFeature(ProcessPackage.Literals.CONNECTOR__OUTPUTS);
-        } else if (eObject instanceof OperationContainer) {
-            setOperationContainmentFeature(ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS);
-        }
-    }
-
-    public void setOperationContainmentFeature(final EReference actionTargetFeature) {
-        operationContainmentFeature = actionTargetFeature;
-    }
-
-    public EObject getEObject() {
-        return eObject;
+    public void setDatabindingContext(final EMFDataBindingContext emfDataBindingContext) {
+        dbc = emfDataBindingContext;
     }
 
     public abstract void refresh();
 
-    protected EReference getActionTargetFeature() {
-        return operationContainmentFeature;
+    protected EStructuralFeature getActionTargetFeature() {
+        if (operationContainerFeature != null) {
+            return operationContainerFeature;
+        }
+        final ContextFinder contextFinder = new ContextFinder(location);
+        if (contextFinder.find(Form.class) != null) {
+            return FormPackage.Literals.FORM__ACTIONS;
+        } else if (contextFinder.find(SubmitFormButton.class) != null) {
+            return FormPackage.Literals.SUBMIT_FORM_BUTTON__ACTIONS;
+        } else if (contextFinder.find(ReceiveTask.class) != null) {
+            return ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS;
+        } else if (contextFinder.find(AbstractCatchMessageEvent.class) != null) {
+            return ProcessPackage.Literals.ABSTRACT_CATCH_MESSAGE_EVENT__MESSAGE_CONTENT;
+        } else if (contextFinder.find(Connector.class) != null) {
+            return ProcessPackage.Literals.CONNECTOR__OUTPUTS;
+        } else if (contextFinder.find(OperationContainer.class) != null) {
+            return ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS;
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
     private List<Operation> getActions() {
-        EObject eObject = getEObject();
-        if (getEObject() instanceof Lane) {
-            eObject = getEObject().eContainer();
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final EStructuralFeature feature = getActionTargetFeature();
+        if (contextFinder.find(Form.class) != null) {
+            return (List<Operation>) contextFinder.find(Form.class).eGet(FormPackage.Literals.FORM__ACTIONS);
+        } else if (contextFinder.find(SubmitFormButton.class) != null) {
+            return (List<Operation>) contextFinder.find(SubmitFormButton.class).eGet(FormPackage.Literals.SUBMIT_FORM_BUTTON__ACTIONS);
+        } else if (contextFinder.find(AbstractCatchMessageEvent.class) != null) {
+            return (List<Operation>) contextFinder.find(AbstractCatchMessageEvent.class)
+                    .eGet(ProcessPackage.Literals.ABSTRACT_CATCH_MESSAGE_EVENT__MESSAGE_CONTENT);
+        } else if (contextFinder.find(Connector.class) != null) {
+            return (List<Operation>) contextFinder.find(Connector.class).eGet(ProcessPackage.Literals.CONNECTOR__OUTPUTS);
+        } else if (contextFinder.find(OperationContainer.class) != null) {
+            return (List<Operation>) contextFinder.find(OperationContainer.class).eGet(ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS);
         }
-        return (List<Operation>) eObject.eGet(getActionTargetFeature());
+        return Collections.emptyList();
     }
+
 
     /**
      * Set a specify IExpressionNatureProvider for the left operand
@@ -347,6 +348,14 @@ public abstract class OperationsComposite extends Composite {
 
     public List<OperationViewer> getOperationViewers() {
         return operationViewers;
+    }
+
+    public void setInput(ModelLocation location) {
+        this.location = location;
+    }
+
+    public void setOperationContainmentFeature(EStructuralFeature operationContainerFeature) {
+        this.operationContainerFeature = operationContainerFeature;
     }
 
 }

@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gmf.runtime.diagram.ui;bundle-version="1.4.0",
  org.bonitasoft.studio.groovy.ui;bundle-version="1.0.0",
  org.bonitasoft.studio.data;bundle-version="1.0.0",
- org.bonitasoft.studio.expression.editor;bundle-version="1.0.0"
+ org.bonitasoft.studio.expression.editor;bundle-version="1.0.0",
+ org.bonitasoft.studio.expression.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.bonitasoft.studio.decision.ui,org.bonitasoft.studi

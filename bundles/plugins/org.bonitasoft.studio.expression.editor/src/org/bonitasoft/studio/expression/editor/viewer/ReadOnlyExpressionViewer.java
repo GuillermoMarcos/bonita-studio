@@ -25,6 +25,7 @@ import org.bonitasoft.studio.common.extension.BonitaStudioExtensionRegistryManag
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.expression.editor.provider.DataExpressionNatureProvider;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -81,8 +82,8 @@ public class ReadOnlyExpressionViewer extends ExpressionViewer {
     }
 
     @Override
-    public void manageNatureProviderAndAutocompletionProposal(final Object input) {
-        super.manageNatureProviderAndAutocompletionProposal(input);
+    public void manageNatureProviderAndAutocompletionProposal() {
+        super.manageNatureProviderAndAutocompletionProposal();
         setProposalsFiltering(false);
     }
 
@@ -90,8 +91,8 @@ public class ReadOnlyExpressionViewer extends ExpressionViewer {
      * Override to remove Form transient data that cannot be set anywhere
      */
     @Override
-    protected Set<Expression> getFilteredExpressions() {
-        final Set<Expression> result = super.getFilteredExpressions();
+    protected Set<Expression> getFilteredExpressions(ExpressionScope scope) {
+        final Set<Expression> result = super.getFilteredExpressions(scope);
         filterOutTransientData(result);
         return result;
     }
@@ -127,10 +128,11 @@ public class ReadOnlyExpressionViewer extends ExpressionViewer {
                 return true;
             }
         }
-        if (location != null) {
-            final Operation op = new ContextFinder(location).find(Operation.class);
+        final ExpressionScope expressionScope = getExpressionScope();
+        if (expressionScope.getModelLocation() != null) {
+            final Operation op = new ContextFinder(expressionScope.getModelLocation()).find(Operation.class);
             if (op != null && op.eContainer() instanceof Connector) {
-                return op.eContainer().eContainmentFeature().equals(ProcessPackage.Literals.PAGE_FLOW__PAGE_FLOW_CONNECTORS);
+                return new ContextFinder(expressionScope.getModelLocation()).find(ProcessPackage.Literals.PAGE_FLOW__PAGE_FLOW_CONNECTORS) != null;
             }
         }
         return false;
@@ -152,7 +154,8 @@ public class ReadOnlyExpressionViewer extends ExpressionViewer {
     @Override
     protected void sideModificationOnProposalAccepted(final CompoundCommand cc, final Expression copy) {
         super.sideModificationOnProposalAccepted(cc, copy);
-        final Operation op = new ContextFinder(location).find(Operation.class);
+        final ExpressionScope expressionScope = getExpressionScope();
+        final Operation op = new ContextFinder(expressionScope.getModelLocation()).find(Operation.class);
         if (op != null) {
             final Expression selectedExpression = getSelectedExpression();
             if (selectedExpression != null && ExpressionPackage.Literals.OPERATION__LEFT_OPERAND.equals(selectedExpression.eContainingFeature())) {

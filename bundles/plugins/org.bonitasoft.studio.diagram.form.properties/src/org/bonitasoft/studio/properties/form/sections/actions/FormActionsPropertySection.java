@@ -19,6 +19,7 @@ import org.bonitasoft.studio.common.properties.AbstractBonitaDescriptionSection;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.data.provider.DataExpressionNatureProviderForFormOutput;
 import org.bonitasoft.studio.data.provider.DataExpressionProviderForOutput;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.operation.OperationsComposite;
 import org.bonitasoft.studio.expression.editor.operation.PropertyOperationsComposite;
@@ -71,8 +72,8 @@ public class FormActionsPropertySection extends AbstractBonitaDescriptionSection
     public void setInput(final IWorkbenchPart part, final ISelection selection) {
         super.setInput(part, selection);
         if (lastEObject == null || lastEObject != null && !lastEObject.equals(getEObject())) {
-            table.setEObject(getEObject());
-            table.setContext(new EMFDataBindingContext());
+            table.setInput(new ModelLocationFactory().newLocation(getEObject()));
+            table.setDatabindingContext(new EMFDataBindingContext());
             table.removeLinesUI();
             table.fillTable();
             table.refresh();

@@ -22,7 +22,8 @@ import java.util.Set;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.expression.core.provider.ExpressionProviderService;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
-import org.eclipse.emf.ecore.EObject;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -43,22 +44,20 @@ public class ExpressionTypeContentProvider implements IStructuredContentProvider
     }
 
     @Override
-    public Object[] getElements(Object context) {
+    public Object[] getElements(Object input) {
         final Set<IExpressionProvider> expressionTypes = new HashSet<IExpressionProvider>() ;
-        if(context == null){
+        if (input == null) {
             expressionTypes.add(ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.CONSTANT_TYPE));
             expressionTypes.add(ExpressionProviderService.getInstance().getExpressionProvider(ExpressionConstants.SCRIPT_TYPE));
-        }else{
+        } else if (input instanceof ModelLocation) {
             for (final IExpressionProvider provider : ExpressionProviderService.getInstance().getExpressionProviders()) {
-                if(provider.getExpressionEditor(null, (EObject) context) != null && provider.isRelevantFor((EObject)context)){
+                if (provider.getExpressionEditor(null, new ContextFinder((ModelLocation) input).findExpressionContext()) != null
+                        && provider.isRelevantFor((ModelLocation) input)) {
                     expressionTypes.add(provider) ;
                 }
             }
         }
-
-
         return expressionTypes.toArray();
     }
-
 
 }

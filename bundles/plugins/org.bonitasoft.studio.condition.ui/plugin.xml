@@ -287,5 +287,4 @@
            providerClass="org.bonitasoft.studio.condition.ui.expression.ComparisonExpressionProvider">
      </expressionProvider>
   </extension>
-
 </plugin>

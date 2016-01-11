@@ -341,7 +341,7 @@ public class ContractInputGenerationWizardTest {
     @Test
     public void should_canFinish_return_true_when_data_is_selected() {
         final Pool process = aPool().havingContract(aContract()).build();
-        final BusinessObjectData data = aBusinessData().withClassname("com.company.Employee").build();
+        final BusinessObjectData data = aBusinessData().withName("employee").withClassname("com.company.Employee").build();
         process.getData().add(data);
 
         final BusinessObjectModelRepositoryStore store = mock(BusinessObjectModelRepositoryStore.class);

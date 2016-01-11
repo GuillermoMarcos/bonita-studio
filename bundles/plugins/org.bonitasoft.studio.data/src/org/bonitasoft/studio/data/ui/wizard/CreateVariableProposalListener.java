@@ -20,10 +20,11 @@ import org.bonitasoft.studio.common.DataTypeLabels;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.jface.CustomWizardDialog;
 import org.bonitasoft.studio.data.i18n.Messages;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IDataProposalListener;
-import org.bonitasoft.studio.model.process.AbstractProcess;
-import org.bonitasoft.studio.model.process.Activity;
 import org.bonitasoft.studio.model.process.Data;
+import org.bonitasoft.studio.model.process.DataAware;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.bonitasoft.studio.model.process.ReceiveTask;
@@ -47,13 +48,13 @@ public class CreateVariableProposalListener implements IDataProposalListener {
     private boolean multipleData = false;
 
     @Override
-    public String handleEvent(final EObject context, final String fixedReturnType) {
-        Assert.isNotNull(context);
-        final EObject dataContainer = getDataContainer(context);
+    public String handleEvent(final ModelLocation location, final String fixedReturnType) {
+        Assert.isNotNull(location);
+        final EObject dataContainer = getDataContainer(location);
         final Data dataWorkingCopy = ProcessFactory.eINSTANCE.createData();
         dataWorkingCopy.setMultiple(multipleData);
         dataWorkingCopy.setDataType(ModelHelper.getDataTypeForID(dataContainer, DataTypeLabels.stringDataType));
-        final DataWizard newWizard = new DataWizard(TransactionUtil.getEditingDomain(context), dataContainer, dataWorkingCopy, feature,
+        final DataWizard newWizard = new DataWizard(TransactionUtil.getEditingDomain(dataContainer), dataContainer, dataWorkingCopy, feature,
                 Collections.singleton(feature), true,
                 fixedReturnType);
         final CustomWizardDialog wizardDialog = new CustomWizardDialog(activeShell(), newWizard, IDialogConstants.FINISH_LABEL);
@@ -75,19 +76,18 @@ public class CreateVariableProposalListener implements IDataProposalListener {
         return activeShell;
     }
 
-    protected EObject getDataContainer(EObject context) {
-        while (!isValidContainer(context)) {
-            context = context.eContainer();
+    protected EObject getDataContainer(ModelLocation location) {
+        if (isValidContainer(location)) {
+            return new ContextFinder(location).find(DataAware.class);
         }
-        return context;
+        return null;
     }
 
-    private boolean isValidContainer(final EObject context) {
-        return (context instanceof AbstractProcess
-                || context instanceof Activity)
-                && !(context instanceof SendTask)
-                && !(context instanceof ReceiveTask);
+    private boolean isValidContainer(final ModelLocation location) {
+        final DataAware dataAware = new ContextFinder(location).find(DataAware.class);
+        return dataAware != null && !(dataAware instanceof SendTask) && !(dataAware instanceof ReceiveTask);
     }
+
 
     @Override
     public String toString() {
@@ -105,8 +105,8 @@ public class CreateVariableProposalListener implements IDataProposalListener {
     }
 
     @Override
-    public boolean isRelevant(final EObject context) {
-        return true;
+    public boolean isRelevant(final ModelLocation location) {
+        return getDataContainer(location) != null;
     }
 
     @Override

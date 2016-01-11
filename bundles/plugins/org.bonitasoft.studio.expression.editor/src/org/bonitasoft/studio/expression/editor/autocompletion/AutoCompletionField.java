@@ -16,9 +16,9 @@ package org.bonitasoft.studio.expression.editor.autocompletion;
 
 import java.util.List;
 
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.ExpressionLabelProvider;
 import org.bonitasoft.studio.model.expression.Expression;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposalListener;
 import org.eclipse.jface.fieldassist.IControlContentAdapter;
@@ -67,8 +67,8 @@ public class AutoCompletionField {
         return contentProposalAdapter;
     }
 
-    public void setContext(final EObject context) {
-        contentProposalAdapter.setContext(context);
+    public void setModelLocation(final ModelLocation location) {
+        contentProposalAdapter.setModelLocation(location);
     }
 
     public void setFilteredExpressionType(final List<String> filteredExpressionType) {

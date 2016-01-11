@@ -90,7 +90,7 @@ import org.eclipse.ui.PlatformUI;
 public class AddMessageEventWizardPage extends WizardPage implements
 		IWizardPage {
 
-	private final ThrowMessageEvent element;
+    private final ThrowMessageEvent messageContainer;
 	private final Message originalMessage;
 	private String throwEvent;
 	private GridData gd;
@@ -113,12 +113,12 @@ public class AddMessageEventWizardPage extends WizardPage implements
 	 * @param pageName
 	 */
 	protected AddMessageEventWizardPage(final MainProcess diagram,
-			final ThrowMessageEvent element, final Message originalMessage,
+			final ThrowMessageEvent messageContainer, final Message originalMessage,
 			Message workingCopyMessage) {
 		super(Messages.messageEventAddWizardPageName,
 				Messages.messageEventAddWizardPageTitle, Pics.getWizban());
 		setDescription(Messages.messageEventAddWizardPageDesc);
-		this.element = element;
+        this.messageContainer = messageContainer;
 		this.originalMessage = originalMessage;
 		if (originalMessage != null) {
 			if (originalMessage.getCorrelation() == null) {
@@ -228,7 +228,7 @@ public class AddMessageEventWizardPage extends WizardPage implements
 			}
 		});
 		addMessageContentFilters(ecv);
-		ecv.setInput(element);
+        ecv.setInput(messageContainer);
 
 		final TableExpression messageContent = getMessageContentTable();
 		ecv.setSelection(messageContent);
@@ -339,7 +339,7 @@ public class AddMessageEventWizardPage extends WizardPage implements
 														// Form field and
 														// simulation type
 		ecv.setViewerFilters(filters);
-		ecv.setInput(element);
+        ecv.setInput(messageContainer);
 
 		final TableExpression correlationAssociation = getCorrelationTable();
 		ecv.setSelection(correlationAssociation);
@@ -502,9 +502,8 @@ public class AddMessageEventWizardPage extends WizardPage implements
 				IStatus.INFO);
 		elementExpressionViewer.setMandatoryField(Messages.eventNameLabel,
 				databindingContext);
-		elementExpressionViewer.setLocation(element);
 		catchEventNatureProvider = new CatchMessageEventNamesExpressionNatureProvider();
-		catchEventNatureProvider.setThrowMessage(element);
+        catchEventNatureProvider.setThrowMessage(messageContainer);
 		elementExpressionViewer
 				.setExpressionNatureProvider(catchEventNatureProvider);
 		
@@ -515,7 +514,7 @@ public class AddMessageEventWizardPage extends WizardPage implements
 			createExpression.setReturnType(String.class.getName());
 			workingCopyMessage.setTargetElementExpression(createExpression);
 		}
-		elementExpressionViewer.setInput(workingCopyMessage);
+        elementExpressionViewer.setInput(messageContainer);
 
 		refreshTargetEventContent();
 
@@ -551,7 +550,6 @@ public class AddMessageEventWizardPage extends WizardPage implements
 				IStatus.INFO);
 		final IExpressionNatureProvider provider = new ProcessNamesExpressionNatureProviderForMessage();
 		processExpressionViewer.setExpressionNatureProvider(provider);
-		processExpressionViewer.setLocation(element);
 		if (workingCopyMessage.getTargetProcessExpression() == null) {
 			final Expression createExpression = ExpressionFactory.eINSTANCE
 					.createExpression();
@@ -559,7 +557,7 @@ public class AddMessageEventWizardPage extends WizardPage implements
 			createExpression.setReturnType(String.class.getName());
 			workingCopyMessage.setTargetProcessExpression(createExpression);
 		}
-		processExpressionViewer.setInput(workingCopyMessage);
+        processExpressionViewer.setInput(messageContainer);
 
 		databindingContext
 				.bindValue(
@@ -615,7 +613,7 @@ public class AddMessageEventWizardPage extends WizardPage implements
 						return ValidationStatus.error(Messages.emptyName);
 					} else {
 						final List<Message> events = ModelHelper.getAllItemsOfType(
-								ModelHelper.getMainProcess(element),
+                                ModelHelper.getMainProcess(messageContainer),
 								ProcessPackage.eINSTANCE.getMessage());
 						for (final Message ev : events) {
 							if (!ev.equals(originalMessage)
@@ -652,7 +650,7 @@ public class AddMessageEventWizardPage extends WizardPage implements
 					.getSelection()).getFirstElement();
 			if (procName.getType().equals(ExpressionConstants.CONSTANT_TYPE)) {
 				final AbstractProcess proc = getProcessOnDiagram(
-						ModelHelper.getMainProcess(element),
+                        ModelHelper.getMainProcess(messageContainer),
 						procName.getContent());
 					final DiagramRepositoryStore store = RepositoryManager
 							.getInstance().getRepositoryStore(

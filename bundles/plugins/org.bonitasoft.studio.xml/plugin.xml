@@ -30,5 +30,5 @@
       <expressionProvider
             providerClass="org.bonitasoft.studio.xml.ui.XPathExpressionProvider"></expressionProvider>
    </extension>
-
+   
 </plugin>

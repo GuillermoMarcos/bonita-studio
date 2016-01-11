@@ -27,6 +27,7 @@ import org.bonitasoft.studio.contract.i18n.Messages;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.provider.IExpressionProvider;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -37,7 +38,6 @@ import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
@@ -116,10 +116,10 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
                 .align(SWT.FILL, SWT.CENTER).indent(10, 0).create());
     }
 
-    private void updateViewerInput(final EObject context) {
+    private void updateViewerInput(final ModelLocation location) {
         final Set<ContractInput> input = new HashSet<ContractInput>();
         final IExpressionProvider provider = getContractInputExpressionProvider();
-        final Set<Expression> expressions = provider.getExpressions(context);
+        final Set<Expression> expressions = provider.getExpressions(location);
         for (final Expression expression : expressions) {
             if (editorInputExpression.isReturnTypeFixed()) {
                 if (compatibleReturnType(editorInputExpression, expression)) {
@@ -143,7 +143,7 @@ public class ContractInputExpressionEditor extends SelectionAwareExpressionEdito
     @Override
     public void bindExpression(final EMFDataBindingContext dataBindingContext, final Expression inputExpression, final ExpressionScope scope) {
         editorInputExpression = inputExpression;
-        updateViewerInput(scope.getContext());
+        updateViewerInput(scope.getModelLocation());
 
         final IObservableValue contentObservable = EMFObservables
                 .observeValue(inputExpression,

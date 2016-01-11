@@ -31,6 +31,7 @@ import org.bonitasoft.studio.data.i18n.Messages;
 import org.bonitasoft.studio.data.ui.wizard.CreateVariableProposalListener;
 import org.bonitasoft.studio.expression.core.provider.IExpressionEditor;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IProposalListener;
 import org.bonitasoft.studio.expression.editor.provider.SelectionAwareExpressionEditor;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -172,13 +173,13 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
 
     }
 
-    private void expressionButtonListener(final EObject context, final ExpressionScope scope) throws CoreException {
+    private void expressionButtonListener(final ModelLocation location, final ExpressionScope scope) throws CoreException {
         for (final IConfigurationElement element : BonitaStudioExtensionRegistryManager.getInstance()
                 .getConfigurationElements("org.bonitasoft.studio.expression.proposalListener")) {
             final String expressionTypeLink = element.getAttribute("type");
             if (expressionTypeLink.equals(ExpressionConstants.VARIABLE_TYPE)) {
                 final IProposalListener proposalListener = (IProposalListener) element.createExecutableExtension("providerClass");
-                if (proposalListener.isRelevant(context) && proposalListener instanceof CreateVariableProposalListener) {
+                if (proposalListener.isRelevant(location) && proposalListener instanceof CreateVariableProposalListener) {
                     String fixedReturnType = null;
                     if (editorInputExpression != null && editorInputExpression.isReturnTypeFixed()) {
                         fixedReturnType = editorInputExpression.getReturnType();
@@ -186,15 +187,15 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
                     if (getDataFeature() != null) {
                         proposalListener.setEStructuralFeature(getDataFeature());
                     }
-                    proposalListener.handleEvent(context, fixedReturnType);
-                    fillViewerData(context, scope);
+                    proposalListener.handleEvent(location, fixedReturnType);
+                    fillViewerData(scope);
                     return;
                 }
             }
         }
     }
 
-    private void fillViewerData(final EObject context, final ExpressionScope scope) {
+    private void fillViewerData(final ExpressionScope scope) {
         final Set<Data> input = new HashSet<Data>();
         for (final Expression e1 : scope.getExpressionsWithType(ExpressionConstants.VARIABLE_TYPE)) {
             if (editorInputExpression.isReturnTypeFixed()) {
@@ -220,7 +221,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 try {
-                    expressionButtonListener(context, scope);
+                    expressionButtonListener(scope.getModelLocation(), scope);
                 } catch (final CoreException e1) {
                     BonitaStudioLog.error(e1);
                 }
@@ -228,7 +229,7 @@ public class DataExpressionEditor extends SelectionAwareExpressionEditor
         });
 
         editorInputExpression = inputExpression;
-        fillViewerData(context, scope);
+        fillViewerData(scope);
 
         final IObservableValue contentObservable = EMFObservables
                 .observeValue(inputExpression,

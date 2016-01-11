@@ -18,7 +18,7 @@
 package org.bonitasoft.studio.decision.ui;
 
 import org.bonitasoft.studio.decision.ui.condition.TakeTransitionLabelProvider;
-import org.bonitasoft.studio.model.process.Element;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.process.decision.DecisionFactory;
 import org.bonitasoft.studio.model.process.decision.DecisionTable;
 import org.bonitasoft.studio.model.process.decision.DecisionTableAction;
@@ -34,15 +34,15 @@ import org.eclipse.jface.wizard.Wizard;
 public class DecisionTableWizard extends Wizard {
 
 	public DecisionTable table;
-	private Element container;
+    private final ModelLocation location;
 	private DecisionTableAction[] lineActions;
 	private IBaseLabelProvider actionLabelProvider;
 	private DecisionTableAction[] defaultTableActions;
 	private IElementComparer actionComparer;
 	private DecisionTable oldTable;
 	
-	public DecisionTableWizard(Element container, DecisionTable table) {
-		this.container = container;
+    public DecisionTableWizard(ModelLocation location, DecisionTable table) {
+        this.location = location;
 		setTable(table);
 		setWindowTitle(Messages.wizardPageTitle);
 	}
@@ -58,7 +58,7 @@ public class DecisionTableWizard extends Wizard {
 	
 	@Override
 	public void addPages() {
-		addPage(new DecisionTableWizardPage(this, container, table));
+        addPage(new DecisionTableWizardPage(this, location, table));
 	}
 	
 	/* (non-Javadoc)

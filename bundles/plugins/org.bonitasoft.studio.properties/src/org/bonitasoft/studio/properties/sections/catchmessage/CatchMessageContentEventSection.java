@@ -23,6 +23,7 @@ import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.properties.AbstractBonitaDescriptionSection;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.operation.OperationsComposite;
 import org.bonitasoft.studio.expression.editor.operation.PropertyOperationsComposite;
@@ -179,8 +180,8 @@ public class CatchMessageContentEventSection extends AbstractBonitaDescriptionSe
 
     private void refreshUI() {
         validator.setCatchMessageEvent(getCatchMessageEvent());
-        alc.setEObject(getCatchMessageEvent());
-        alc.setContext(new EMFDataBindingContext());
+        alc.setInput(new ModelLocationFactory().newLocation(getCatchMessageEvent()));
+        alc.setDatabindingContext(new EMFDataBindingContext());
         alc.removeLinesUI();
         alc.fillTable();
         alc.refresh();

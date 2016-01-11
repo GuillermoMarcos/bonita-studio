@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-  <extension-point id="org.bonitasoft.studio.expression.expressionProvider" name="org.bonitasoft.studio.expression.expressionProvider" schema="schema/org.bonitasoft.studio.expression.expressionProvider.exsd"/>
+  	<extension-point id="org.bonitasoft.studio.expression.expressionProvider" name="org.bonitasoft.studio.expression.expressionProvider" schema="schema/org.bonitasoft.studio.expression.expressionProvider.exsd"/>
+     
       <extension
             id="org.bonitasoft.studio.expression.editor.fragment"
             point="org.eclipse.e4.workbench.model">

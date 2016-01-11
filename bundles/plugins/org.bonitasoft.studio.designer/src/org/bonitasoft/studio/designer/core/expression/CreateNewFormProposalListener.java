@@ -20,19 +20,20 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.inject.Inject;
 
-import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.designer.core.FormScope;
 import org.bonitasoft.studio.designer.core.PageDesignerURLFactory;
 import org.bonitasoft.studio.designer.core.operation.CreateFormFromContractOperation;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IProposalAdapter;
 import org.bonitasoft.studio.model.process.Contract;
 import org.bonitasoft.studio.model.process.ContractContainer;
 import org.bonitasoft.studio.model.process.PageFlow;
-import org.bonitasoft.studio.model.process.Pool;
 import org.bonitasoft.studio.model.process.ProcessPackage;
+import org.bonitasoft.studio.model.process.Task;
 import org.bonitasoft.studio.preferences.BonitaPreferenceConstants;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.emf.ecore.EObject;
@@ -63,10 +64,11 @@ public class CreateNewFormProposalListener extends IProposalAdapter implements B
      * @see org.bonitasoft.studio.expression.editor.provider.IProposalListener#handleEvent(org.eclipse.emf.ecore.EObject, java.lang.String)
      */
     @Override
-    public String handleEvent(final EObject context, final String fixedReturnType) {
-        final PageFlow pageFlow = pageFlowFor(context);
+    public String handleEvent(final ModelLocation location, final String fixedReturnType) {
+        final PageFlow pageFlow = new ContextFinder(location).find(PageFlow.class);
         checkState(pageFlow != null);
-        final CreateFormFromContractOperation operation = doCreateFormOperation(pageDesignerURLFactory, "newForm", contractFor(context), formScopeFor(context));
+        final CreateFormFromContractOperation operation = doCreateFormOperation(pageDesignerURLFactory, "newForm", contractFor(location),
+                formScopeFor(location));
 
         try {
             progressService.busyCursorWhile(operation);
@@ -79,24 +81,21 @@ public class CreateNewFormProposalListener extends IProposalAdapter implements B
         return newPageId;
     }
 
-    private FormScope formScopeFor(final EObject context) {
-        return context.eContainingFeature().equals(ProcessPackage.Literals.RECAP_FLOW__OVERVIEW_FORM_MAPPING) ? FormScope.OVERVIEW
-                : context.eContainer() instanceof Pool ? FormScope.PROCESS : FormScope.TASK;
+    private FormScope formScopeFor(final ModelLocation location) {
+        final ContextFinder contextFinder = new ContextFinder(location);
+        return contextFinder.find(ProcessPackage.Literals.RECAP_FLOW__OVERVIEW_FORM_MAPPING) != null ? FormScope.OVERVIEW
+                : contextFinder.find(Task.class) != null ? FormScope.TASK : FormScope.PROCESS;
     }
 
-    private static PageFlow pageFlowFor(final EObject context) {
-        return ModelHelper.getFirstContainerOfType(context, PageFlow.class);
-    }
-
-    private Contract contractFor(final EObject context) {
-        EObject contractContainer = context;
+    private Contract contractFor(final ModelLocation location) {
+        EObject contractContainer = new ContextFinder(location).find(ContractContainer.class);
         while (contractContainer != null && !(contractContainer instanceof ContractContainer)) {
             contractContainer = contractContainer.eContainer();
         }
         if (contractContainer instanceof ContractContainer) {
             return ((ContractContainer) contractContainer).getContract();
         }
-        throw new IllegalStateException("No contract found for context " + context);
+        throw new IllegalStateException("No contract found for location " + location);
     }
 
     protected CreateFormFromContractOperation doCreateFormOperation(final PageDesignerURLFactory pageDesignerURLBuilder, final String formName,

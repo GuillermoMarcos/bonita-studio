@@ -141,14 +141,13 @@ public class PageComponentSwitchBuilder {
             final Input input, final ConnectorParameter parameter, final LabelProvider autoCompletionLabelProvider) {
         final ExpressionViewer viewer = new ExpressionViewer(composite, SWT.BORDER);
         viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        viewer.setLocation(location);
         if (autoCompletionLabelProvider != null) {
             viewer.setAutocomplitionLabelProvider(autoCompletionLabelProvider);
         }
         handleExpressionProvider(expressionProvider, viewer);
         handleMandatory(object, input, viewer);
         handleDocumentsOption(object, viewer);
-        viewer.setInput(parameter);
+        viewer.setInput(location);
         handleDescription(object, viewer);
         context.bindValue(ViewersObservables.observeSingleSelection(viewer),
                 EMFObservables.observeValue(parameter, ConnectorConfigurationPackage.Literals.CONNECTOR_PARAMETER__EXPRESSION));
@@ -318,13 +317,12 @@ public class PageComponentSwitchBuilder {
                     ConnectorConfigurationPackage.Literals.CONNECTOR_PARAMETER__EXPRESSION);
             viewer.getCheckboxControl().setText(fieldLabel.getText());
             viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-            viewer.setLocation(location);
 
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
             }
             viewer.addFilter(connectorExpressionContentTypeFilter);
-            viewer.setInput(parameter);
+            viewer.setInput(location);
             final String desc = getDescription(object.getId());
             if (desc != null && !desc.isEmpty()) {
                 viewer.setMessage(desc, IStatus.INFO);
@@ -419,8 +417,7 @@ public class PageComponentSwitchBuilder {
             if (desc != null && !desc.isEmpty()) {
                 viewer.setHint(desc);
             }
-            viewer.setLocation(location);
-            viewer.setInput(parameter);
+            viewer.setInput(location);
             final UpdateValueStrategy startegy = new UpdateValueStrategy();
             if (input.isMandatory()) {
                 startegy.setAfterConvertValidator(new EmptyInputValidator(getLabel(object.getId())));
@@ -444,12 +441,11 @@ public class PageComponentSwitchBuilder {
             createFieldLabel(composite, SWT.CENTER, object.getId(), input.isMandatory());
             final ExpressionViewer viewer = new GroovyOnlyExpressionViewer(composite, SWT.BORDER | SWT.SHORT);
             viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-            viewer.setLocation(location);
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
             }
             viewer.addFilter(connectorExpressionContentTypeFilter);
-            viewer.setInput(parameter);
+            viewer.setInput(location);
             final String desc = getDescription(object.getId());
             if (desc != null && !desc.isEmpty()) {
                 viewer.setMessage(desc, IStatus.INFO);
@@ -618,12 +614,11 @@ public class PageComponentSwitchBuilder {
             createFieldLabel(composite, SWT.CENTER, object.getId(), input.isMandatory());
             final ExpressionViewer viewer = new ExpressionViewer(composite, SWT.BORDER | SWT.PASSWORD);
             viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-            viewer.setLocation(location);
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
             }
             viewer.addFilter(connectorExpressionContentTypeFilter);
-            viewer.setInput(parameter);
+            viewer.setInput(location);
             final String desc = getDescription(object.getId());
             if (desc != null && !desc.isEmpty()) {
                 viewer.setMessage(desc, IStatus.INFO);

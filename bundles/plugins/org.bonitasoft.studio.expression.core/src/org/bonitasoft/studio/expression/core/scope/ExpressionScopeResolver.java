@@ -24,6 +24,7 @@ import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
 import org.bonitasoft.studio.expression.core.scope.filter.DataDefaultValueFilter;
 import org.bonitasoft.studio.expression.core.scope.filter.DuplicableLabelAndTooltipFilter;
 import org.bonitasoft.studio.expression.core.scope.filter.ExpressionScopeFilter;
+import org.bonitasoft.studio.expression.core.scope.filter.ValidatorExpressionFilter;
 import org.bonitasoft.studio.model.expression.Expression;
 
 import com.google.common.base.Predicate;
@@ -36,6 +37,7 @@ public class ExpressionScopeResolver {
         FILTERS = new ArrayList<>();
         FILTERS.add(new DuplicableLabelAndTooltipFilter());
         FILTERS.add(new DataDefaultValueFilter());
+        FILTERS.add(new ValidatorExpressionFilter());
     }
 
     public ExpressionScope resolve(final ModelLocation location) {

@@ -650,7 +650,7 @@ public class DataWizardPage extends WizardPage {
             exp.setReturnType(getSelectedReturnType());
         }
 
-        defaultValueViewer.setInput(data);
+        defaultValueViewer.setInput(location);
         observeSingleSelectionDefaultValueExpression = ViewersObservables.observeSingleSelection(defaultValueViewer);
         emfDatabindingContext.bindValue(observeSingleSelectionDefaultValueExpression,
                 EMFObservables.observeValue(data, ProcessPackage.Literals.DATA__DEFAULT_VALUE));
@@ -831,7 +831,6 @@ public class DataWizardPage extends WizardPage {
 
         defaultValueViewer = new ExpressionViewer(defaultValueComposite, SWT.BORDER, ProcessPackage.Literals.DATA__DEFAULT_VALUE);
         defaultValueViewer.getControl().setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).create());
-        defaultValueViewer.setLocation(location);
 
         final ToolItem eraseItem = defaultValueViewer.getEraseControl();
         eraseItem.addSelectionListener(new SelectionAdapter() {
@@ -849,9 +848,7 @@ public class DataWizardPage extends WizardPage {
                 }
             }
         });
-
-        //  defaultValueViewer.addFilter(new DataDefaultValueExpressionFilter(this, container, isOverViewContext()));
-        defaultValueViewer.setInput(data);
+        defaultValueViewer.setInput(location);
 
         updateBrowseXMLButton(data.getDataType());
     }

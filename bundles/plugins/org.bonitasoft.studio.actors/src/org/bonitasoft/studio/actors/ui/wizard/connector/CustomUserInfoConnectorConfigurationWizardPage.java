@@ -104,7 +104,8 @@ public class CustomUserInfoConnectorConfigurationWizardPage extends AbstractConn
             final Text object) {
         final OrganizationRepositoryStore store = RepositoryManager.getInstance().getRepositoryStore(OrganizationRepositoryStore.class);
         final String fileName = activeOrganizationProvider.getActiveOrganization();
-        componentSwitchBuilder.createTextControl(composite, object, new CustomUserInfoNameExpressionProvider(store, fileName),
+        componentSwitchBuilder.createTextControl(composite, object,
+                new CustomUserInfoNameExpressionProvider(store, fileName + "." + OrganizationRepositoryStore.ORGANIZATION_EXT),
                 new CustomUserInfoLabelProvider());
     }
 

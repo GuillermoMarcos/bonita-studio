@@ -21,10 +21,11 @@ import org.bonitasoft.studio.common.DataTypeLabels;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.jface.CustomWizardDialog;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IDataProposalListener;
 import org.bonitasoft.studio.model.process.BusinessObjectData;
 import org.bonitasoft.studio.model.process.Data;
-import org.bonitasoft.studio.model.process.DataAware;
 import org.bonitasoft.studio.model.process.Pool;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.eclipse.core.runtime.Assert;
@@ -44,14 +45,12 @@ public class CreateBusinessDataProposalListener implements IDataProposalListener
     private boolean multipleData;
 
     @Override
-    public String handleEvent(EObject context, final String fixedReturnType) {
-        Assert.isNotNull(context);
-        while (!(context instanceof Pool)) {
-            context = context.eContainer();
-        }
+    public String handleEvent(ModelLocation location, final String fixedReturnType) {
+        Assert.isNotNull(location);
+        final Pool pool = new ContextFinder(location).find(Pool.class);
         final BusinessObjectModelRepositoryStore repositoryStore = RepositoryManager.getInstance().getRepositoryStore(BusinessObjectModelRepositoryStore.class);
-        final AddBusinessObjectDataWizard newWizard = new AddBusinessObjectDataWizard((DataAware) context, newMultipleBusinessData(context), repositoryStore,
-                TransactionUtil.getEditingDomain(context));
+        final AddBusinessObjectDataWizard newWizard = new AddBusinessObjectDataWizard(pool, newMultipleBusinessData(pool), repositoryStore,
+                TransactionUtil.getEditingDomain(pool));
         Shell activeShell = Display
                 .getDefault().getActiveShell();
         if (activeShell.getParent() != null) {
@@ -93,8 +92,8 @@ public class CreateBusinessDataProposalListener implements IDataProposalListener
 
 
     @Override
-    public boolean isRelevant(final EObject context) {
-        return context instanceof Pool;
+    public boolean isRelevant(final ModelLocation location) {
+        return new ContextFinder(location).find(Pool.class) != null;
     }
 
     @Override

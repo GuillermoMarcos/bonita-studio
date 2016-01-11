@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-2015 Bonitasoft S.A.
+ * Copyright (C) 2015 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,48 +12,64 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bonitasoft.studio.validators.ui.property.section;
+package org.bonitasoft.studio.expression.core.scope.filter;
+
+import static com.google.common.base.Predicates.or;
+import static org.bonitasoft.studio.common.predicate.ExpressionPredicates.withExpressionType;
+import static org.bonitasoft.studio.common.predicate.ExpressionPredicates.withVariableType;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
-import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
-import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.form.Form;
+import org.bonitasoft.studio.model.form.FormPackage;
 import org.bonitasoft.studio.model.form.Widget;
 import org.bonitasoft.studio.model.form.WidgetDependency;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.emf.ecore.EStructuralFeature;
 
-/**
- * @author Romain Bioteau
- */
-public class AvailableExpressionTypeFilterWitoutContingentWidgets extends AvailableExpressionTypeFilter {
+public class ValidatorExpressionFilter implements ExpressionScopeFilter {
 
-    public AvailableExpressionTypeFilterWitoutContingentWidgets() {
-        super(new String[] { ExpressionConstants.CONSTANT_TYPE, ExpressionConstants.VARIABLE_TYPE, ExpressionConstants.SCRIPT_TYPE,
-                ExpressionConstants.PARAMETER_TYPE, ExpressionConstants.FORM_FIELD_TYPE, ExpressionConstants.DOCUMENT_TYPE });
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.core.scope.ExpressionScopeResolver#isRelevant(org.eclipse.emf.ecore.EStructuralFeature)
+     */
+    @Override
+    public boolean isRelevant(final ModelLocation location) {
+        final EStructuralFeature containingFeature = location.getContainingFeature();
+        return Objects.equals(FormPackage.Literals.VALIDATOR__PARAMETER, containingFeature) ||
+                Objects.equals(FormPackage.Literals.VALIDATOR__DISPLAY_NAME, containingFeature);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.google.common.base.Predicate#apply(java.lang.Object)
+     */
+    @SuppressWarnings("unchecked")
     @Override
-    public boolean select(final Viewer viewer, final Object context, final Object element) {
-        if (element instanceof Expression){
-            final Expression expression = (Expression)element;
+    public boolean apply(final ModelLocation location, final Expression expression) {
             Widget parentWidget = null;
-            if (context instanceof EObject) {
-                parentWidget = ModelHelper.getParentWidget((EObject) context);
-            } else if (viewer instanceof ExpressionViewer) {
-                parentWidget = ModelHelper.getParentWidget(((ExpressionViewer) viewer).getContext());
-            }
-            if(ExpressionConstants.FORM_FIELD_TYPE.equals(expression.getType())
+        final Widget widget = new ContextFinder(location).find(Widget.class);
+        if (widget != null) {
+            parentWidget = ModelHelper.getParentWidget(widget);
+            if (ExpressionConstants.FORM_FIELD_TYPE.equals(expression.getType())
                     && !(expression.getReferencedElements().isEmpty())
                     && isContingentField(parentWidget, expression)) {
                 return false;
             }
         }
-        return super.select(viewer, context, element);
+        return or(
+                withVariableType(),
+                withExpressionType(ExpressionConstants.CONSTANT_TYPE),
+                withExpressionType(ExpressionConstants.FORM_FIELD_TYPE),
+                withExpressionType(ExpressionConstants.SCRIPT_TYPE),
+                withExpressionType(ExpressionConstants.PARAMETER_TYPE),
+                withExpressionType(ExpressionConstants.DOCUMENT_TYPE)).apply(expression);
+
     }
 
     private boolean isContingentField(final Widget parentWidget, final Expression formFieldExpression) {

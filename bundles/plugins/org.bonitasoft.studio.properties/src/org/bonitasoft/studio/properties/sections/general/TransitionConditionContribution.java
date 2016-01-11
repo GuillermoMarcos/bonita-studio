@@ -23,6 +23,7 @@ import org.bonitasoft.studio.condition.ui.expression.ComparisonExpressionValidat
 import org.bonitasoft.studio.decision.ui.DecisionTableWizard;
 import org.bonitasoft.studio.decision.ui.condition.MaximizableWizardDialog;
 import org.bonitasoft.studio.decision.ui.condition.TakeTransitionLabelProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -150,7 +151,6 @@ public class TransitionConditionContribution implements IExtensibleGridPropertyS
             expression.setType(ExpressionConstants.CONDITION_TYPE);
             editingDomain.getCommandStack().execute(SetCommand.create(editingDomain, transition, ProcessPackage.Literals.SEQUENCE_FLOW__CONDITION, expression));
         }
-        conditionViewer.setLocation(transition);
         conditionViewer.setInput(transition);
         conditionViewer.getControl().setLayoutData(
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(350, SWT.DEFAULT).create());
@@ -164,13 +164,13 @@ public class TransitionConditionContribution implements IExtensibleGridPropertyS
         client.setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).create());
         client.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
 
+        final ModelLocationFactory modelLocationFactory = new ModelLocationFactory();
         updateTableButton = widgetFactory.createButton(client, Messages.editDecisionTable, SWT.PUSH);
         updateTableButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(final SelectionEvent e) {
-
-                final DecisionTableWizard wizard = new DecisionTableWizard(transition, transition.getDecisionTable());
+                final DecisionTableWizard wizard = new DecisionTableWizard(modelLocationFactory.newLocation(transition), transition.getDecisionTable());
                 final TakeTransitionAction takeTransitionAction = TransitionsFactory.eINSTANCE.createTakeTransitionAction();
                 takeTransitionAction.setTakeTransition(true);
                 final TakeTransitionAction dontTakeTransitionAction = TransitionsFactory.eINSTANCE.createTakeTransitionAction();

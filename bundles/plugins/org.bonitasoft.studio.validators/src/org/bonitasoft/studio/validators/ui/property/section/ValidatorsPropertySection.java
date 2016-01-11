@@ -195,13 +195,11 @@ public class ValidatorsPropertySection extends AbstractBonitaDescriptionSection 
         // Label text
         labelExpressionViewer = new ExpressionViewer(fieldsComposite, SWT.BORDER, getWidgetFactory());
         labelExpressionViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.DEFAULT, true, false, 3, 1));
-        labelExpressionViewer.addFilter(new AvailableExpressionTypeFilterWitoutContingentWidgets());
 
         /*create the parameter field */
         getWidgetFactory().createLabel(fieldsComposite, Messages.Validator_Parameter);
         parameterExpressionViewer = new ExpressionViewer(fieldsComposite, SWT.BORDER, getWidgetFactory());
         parameterExpressionViewer.getControl().setLayoutData(GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).span(3, 1).create());
-        parameterExpressionViewer.addFilter(new AvailableExpressionTypeFilterWitoutContingentWidgets());
 
 
         // htmlClass Label
@@ -305,7 +303,6 @@ public class ValidatorsPropertySection extends AbstractBonitaDescriptionSection 
 
             @Override
             public void selectionChanged(final SelectionChangedEvent event) {
-
                 currentValidator = (Validator) ((IStructuredSelection) tableViewer.getSelection()).getFirstElement();
                 enableFields(!tableViewer.getSelection().isEmpty());
                 if(currentValidator != null){
@@ -321,13 +318,7 @@ public class ValidatorsPropertySection extends AbstractBonitaDescriptionSection 
                         getEditingDomain().getCommandStack().execute(SetCommand.create(getEditingDomain(), currentValidator, FormPackage.Literals.VALIDATOR__PARAMETER, selection)) ;
 
                     }
-                    if(currentValidator != null){
-                        parameterExpressionViewer.setLocation(currentValidator);
-                    }else{
-                        parameterExpressionViewer.setLocation(getValidable());
-                    }
-
-                    parameterExpressionViewer.setInput(currentValidator) ;
+                    parameterExpressionViewer.setInput(currentValidator != null ? currentValidator : getValidable());
 
                     expressionContext.bindValue(
                             ViewerProperties.singleSelection().observe(parameterExpressionViewer),
@@ -342,13 +333,7 @@ public class ValidatorsPropertySection extends AbstractBonitaDescriptionSection 
                         selection = ExpressionFactory.eINSTANCE.createExpression() ;
                         getEditingDomain().getCommandStack().execute(SetCommand.create(getEditingDomain(), currentValidator, FormPackage.Literals.VALIDATOR__DISPLAY_NAME, selection)) ;
                     }
-                    if(currentValidator != null){
-                        labelExpressionViewer.setLocation(currentValidator);
-                    }else{
-                        labelExpressionViewer.setLocation(getValidable());
-                    }
-
-                    labelExpressionViewer.setInput(currentValidator) ;
+                    labelExpressionViewer.setInput(currentValidator != null ? currentValidator : getValidable());
                     expressionContext.bindValue(
                             ViewerProperties.singleSelection().observe(labelExpressionViewer),
                             EMFEditProperties.value(getEditingDomain(), FormPackage.Literals.VALIDATOR__DISPLAY_NAME).observe(currentValidator));

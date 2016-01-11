@@ -171,7 +171,6 @@ public class TestDatabaseConnectorOutputWizardPage extends DatabaseConnectorOutp
 		outputExpressionViewer = new ExpressionViewer(mainComposite, SWT.BORDER, ExpressionPackage.Literals.OPERATION__RIGHT_OPERAND);
 		outputExpressionViewer.getControl().setLayoutData( GridDataFactory.fillDefaults().grab(true, false).create());
 		outputExpressionViewer.addFilter(rightFilter);
-        outputExpressionViewer.setLocation(getModelLocation());
 		outputExpressionViewer.setMessage(Messages.connectorExpressionViewerMessage, IStatus.INFO);
 		outputExpressionViewer.setExternalDataBindingContext(context);
 		outputExpressionViewer.setProposalsFiltering(false);
@@ -194,7 +193,7 @@ public class TestDatabaseConnectorOutputWizardPage extends DatabaseConnectorOutp
         });
 		final Operation output = getOuputOperationFor(RESULTSET_OUTPUT);
 		if(output != null){
-			outputExpressionViewer.setInput(output);
+			outputExpressionViewer.setInput(getModelLocation());
 			context.bindValue(ViewersObservables.observeSingleSelection(outputExpressionViewer), EMFObservables.observeValue(output, ExpressionPackage.Literals.OPERATION__RIGHT_OPERAND));
 		}
 

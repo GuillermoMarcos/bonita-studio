@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.expression.ListExpression;
@@ -92,15 +93,19 @@ public class MessageContentExpressionValidator implements IExpressionValidator {
         //Nothing
 	}
 
-	@Override
-	public void setContext(final EObject context) {
-        //Nothing
-	}
-
     @Override
     public boolean isRelevantForExpressionType(final String type) {
         return ExpressionConstants.MESSAGE_ID_TYPE.equals(type)
                 || ExpressionConstants.CONSTANT_TYPE.equals(type);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.bonitasoft.studio.expression.editor.provider.IExpressionValidator#setModelLocation(org.bonitasoft.studio.expression.core.scope.ModelLocation)
+     */
+    @Override
+    public void setModelLocation(ModelLocation modelLocation) {
+
     }
 
 }

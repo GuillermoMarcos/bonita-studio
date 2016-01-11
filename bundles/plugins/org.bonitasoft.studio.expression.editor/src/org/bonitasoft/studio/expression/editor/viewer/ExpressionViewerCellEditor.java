@@ -17,7 +17,6 @@
 package org.bonitasoft.studio.expression.editor.viewer;
 
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
-import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.autocompletion.IExpressionProposalLabelProvider;
 import org.bonitasoft.studio.expression.editor.i18n.Messages;
 import org.bonitasoft.studio.model.expression.Expression;
@@ -300,10 +299,6 @@ public class ExpressionViewerCellEditor extends CellEditor {
 
     public void addFilter(final ViewerFilter filter) {
         viewer.addFilter(filter);
-    }
-
-    public void setLocation(final ModelLocation location) {
-        viewer.setLocation(location);
     }
 
     public void setExpressionNatureProvider(

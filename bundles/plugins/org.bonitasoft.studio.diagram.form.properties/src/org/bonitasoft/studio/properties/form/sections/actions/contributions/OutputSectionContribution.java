@@ -22,6 +22,7 @@ import org.bonitasoft.studio.common.properties.IExtensibleGridPropertySectionCon
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.data.provider.DataExpressionNatureProviderForFormOutput;
 import org.bonitasoft.studio.data.provider.DataExpressionProviderForOutput;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.operation.OperationViewer;
 import org.bonitasoft.studio.form.properties.i18n.Messages;
@@ -104,7 +105,7 @@ public class OutputSectionContribution implements IExtensibleGridPropertySection
                 dataBinding.dispose();
             }
             dataBinding = new EMFDataBindingContext();
-            operationViewer.setContext(dataBinding);
+            operationViewer.setDatabindingContext(dataBinding);
             Operation action = element.getAction();
             if (action == null) {
                 action = ExpressionFactory.eINSTANCE.createOperation();
@@ -120,7 +121,7 @@ public class OutputSectionContribution implements IExtensibleGridPropertySection
                 editingDomain.getCommandStack().execute(SetCommand.create(editingDomain, element, FormPackage.Literals.WIDGET__ACTION, action));
             }
             operationViewer.setEditingDomain(getEditingDomain());
-            operationViewer.setEObject(element);
+            operationViewer.setInput(new ModelLocationFactory().newLocation(element, action));
             final UpdateValueStrategy strategy = new UpdateValueStrategy();
             strategy.setConverter(new BooleanInverserConverter());
 

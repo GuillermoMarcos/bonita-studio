@@ -14,7 +14,7 @@
  */
 package org.bonitasoft.studio.expression.editor.provider;
 
-import org.eclipse.emf.ecore.EObject;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
@@ -24,7 +24,7 @@ public abstract class IProposalAdapter implements IProposalListener {
 
 
     @Override
-    public String handleEvent(final EObject context, final String fixedReturnType) {
+    public String handleEvent(final ModelLocation location, final String fixedReturnType) {
         return null;
     }
 
@@ -34,7 +34,7 @@ public abstract class IProposalAdapter implements IProposalListener {
     }
 
     @Override
-    public boolean isRelevant(final EObject context) {
+    public boolean isRelevant(final ModelLocation location) {
         return false;
     }
 }

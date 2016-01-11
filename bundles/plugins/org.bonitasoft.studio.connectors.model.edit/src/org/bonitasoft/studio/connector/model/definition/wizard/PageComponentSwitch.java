@@ -76,15 +76,21 @@ public class PageComponentSwitch extends ConnectorDefinitionSwitch<Component> {
     protected final IWizardContainer iWizardContainer;
     protected final PageComponentSwitchBuilder componentBuilder;
 
-    public PageComponentSwitch(final IWizardContainer iWizardContainer, final Composite parent, final PageComponentSwitchBuilder componentBuilder) {
+    public PageComponentSwitch(final IWizardContainer iWizardContainer,
+            final Composite parent,
+            final PageComponentSwitchBuilder componentBuilder) {
         this.parent = parent ;
         this.iWizardContainer = iWizardContainer;
         this.componentBuilder = componentBuilder;
     }
 
-    public PageComponentSwitch(final IWizardContainer iWizardContainer, final Composite parent, final ModelLocation location,
+    public PageComponentSwitch(final IWizardContainer iWizardContainer,
+            final Composite parent,
+            final ModelLocation location,
             final ConnectorDefinition definition,
-            final ConnectorConfiguration connectorConfiguration, final EMFDataBindingContext context, final DefinitionResourceProvider messageProvider,
+            final ConnectorConfiguration connectorConfiguration,
+            final EMFDataBindingContext context,
+            final DefinitionResourceProvider messageProvider,
             final AvailableExpressionTypeFilter connectorExpressionContentTypeFilter) {
         this(iWizardContainer, parent, new PageComponentSwitchBuilder(location, definition, connectorConfiguration, context, messageProvider,
                 connectorExpressionContentTypeFilter));
@@ -285,7 +291,7 @@ public class PageComponentSwitch extends ConnectorDefinitionSwitch<Component> {
         return componentBuilder.connectorExpressionContentTypeFilter;
     }
 
-    protected ModelLocation getLocation() {
+    protected ModelLocation getModelLocation() {
         return componentBuilder.location;
     }
 

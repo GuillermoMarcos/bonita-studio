@@ -251,7 +251,7 @@ public class EditExpressionDialog extends TrayDialog {
             expressionTypeViewer.addFilter(filterEditor());
         }
         ColumnViewerToolTipSupport.enableFor(expressionTypeViewer, ToolTip.NO_RECREATE);
-        expressionTypeViewer.setInput(expressionViewer.getInput());
+        expressionTypeViewer.setInput(scope.getModelLocation());
         expressionTypeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override

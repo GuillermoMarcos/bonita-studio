@@ -113,8 +113,6 @@ public class ConnectorWizard extends ExtensibleWizard implements
 
 	private static final String DATASOURCE_CONNECTOR_D = "database-datasource";
 
-    //	protected final EObject container;
-
     protected ModelLocation location;
 
 	protected Connector connectorWorkingCopy;

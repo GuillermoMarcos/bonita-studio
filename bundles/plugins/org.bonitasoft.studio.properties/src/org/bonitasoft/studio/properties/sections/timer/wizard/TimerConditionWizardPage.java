@@ -24,6 +24,7 @@ import org.bonitasoft.studio.common.DateUtil;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.widgets.DurationComposite;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.provider.IExpressionValidator;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
@@ -37,7 +38,6 @@ import org.bonitasoft.studio.properties.i18n.Messages;
 import org.bonitasoft.studio.properties.sections.timer.cron.CronEditor;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
@@ -201,13 +201,14 @@ public class TimerConditionWizardPage extends WizardPage {
 
 			}
 
-			@Override
-			public void setContext(final EObject context) {
-			}
-
             @Override
             public boolean isRelevantForExpressionType(final String type) {
                 return ExpressionConstants.CONSTANT_TYPE.equals(type);
+            }
+
+            @Override
+            public void setModelLocation(ModelLocation modelLocation) {
+                
             }
 		});
 		conditionViewer.setInput(event) ;

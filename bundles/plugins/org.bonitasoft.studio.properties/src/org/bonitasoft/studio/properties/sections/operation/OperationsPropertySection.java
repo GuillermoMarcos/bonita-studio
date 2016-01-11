@@ -16,6 +16,7 @@ package org.bonitasoft.studio.properties.sections.operation;
 
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.properties.AbstractBonitaDescriptionSection;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.operation.OperationsComposite;
 import org.bonitasoft.studio.expression.editor.operation.PropertyOperationsComposite;
@@ -91,11 +92,11 @@ public class OperationsPropertySection extends AbstractBonitaDescriptionSection 
         super.setInput(part, selection);
         if (lastEObject == null || lastEObject != null && !lastEObject.equals(getEObject())) {
             lastEObject = (OperationContainer) getEObject();
-            operationComposite.setEObject(getEObject());
+            operationComposite.setInput(new ModelLocationFactory().newLocation(getEObject()));
             if (lastEObject instanceof ReceiveTask) {
                 operationComposite.setOperationContainmentFeature(ProcessPackage.Literals.OPERATION_CONTAINER__OPERATIONS);
             }
-            operationComposite.setContext(new EMFDataBindingContext());
+            operationComposite.setDatabindingContext(new EMFDataBindingContext());
             operationComposite.removeLinesUI();
             operationComposite.fillTable();
             operationComposite.refresh();

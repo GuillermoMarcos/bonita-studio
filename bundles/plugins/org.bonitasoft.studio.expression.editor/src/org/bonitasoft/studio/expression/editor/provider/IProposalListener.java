@@ -8,7 +8,7 @@
  *******************************************************************************/
 package org.bonitasoft.studio.expression.editor.provider;
 
-import org.eclipse.emf.ecore.EObject;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
@@ -17,10 +17,10 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  */
 public interface IProposalListener {
 
-    public String handleEvent(EObject context, String fixedReturnType);
+    public String handleEvent(ModelLocation location, String fixedReturnType);
 
     public void setEStructuralFeature(EStructuralFeature feature);
 
-    public boolean isRelevant(EObject context);
+    public boolean isRelevant(ModelLocation location);
 }
 

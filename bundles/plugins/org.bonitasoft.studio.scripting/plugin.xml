@@ -8,5 +8,4 @@
             providerClass="org.bonitasoft.studio.scripting.provider.ScriptExpressionProvider">
       </expressionProvider>
    </extension>
-
 </plugin>

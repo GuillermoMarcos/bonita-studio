@@ -21,6 +21,7 @@ import org.bonitasoft.studio.common.extension.ExtensionContextInjectionFactory;
 import org.bonitasoft.studio.common.jface.SWTBotConstants;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.expression.core.provider.IExpressionNatureProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.DataExpressionNatureProvider;
 import org.bonitasoft.studio.expression.editor.provider.IProposalListener;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
@@ -32,7 +33,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.e4.core.di.InjectionException;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.dialogs.PopupDialog;
@@ -790,7 +790,7 @@ public class BonitaContentProposalAdapter implements SWTBotConstants {
                     final IContentProposalListener listener = (IContentProposalListener) listenerArray[i];
                     if (listener instanceof ExpressionViewer) {
                         ((ExpressionViewer) listener)
-                                .manageNatureProviderAndAutocompletionProposal(((ExpressionViewer) listener).getInput());
+                                .manageNatureProviderAndAutocompletionProposal();
                     }
                 }
                 if (proposalProvider != null) {
@@ -1414,11 +1414,11 @@ public class BonitaContentProposalAdapter implements SWTBotConstants {
      */
     private boolean watchModify = false;
 
-    protected EObject context;
-
     protected List<String> filteredExpressionType;
 
     private boolean createShortcutZone;
+
+    private ModelLocation location;
 
     /**
      * Construct a content proposal adapter that can assist the user with
@@ -1469,9 +1469,9 @@ public class BonitaContentProposalAdapter implements SWTBotConstants {
         filteredExpressionType = new ArrayList<String>();
     }
 
-    public void setContext(final EObject context) {
-        this.context = context;
-        setCreateShortcutZone(context != null && context.eResource() != null);
+    public void setModelLocation(final ModelLocation location) {
+        this.location = location;
+        setCreateShortcutZone(location != null);
     }
 
     /**
@@ -2394,7 +2394,7 @@ public class BonitaContentProposalAdapter implements SWTBotConstants {
         if (dataFeature != null) {
             proposalListener.setEStructuralFeature(dataFeature);
         }
-        return proposalListener.handleEvent(context, fixedReturnType);
+        return proposalListener.handleEvent(location, fixedReturnType);
     }
 
     public boolean createShortcutZone() {

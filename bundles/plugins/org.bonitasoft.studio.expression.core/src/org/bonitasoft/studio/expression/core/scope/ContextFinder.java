@@ -46,12 +46,12 @@ public class ContextFinder {
         return context;
     }
 
-    public EObject find(EStructuralFeature feature) {
+    public ModelLocation find(EStructuralFeature feature) {
         ModelLocation currentLocation = location;
         while (currentLocation != null && !java.util.Objects.equals(feature, currentLocation.getContainingFeature())) {
             currentLocation = currentLocation.getParent();
         }
-        return currentLocation != null ? currentLocation.getModelElement() : null;
+        return currentLocation;
     }
 
 }
