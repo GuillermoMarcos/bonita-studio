@@ -25,6 +25,7 @@ import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.provider.IDataProposalListener;
 import org.bonitasoft.studio.model.process.Data;
 import org.bonitasoft.studio.model.process.DataAware;
+import org.bonitasoft.studio.model.process.Pool;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.bonitasoft.studio.model.process.ProcessPackage;
 import org.bonitasoft.studio.model.process.ReceiveTask;
@@ -77,10 +78,11 @@ public class CreateVariableProposalListener implements IDataProposalListener {
     }
 
     protected EObject getDataContainer(ModelLocation location) {
+        ContextFinder contextFinder = new ContextFinder(location);
         if (isValidContainer(location)) {
-            return new ContextFinder(location).find(DataAware.class);
+            return contextFinder.find(DataAware.class);
         }
-        return null;
+        return contextFinder.find(Pool.class);
     }
 
     private boolean isValidContainer(final ModelLocation location) {

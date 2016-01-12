@@ -51,7 +51,6 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.databinding.EMFDataBindingContext;
 import org.eclipse.emf.databinding.EMFObservables;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -76,7 +75,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class DocumentWizardPage extends WizardPage {
 
-    private final EObject context;
+    private final Pool pool;
     private final Document document;
     private ExpressionViewer documentUrlViewer;
     private ExpressionViewer documentMimeTypeViewer;
@@ -114,9 +113,9 @@ public class DocumentWizardPage extends WizardPage {
     private StackLayout multipleStack;
     private Composite multiNoneCompo;
 
-    public DocumentWizardPage(final EObject context, final Document document) {
+    public DocumentWizardPage(final Pool pool, final Document document) {
         super(DocumentWizardPage.class.getName());
-        this.context = context;
+        this.pool = pool;
         this.document = document;
         setTitle(Messages.bind(Messages.documentWizardPageTitle, getCurrentContextName()));
         setDescription(Messages.newDocumentWizardDescription);
@@ -129,7 +128,7 @@ public class DocumentWizardPage extends WizardPage {
         mainComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         mainComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).create());
 
-        new DocumentNameComposite(mainComposite).bindControl(document, context, emfDataBindingContext);
+        new DocumentNameComposite(mainComposite).bindControl(document, pool, emfDataBindingContext);
         new DocumentDescriptionComposite(mainComposite).bindControl(document, emfDataBindingContext);
 
         createSingleMultipleRadioGroup(mainComposite, emfDataBindingContext);
@@ -159,7 +158,7 @@ public class DocumentWizardPage extends WizardPage {
     }
 
     private String getCurrentContextName() {
-        final Pool parentPool = ModelHelper.getParentPool(context);
+        final Pool parentPool = ModelHelper.getParentPool(pool);
         if (parentPool != null) {
             return parentPool.getName();
         }
@@ -295,7 +294,7 @@ public class DocumentWizardPage extends WizardPage {
         noneCompo.setLayoutData(GridDataFactory.swtDefaults().grab(false, false).create());
 
         singleContractComposite = new SingleFileContractInputSelectionComposite(stackedComposite);
-        singleContractComposite.bindControl(document, context, emfDataBindingContext);
+        singleContractComposite.bindControl(document, pool, emfDataBindingContext);
         createLocalFileComposite(stackedComposite, emfDataBindingContext);
         createExternalURLComposite(stackedComposite, emfDataBindingContext);
     }
@@ -345,7 +344,7 @@ public class DocumentWizardPage extends WizardPage {
         multiNoneCompo.setLayoutData(GridDataFactory.swtDefaults().grab(false, false).create());
 
         multipleContractComposite = new MultipleFileContractInputSelectionComposite(multipleStackedComposite);
-        multipleContractComposite.bindControl(document, context, emfDataBindingContext);
+        multipleContractComposite.bindControl(document, pool, emfDataBindingContext);
         scriptComposite = createScriptComposite(multipleStackedComposite, emfDataBindingContext);
     }
 
@@ -368,7 +367,7 @@ public class DocumentWizardPage extends WizardPage {
         multipleInitialContentExpressionViewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         multipleInitialContentExpressionViewer.addFilter(new AvailableExpressionTypeFilter(ExpressionConstants.CONTRACT_INPUT_TYPE));
         multipleInitialContentExpressionViewer.setMessage(Messages.documentListScriptToolTip, IStatus.INFO);
-        multipleInitialContentExpressionViewer.setInput(context);
+        multipleInitialContentExpressionViewer.setInput(pool);
 
         emfDataBindingContext.bindValue(ViewerProperties.singleSelection().observe(multipleInitialContentExpressionViewer),
                 EMFObservables.observeValue(document, ProcessPackage.Literals.DOCUMENT__INITIAL_MULTIPLE_CONTENT));

@@ -332,7 +332,6 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
             }
 
         });
-
         editControl.addDisposeListener(disposeListener);
         return editControl;
     }
@@ -660,7 +659,7 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
         } else {
             autoCompletion.getContentProposalAdapter().setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
         }
-        autoCompletion.setModelLocation(new ContextFinder(scope.getModelLocation()).find);
+        autoCompletion.setModelLocation(scope.getModelLocation());
         final Set<Expression> filteredExpressions = getFilteredExpressions(scope);
         autoCompletion.setProposals(filteredExpressions.toArray(new Expression[filteredExpressions.size()]));
 

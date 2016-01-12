@@ -24,11 +24,12 @@ import org.bonitasoft.studio.designer.core.operation.CreateFormFromContractOpera
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
 import org.bonitasoft.studio.designer.i18n.Messages;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.Contract;
 import org.bonitasoft.studio.model.process.FormMapping;
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.progress.IProgressService;
@@ -50,8 +51,8 @@ public class CreateOrEditFormProposalListener extends CreateNewFormProposalListe
      * @see org.bonitasoft.studio.designer.core.expression.CreateNewFormProposalListener#handleEvent(org.eclipse.emf.ecore.EObject, java.lang.String)
      */
     @Override
-    public String handleEvent(final EObject context, final String fixedReturnType) {
-        final FormMapping mapping = (FormMapping) context;
+    public String handleEvent(final ModelLocation location, final String fixedReturnType) {
+        final FormMapping mapping = new ContextFinder(location).find(FormMapping.class);
         final Expression targetForm = mapping.getTargetForm();
         if (targetForm.hasContent()) {
             final WebPageFileStore pageStore = repositoryAccessor.getRepositoryStore(WebPageRepositoryStore.class).getChild(targetForm.getContent());
@@ -63,7 +64,7 @@ public class CreateOrEditFormProposalListener extends CreateNewFormProposalListe
             }
             return null;
         } else {
-            return super.handleEvent(context, fixedReturnType);
+            return super.handleEvent(location, fixedReturnType);
         }
     }
 

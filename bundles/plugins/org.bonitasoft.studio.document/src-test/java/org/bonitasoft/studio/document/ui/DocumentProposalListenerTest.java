@@ -15,9 +15,12 @@
 package org.bonitasoft.studio.document.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.process.Document;
 import org.bonitasoft.studio.model.process.ProcessFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -59,7 +62,7 @@ public class DocumentProposalListenerTest extends DocumentProposalListener {
         documentToReturn.setName("myBonitaDocument");
 
         context = ProcessFactory.eINSTANCE.createPool();
-        doReturn(mockedDocumentWizard).when(documentProposalListener).createDocumentWizard(context);
+        doReturn(mockedDocumentWizard).when(documentProposalListener).createDocumentWizard(notNull(ModelLocation.class));
         doReturn(mockedDocumentWizardDialog).when(documentProposalListener).createDocumentWizardDialog(mockedDocumentWizard);
     }
 
@@ -75,7 +78,7 @@ public class DocumentProposalListenerTest extends DocumentProposalListener {
         when(mockedDocumentWizardDialog.open()).thenReturn(Dialog.OK);
         when(mockedDocumentWizard.getDocument()).thenReturn(documentToReturn);
 
-        final String result = documentProposalListener.handleEvent(context, null);
+        final String result = documentProposalListener.handleEvent(new ModelLocationFactory().newLocation(context), null);
         assertThat(result).isEqualTo(documentToReturn.getName());
 
     }
@@ -85,11 +88,11 @@ public class DocumentProposalListenerTest extends DocumentProposalListener {
 
         when(mockedDocumentWizardDialog.open()).thenReturn(Dialog.OK);
         when(mockedDocumentWizard.getDocument()).thenReturn(null);
-        String result = documentProposalListener.handleEvent(context, null);
+        String result = documentProposalListener.handleEvent(new ModelLocationFactory().newLocation(context), null);
         assertThat(result).isNull();
 
         when(mockedDocumentWizardDialog.open()).thenReturn(Dialog.CANCEL);
-        result = documentProposalListener.handleEvent(context, null);
+        result = documentProposalListener.handleEvent(new ModelLocationFactory().newLocation(context), null);
         assertThat(result).isNull();
     }
 

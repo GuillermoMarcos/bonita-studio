@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.bonitasoft.studio.common.emf.tools.ExpressionHelper;
-import org.bonitasoft.studio.common.emf.tools.ModelHelper;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.document.DocumentPlugin;
@@ -33,7 +32,6 @@ import org.bonitasoft.studio.pics.Pics;
 import org.bonitasoft.studio.refactoring.core.RefactoringOperationType;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -45,13 +43,13 @@ public class DocumentWizard extends Wizard {
     private final Document document;
     private final Document documentWorkingCopy;
     private final boolean editMode;
-    private final EObject context;
+    private final Pool process;
 
     private static final String XTEXT_BUILDER_ID = "org.eclipse.xtext.ui.shared.xtextBuilder";
 
-    public DocumentWizard(final EObject context) {
+    public DocumentWizard(final Pool process) {
         super();
-        this.context = context;
+        this.process = process;
         setWindowTitle(Messages.newDocument);
         setDefaultPageImageDescriptor(Pics.getWizban());
         documentWorkingCopy = ProcessFactory.eINSTANCE.createDocument();
@@ -69,9 +67,9 @@ public class DocumentWizard extends Wizard {
         editMode = false;
     }
 
-    public DocumentWizard(final EObject context, final Document document, final boolean editMode) {
+    public DocumentWizard(final Pool process, final Document document, final boolean editMode) {
         super();
-        this.context = context;
+        this.process = process;
         setWindowTitle(editMode);
         setDefaultPageImageDescriptor(Pics.getWizban());
         this.document = document;
@@ -99,7 +97,7 @@ public class DocumentWizard extends Wizard {
 
     @Override
     public void addPages() {
-        final DocumentWizardPage page = new DocumentWizardPage(context, documentWorkingCopy);
+        final DocumentWizardPage page = new DocumentWizardPage(process, documentWorkingCopy);
         if (editMode) {
             page.setDescription(Messages.editDocumentDescription);
             page.setTitle(Messages.editDocumentTitle);
@@ -109,10 +107,9 @@ public class DocumentWizard extends Wizard {
 
     @Override
     public boolean performFinish() {
-        final Pool pool = (Pool) ModelHelper.getParentProcess(context);
-        final TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(context);
+        final TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(process);
         if (document == null) {
-            editingDomain.getCommandStack().execute(new AddCommand(editingDomain, pool.getDocuments(), documentWorkingCopy));
+            editingDomain.getCommandStack().execute(new AddCommand(editingDomain, process.getDocuments(), documentWorkingCopy));
         } else {
             final boolean cancelled = performFinishOnEdition(editingDomain);
             if (cancelled) {
@@ -165,8 +162,8 @@ public class DocumentWizard extends Wizard {
         return documentWorkingCopy;
     }
 
-    public EObject getContext() {
-        return context;
+    public Pool getProcess() {
+        return process;
     }
 
 }

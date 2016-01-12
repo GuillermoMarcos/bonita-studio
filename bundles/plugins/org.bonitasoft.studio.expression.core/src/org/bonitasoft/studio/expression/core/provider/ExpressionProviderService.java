@@ -37,10 +37,13 @@ public class ExpressionProviderService {
 
     private static ExpressionProviderService INSTANCE;
 
-    private Set<IExpressionProvider> expressionProviders;
+    private final Set<IExpressionProvider> expressionProviders = new HashSet<IExpressionProvider>();
     private final ExtensionContextInjectionFactory extensionContextInjectionFactory;
 
     public static ExpressionProviderService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ExpressionProviderService();
+        }
         return INSTANCE;
     }
 
@@ -51,7 +54,6 @@ public class ExpressionProviderService {
 
     @PostConstruct
     protected void init(final IEclipseContext context) {
-        expressionProviders = new HashSet<IExpressionProvider>();
         final IConfigurationElement[] elements = BonitaStudioExtensionRegistryManager.getInstance().getConfigurationElements(EXPRESSION_PROVIDER_ID);
         for (final IConfigurationElement element : elements) {
             try {
@@ -66,8 +68,6 @@ public class ExpressionProviderService {
     public Set<IExpressionProvider> getExpressionProviders() {
         return expressionProviders;
     }
-
-
 
     public synchronized IExpressionProvider getExpressionProvider(final String type) {
         for (final IExpressionProvider provider : getExpressionProviders()) {

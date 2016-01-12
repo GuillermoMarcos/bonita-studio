@@ -27,7 +27,7 @@ public class DocumentWizardDialog extends FinishAndAddCustomWizardDialog {
 
     @Override
     protected void actionOnFinishAndAdd() {
-        final DocumentWizardDialog documentWizardDialog = new DocumentWizardDialog(getParentShell(), new DocumentWizard(getWizard().getContext()), true);
+        final DocumentWizardDialog documentWizardDialog = new DocumentWizardDialog(getParentShell(), new DocumentWizard(getWizard().getProcess()), true);
         documentWizardDialog.open();
     }
 

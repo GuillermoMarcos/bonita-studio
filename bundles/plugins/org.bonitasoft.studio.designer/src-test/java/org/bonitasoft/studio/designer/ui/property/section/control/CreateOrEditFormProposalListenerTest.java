@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.bonitasoft.studio.model.expression.builders.ExpressionBuilder.anExpression;
 import static org.bonitasoft.studio.model.process.builders.ContractBuilder.aContract;
 import static org.bonitasoft.studio.model.process.builders.FormMappingBuilder.aFormMapping;
+import static org.bonitasoft.studio.model.process.builders.TaskBuilder.aTask;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -32,7 +33,9 @@ import org.bonitasoft.studio.designer.core.PageDesignerURLFactory;
 import org.bonitasoft.studio.designer.core.operation.CreateFormFromContractOperation;
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.process.Contract;
+import org.bonitasoft.studio.model.process.FormMapping;
 import org.bonitasoft.studio.model.process.builders.TaskBuilder;
 import org.eclipse.ui.progress.IProgressService;
 import org.junit.Test;
@@ -67,9 +70,9 @@ public class CreateOrEditFormProposalListenerTest {
         when(repositoryAccessor.getRepositoryStore(WebPageRepositoryStore.class)).thenReturn(pageStore);
         when(pageStore.getChild("page-id")).thenReturn(fileStore);
 
-        final String newPageId = listener.handleEvent(
-                TaskBuilder.aTask().havingFormMapping(aFormMapping().havingTargetForm(anExpression())).havingContract(aContract()).build()
-                        .getFormMapping(), null);
+        final FormMapping formMapping = aTask().havingFormMapping(aFormMapping().havingTargetForm(anExpression())).havingContract(aContract()).build()
+                .getFormMapping();
+        final String newPageId = listener.handleEvent(new ModelLocationFactory().newLocation(formMapping), null);
 
         assertThat(newPageId).isEqualTo("page-id");
         verify(progressService).busyCursorWhile(operation);
@@ -82,10 +85,10 @@ public class CreateOrEditFormProposalListenerTest {
         when(repositoryAccessor.getRepositoryStore(WebPageRepositoryStore.class)).thenReturn(pageStore);
         when(pageStore.getChild("page-id")).thenReturn(fileStore);
 
-        final String newPageId = listener.handleEvent(
-                TaskBuilder.aTask().havingFormMapping(aFormMapping().havingTargetForm(anExpression().withContent("page-id"))).havingContract(aContract())
-                        .build()
-                        .getFormMapping(), null);
+        final FormMapping formMapping = TaskBuilder.aTask().havingFormMapping(aFormMapping().havingTargetForm(anExpression().withContent("page-id")))
+                .havingContract(aContract())
+                .build().getFormMapping();
+        final String newPageId = listener.handleEvent(new ModelLocationFactory().newLocation(formMapping), null);
 
         assertThat(newPageId).isNull();
         verify(fileStore).open();

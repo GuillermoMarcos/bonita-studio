@@ -16,11 +16,15 @@ package org.bonitasoft.studio.designer.ui.property.section.control;
 
 import static org.bonitasoft.studio.model.expression.builders.ExpressionBuilder.anExpression;
 import static org.bonitasoft.studio.model.process.builders.FormMappingBuilder.aFormMapping;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.when;
 
 import org.bonitasoft.studio.common.repository.RepositoryAccessor;
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.expression.assertions.ExpressionAssert;
 import org.bonitasoft.studio.model.process.FormMapping;
 import org.bonitasoft.studio.model.process.provider.ProcessItemProviderAdapterFactory;
@@ -29,6 +33,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
@@ -79,12 +84,14 @@ public class FormReferenceExpressionViewerTest {
                 webPageRepositoryStore, createOrEditNewFormProposalListener);
 
         final FormMapping mapping = aFormMapping().havingTargetForm(anExpression().withContent("a-page-id")).build();
-        formReferenceExpressionViewer.setInput(mapping);
-        when(createOrEditNewFormProposalListener.handleEvent(mapping, null)).thenReturn(null);
+        final ModelLocation location = new ModelLocationFactory().newLocation(mapping);
+        formReferenceExpressionViewer.setInput(location);
+        formReferenceExpressionViewer.setSelection(new StructuredSelection(anExpression().build()));
+        when(createOrEditNewFormProposalListener.handleEvent(notNull(ModelLocation.class), anyString())).thenReturn(null);
         when(webPageRepositoryStore.getChild("a-page-id")).thenReturn(selectedPage);
         formReferenceExpressionViewer.editControlSelected(toolBar, null, editingDomain());
 
-        Mockito.verify(createOrEditNewFormProposalListener).handleEvent(mapping, null);
+        Mockito.verify(createOrEditNewFormProposalListener).handleEvent(notNull(ModelLocation.class), anyString());
         Mockito.verify(webPageRepositoryStore, Mockito.never()).refresh();
         ExpressionAssert.assertThat(mapping.getTargetForm()).hasContent("a-page-id");
     }
@@ -95,9 +102,10 @@ public class FormReferenceExpressionViewerTest {
                 widgetFactory,
                 webPageRepositoryStore, createOrEditNewFormProposalListener);
         final FormMapping mapping = aFormMapping().havingTargetForm(anExpression()).build();
-        formReferenceExpressionViewer.setInput(mapping);
-
-        when(createOrEditNewFormProposalListener.handleEvent(mapping, null)).thenReturn("a-new-page-id");
+        final ModelLocation location = new ModelLocationFactory().newLocation(mapping);
+        formReferenceExpressionViewer.setInput(location);
+        formReferenceExpressionViewer.setSelection(new StructuredSelection(anExpression().build()));
+        when(createOrEditNewFormProposalListener.handleEvent(notNull(ModelLocation.class), anyString())).thenReturn("a-new-page-id");
         when(webPageRepositoryStore.getChild("a-new-page-id")).thenReturn(selectedPage);
         formReferenceExpressionViewer.editControlSelected(toolBar, null, editingDomain());
 

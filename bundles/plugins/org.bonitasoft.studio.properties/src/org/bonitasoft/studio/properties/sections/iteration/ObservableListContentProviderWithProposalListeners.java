@@ -20,6 +20,8 @@ import java.util.List;
 import org.bonitasoft.studio.common.ExpressionConstants;
 import org.bonitasoft.studio.common.extension.BonitaStudioExtensionRegistryManager;
 import org.bonitasoft.studio.common.log.BonitaStudioLog;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.provider.IDataProposalListener;
 import org.bonitasoft.studio.expression.editor.provider.IProposalListener;
 import org.eclipse.core.runtime.CoreException;
@@ -44,13 +46,14 @@ public abstract class ObservableListContentProviderWithProposalListeners extends
         final IConfigurationElement[] configurationElements = BonitaStudioExtensionRegistryManager.getInstance()
                 .getConfigurationElements(PROPOSAL_LISTENER_EXTENSION_ID);
         // Filters duplicates
+        final ModelLocation location = new ModelLocationFactory().newLocation(context);
         for (final IConfigurationElement configElement : configurationElements) {
             final String type = configElement.getAttribute("type");
             if (type.equals(ExpressionConstants.VARIABLE_TYPE)) {
                 IDataProposalListener extension;
                 try {
                     extension = (IDataProposalListener) configElement.createExecutableExtension("providerClass");
-                    if (extension.isRelevant(context) && !proposalListeners.contains(extension)) {
+                    if (extension.isRelevant(location) && !proposalListeners.contains(extension)) {
                         extension.setMultipleData(true);
                         proposalListeners.add(extension);
                     }

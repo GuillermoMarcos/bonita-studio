@@ -25,6 +25,8 @@ import org.bonitasoft.studio.designer.core.expression.CreateNewFormProposalListe
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
 import org.bonitasoft.studio.designer.i18n.Messages;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.bonitasoft.studio.model.process.Contract;
 import org.bonitasoft.studio.model.process.ContractContainer;
@@ -134,7 +136,8 @@ public class CreateAndEditFormContributionItem extends ContributionItem {
     protected void createNewForm() {
         final PageFlow pageflow = unwrap(selectionProvider.getSelection());
         if (shouldCreateNewContract(pageflow)) {
-            final String newPageId = createNewFormListener.handleEvent(pageflow.getFormMapping(), null);
+            final ModelLocation location = new ModelLocationFactory().newLocation(pageflow.getFormMapping());
+            final String newPageId = createNewFormListener.handleEvent(location, null);
             final WebPageRepositoryStore repositoryStore = repositoryAccessor.getRepositoryStore(WebPageRepositoryStore.class);
             repositoryStore.refresh();
             final WebPageFileStore webPageFileStore = repositoryStore.getChild(newPageId);

@@ -28,6 +28,8 @@ import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.properties.AbstractBonitaDescriptionSection;
 import org.bonitasoft.studio.common.repository.RepositoryManager;
 import org.bonitasoft.studio.data.ui.property.section.DataLabelProvider;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.expression.editor.constant.ExpressionReturnTypeContentProvider;
 import org.bonitasoft.studio.expression.editor.filter.AvailableExpressionTypeFilter;
 import org.bonitasoft.studio.expression.editor.provider.IProposalListener;
@@ -500,7 +502,8 @@ public class IterationPropertySection extends AbstractBonitaDescriptionSection {
                         value = ModelHelper.getParentProcess(value);
                     }
                     if (value != null) {
-                        final String newVariableName = ((IProposalListener) selection).handleEvent(value, null);
+                        final ModelLocation modelLocation = new ModelLocationFactory().newLocation(value);
+                        final String newVariableName = ((IProposalListener) selection).handleEvent(modelLocation, null);
                         if (newVariableName != null) {
                             final IObservableList observeList = (IObservableList) inputListComboViewer.getInput();
                             inputListComboViewer.setSelection(new StructuredSelection(getDataFromName(newVariableName, observeList)));

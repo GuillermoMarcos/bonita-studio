@@ -27,6 +27,9 @@ import org.bonitasoft.studio.common.log.BonitaStudioLog;
 import org.bonitasoft.studio.common.properties.AbstractBonitaDescriptionSection;
 import org.bonitasoft.studio.document.i18n.Messages;
 import org.bonitasoft.studio.document.refactoring.RefactorDocumentOperation;
+import org.bonitasoft.studio.expression.core.scope.ContextFinder;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.process.Document;
 import org.bonitasoft.studio.model.process.Element;
 import org.bonitasoft.studio.model.process.Pool;
@@ -161,8 +164,8 @@ public class DocumentPropertySection extends AbstractBonitaDescriptionSection im
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 super.widgetSelected(e);
-
-                final DocumentWizard documentWizard = new DocumentWizard(getEObject());
+                final ModelLocation location = new ModelLocationFactory().newLocation(getEObject());
+                final DocumentWizard documentWizard = new DocumentWizard(new ContextFinder(location).find(Pool.class));
                 final Dialog dialog = new DocumentWizardDialog(Display.getDefault().getActiveShell(), documentWizard, true);
                 if (IDialogConstants.OK_ID == dialog.open()) {
                     final Document newDocument = documentWizard.getDocument();
@@ -268,7 +271,8 @@ public class DocumentPropertySection extends AbstractBonitaDescriptionSection im
     private void editDocumentAction(final ISelection selection) {
         if (!selection.isEmpty()) {
             final Document selectedDocument = (Document) ((IStructuredSelection) selection).getFirstElement();
-            final DocumentWizard documentWizard = new DocumentWizard(getEObject(), selectedDocument, true);
+            final ModelLocation location = new ModelLocationFactory().newLocation(getEObject());
+            final DocumentWizard documentWizard = new DocumentWizard(new ContextFinder(location).find(Pool.class), selectedDocument, true);
             final Dialog dialog = new CustomWizardDialog(Display.getDefault().getActiveShell(), documentWizard, IDialogConstants.OK_LABEL);
             dialog.open();
             documentListViewer.refresh();

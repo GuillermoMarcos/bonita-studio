@@ -20,6 +20,8 @@ import static org.bonitasoft.studio.model.process.builders.ContractBuilder.aCont
 import static org.bonitasoft.studio.model.process.builders.ContractInputBuilder.aContractInput;
 import static org.bonitasoft.studio.model.process.builders.FormMappingBuilder.aFormMapping;
 import static org.bonitasoft.studio.model.process.builders.TaskBuilder.aTask;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -28,6 +30,8 @@ import org.bonitasoft.studio.designer.core.expression.CreateNewFormProposalListe
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
 import org.bonitasoft.studio.designer.i18n.Messages;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.process.FormMappingType;
 import org.bonitasoft.studio.model.process.PageFlow;
 import org.bonitasoft.studio.model.process.provider.ProcessItemProviderAdapterFactory;
@@ -142,7 +146,7 @@ public class CreateAndEditFormContributionItemTest {
         doReturn(repositoryStore).when(repositoryAccessor).getRepositoryStore(WebPageRepositoryStore.class);
         final PageFlow pagefLow = aTask().havingFormMapping(
                 aFormMapping().havingTargetForm(anExpression())).havingContract(aContract()).build();
-        doReturn("newForm").when(createNewFormListener).handleEvent(pagefLow.getFormMapping(), null);
+        doReturn("newForm").when(createNewFormListener).handleEvent(notNull(ModelLocation.class), anyString());
         doReturn(
                 new StructuredSelection(pagefLow)).when(
                 selectionProvider)
@@ -164,7 +168,7 @@ public class CreateAndEditFormContributionItemTest {
         doReturn(repositoryStore).when(repositoryAccessor).getRepositoryStore(WebPageRepositoryStore.class);
         final PageFlow pagefLow = aTask().havingFormMapping(
                 aFormMapping().havingTargetForm(anExpression())).havingContract(aContract().havingInput(aContractInput())).build();
-        doReturn("newForm").when(createNewFormListener).handleEvent(pagefLow.getFormMapping(), null);
+        doReturn("newForm").when(createNewFormListener).handleEvent(new ModelLocationFactory().newLocation(pagefLow.getFormMapping()), null);
         doReturn(
                 new StructuredSelection(pagefLow)).when(
                 selectionProvider)

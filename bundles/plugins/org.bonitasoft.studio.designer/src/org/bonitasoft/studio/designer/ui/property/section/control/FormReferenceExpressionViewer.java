@@ -21,6 +21,7 @@ import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
 import org.bonitasoft.studio.expression.core.scope.ContextFinder;
 import org.bonitasoft.studio.expression.core.scope.ExpressionScope;
+import org.bonitasoft.studio.expression.core.scope.ModelLocation;
 import org.bonitasoft.studio.expression.editor.viewer.EditExpressionDialog;
 import org.bonitasoft.studio.expression.editor.viewer.ExpressionViewer;
 import org.bonitasoft.studio.model.expression.ExpressionPackage;
@@ -101,9 +102,10 @@ public class FormReferenceExpressionViewer extends ExpressionViewer {
      */
     @Override
     protected void editControlSelected(final ToolBar tb, final Event event, final EditingDomain editingDomain) {
-        final FormMapping formMapping = new ContextFinder(getExpressionScope().getModelLocation()).find(FormMapping.class);
+        ModelLocation modelLocation = getExpressionScope().getModelLocation();
+        final FormMapping formMapping = new ContextFinder(modelLocation).find(FormMapping.class);
         Preconditions.checkState(formMapping != null);
-        final String newPageId = createOrEditFormListener.handleEvent(formMapping, null);
+        final String newPageId = createOrEditFormListener.handleEvent(modelLocation, null);
         if (newPageId != null) {
             pageStore.refresh();
             final WebPageFileStore webPageFileStore = pageStore.getChild(newPageId);

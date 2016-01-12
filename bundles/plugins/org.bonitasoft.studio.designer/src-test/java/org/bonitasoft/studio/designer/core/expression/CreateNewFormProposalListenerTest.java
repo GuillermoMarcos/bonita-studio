@@ -32,6 +32,7 @@ import org.bonitasoft.studio.designer.core.PageDesignerURLFactory;
 import org.bonitasoft.studio.designer.core.operation.CreateFormFromContractOperation;
 import org.bonitasoft.studio.designer.core.repository.WebPageFileStore;
 import org.bonitasoft.studio.designer.core.repository.WebPageRepositoryStore;
+import org.bonitasoft.studio.expression.core.scope.ModelLocationFactory;
 import org.bonitasoft.studio.model.process.Contract;
 import org.bonitasoft.studio.model.process.Task;
 import org.bonitasoft.studio.preferences.BonitaPreferenceConstants;
@@ -94,7 +95,7 @@ public class CreateNewFormProposalListenerTest implements BonitaPreferenceConsta
     public void should_handleEvent_returns_new_pageid_and_open_page_designer_with_new_id() throws Exception {
         final EObject context = aContract().in(aTask().withName("step1")).build();
 
-        final String pageId = createNewFormProposal.handleEvent(context, null);
+        final String pageId = createNewFormProposal.handleEvent(new ModelLocationFactory().newLocation(context), null);
 
         assertThat(pageId).isEqualTo("page-id");
         verify(progressService).busyCursorWhile(any(CreateFormFromContractOperation.class));
@@ -107,7 +108,7 @@ public class CreateNewFormProposalListenerTest implements BonitaPreferenceConsta
         final Task task = aTask().withName("Step1").havingFormMapping(aFormMapping()).havingContract(aContract()).build();
 
         //When
-        createNewFormProposal.handleEvent(task.getFormMapping(), null);
+        createNewFormProposal.handleEvent(new ModelLocationFactory().newLocation(task.getFormMapping()), null);
 
         //Then
         verify(createNewFormProposal).doCreateFormOperation(eq(pageDesignerURLFactory), eq("newForm"), any(Contract.class), any(FormScope.class));
