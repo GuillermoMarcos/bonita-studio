@@ -75,8 +75,6 @@ import org.bonitasoft.studio.model.expression.ExpressionFactory;
 import org.bonitasoft.studio.model.expression.ListExpression;
 import org.bonitasoft.studio.model.expression.Operation;
 import org.bonitasoft.studio.model.expression.TableExpression;
-import org.bonitasoft.studio.model.form.Form;
-import org.bonitasoft.studio.model.form.SubmitFormButton;
 import org.bonitasoft.studio.model.process.ConnectableElement;
 import org.bonitasoft.studio.model.process.Connector;
 import org.bonitasoft.studio.model.process.ProcessFactory;
@@ -139,20 +137,12 @@ public class ConnectorWizard extends ExtensibleWizard implements
 
 	private final AvailableExpressionTypeFilter expressionTypeFilter = new ConnectorAvailableExpressionTypeFilter();
 
-	private final AvailableExpressionTypeFilter formExpressionTypeFilter = new AvailableExpressionTypeFilter(
-			new String[] { ExpressionConstants.CONSTANT_TYPE,
-					ExpressionConstants.VARIABLE_TYPE,
-					ExpressionConstants.SCRIPT_TYPE,
-					ExpressionConstants.PARAMETER_TYPE,
-					ExpressionConstants.FORM_FIELD_TYPE });
-
 	protected List<ConnectorDefinition> definitions;
 
 
 	public ConnectorWizard(final EObject container,
 			final EStructuralFeature connectorContainmentFeature,
 			final Set<EStructuralFeature> featureToCheckForUniqueID) {
-        //		this.container = container;
 		connectorWorkingCopy = ProcessFactory.eINSTANCE.createConnector();
 		final ConnectorConfiguration configuration = ConnectorConfigurationFactory.eINSTANCE
 				.createConnectorConfiguration();
@@ -172,7 +162,6 @@ public class ConnectorWizard extends ExtensibleWizard implements
 			final EStructuralFeature connectorContainmentFeature,
 			final Set<EStructuralFeature> featureToCheckForUniqueID) {
 		Assert.isNotNull(connector);
-        //		container = connector.eContainer();
 		originalConnector = connector;
 		this.connectorContainmentFeature = connectorContainmentFeature;
 		connectorWorkingCopy = EcoreUtil.copy(connector);
@@ -634,7 +623,6 @@ public class ConnectorWizard extends ExtensibleWizard implements
 					p.setPage(definition.getPage().get(i));
 				}
                 p.setModelLocation(location);
-				p.setExpressionTypeFilter(getExpressionTypeFilter());
 				result.add(p);
 			}
 
@@ -711,7 +699,6 @@ public class ConnectorWizard extends ExtensibleWizard implements
 				.getConfiguration());
 		selectOutputPage.setDefinition(definition);
         selectOutputPage.setModelLocation(location);
-		selectOutputPage.setExpressionTypeFilter(getExpressionTypeFilter());
 		return selectOutputPage;
 	}
 
@@ -723,16 +710,7 @@ public class ConnectorWizard extends ExtensibleWizard implements
 		wizPage.setDefinition(def);
         wizPage.setModelLocation(location);
 		wizPage.setPage(page);
-		wizPage.setExpressionTypeFilter(getExpressionTypeFilter());
 		return wizPage;
-	}
-
-	protected AvailableExpressionTypeFilter getExpressionTypeFilter() {
-        final ConnectableElement container = new ContextFinder(location).find(ConnectableElement.class);
-		if (container instanceof Form || container instanceof SubmitFormButton) {
-			return formExpressionTypeFilter;
-		}
-		return expressionTypeFilter;
 	}
 
 	/*

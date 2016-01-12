@@ -5,14 +5,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.bonitasoft.studio.expression.editor.viewer;
 
@@ -72,11 +70,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 
-
-
 /**
  * @author Romain Bioteau
- *
  */
 public class PatternExpressionViewer extends Composite {
 
@@ -98,6 +93,7 @@ public class PatternExpressionViewer extends Composite {
     private Object input;
     private ModelLocation modelLocation;
     private static Set<String> compatibleTypes;
+
     static {
         compatibleTypes = new HashSet<String>();
         compatibleTypes.add(String.class.getName());
@@ -111,7 +107,7 @@ public class PatternExpressionViewer extends Composite {
 
     public PatternExpressionViewer(final Composite parent, final int style) {
         super(parent, style);
-        setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).create()) ;
+        setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).create());
         mc = new MagicComposite(this, SWT.INHERIT_DEFAULT);
         mc.setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).extendedMargins(15, 25, 0, 0).create());
         mc.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
@@ -128,6 +124,7 @@ public class PatternExpressionViewer extends Composite {
         switchControl.setText(Messages.switchEditor);
         switchControl.setLayoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create());
         switchControl.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 switchEditorType();
@@ -136,14 +133,14 @@ public class PatternExpressionViewer extends Composite {
     }
 
     protected void initializeEditorType() {
-        if(ExpressionConstants.PATTERN_TYPE.equals(expression.getType())){
+        if (ExpressionConstants.PATTERN_TYPE.equals(expression.getType())) {
             expression.setName("<pattern-expression>");
             mc.hide(expressionViewer.getControl());
             mc.show(getViewerControl());
             helpDecoration.show();
             mc.setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).extendedMargins(15, 25, 0, 0).create());
             bindPatternExpression();
-        }else{
+        } else {
             mc.hide(getViewerControl());
             mc.show(expressionViewer.getControl());
             helpDecoration.hide();
@@ -154,12 +151,12 @@ public class PatternExpressionViewer extends Composite {
     }
 
     protected void switchEditorType() {
-        if(MessageDialog.openQuestion(mc.getShell(), Messages.eraseExpressionTitle,Messages.eraseExpressionMsg)){
-            if(!expressionMode()){
+        if (MessageDialog.openQuestion(mc.getShell(), Messages.eraseExpressionTitle, Messages.eraseExpressionMsg)) {
+            if (!expressionMode()) {
                 showExpressionViewer();
                 bindExpressionViewer();
                 mc.layout(true, true);
-            }else{
+            } else {
                 showTextViewer();
                 bindPatternExpression();
             }
@@ -177,7 +174,7 @@ public class PatternExpressionViewer extends Composite {
         mc.setLayout(GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).extendedMargins(15, 25, 0, 0).create());
         mc.layout(true, true);
         helpDecoration.show();
-        if(hintDecoration.getDescriptionText() != null){
+        if (hintDecoration.getDescriptionText() != null) {
             hintDecoration.show();
         }
     }
@@ -206,71 +203,67 @@ public class PatternExpressionViewer extends Composite {
 
     private void bindExpressionViewer() {
         expressionViewer.setInput(input);
-        if(mandatoryFieldLabel != null){
+        if (mandatoryFieldLabel != null) {
             expressionViewer.setMandatoryField(mandatoryFieldLabel, context);
         }
         expressionViewer.setExternalDataBindingContext(context);
         expressionViewer.setSelection(new StructuredSelection(expression));
     }
 
-
     protected void bindPatternExpression() {
         final UpdateValueStrategy startegy = new UpdateValueStrategy();
-        if(mandatoryFieldLabel != null){
+        if (mandatoryFieldLabel != null) {
             startegy.setAfterConvertValidator(new EmptyInputValidator(mandatoryFieldLabel));
         }
-        if(patternBinding != null){
+        if (patternBinding != null) {
             patternBinding.dispose();
             patternBinding = null;
         }
         expression.getReferencedElements().clear();
-        patternBinding = context.bindValue(SWTObservables.observeText(viewer.getTextWidget(),SWT.Modify), EMFObservables.observeValue(expression, ExpressionPackage.Literals.EXPRESSION__CONTENT),startegy,null);
+        patternBinding = context.bindValue(SWTObservables.observeText(viewer.getTextWidget(), SWT.Modify),
+                EMFObservables.observeValue(expression, ExpressionPackage.Literals.EXPRESSION__CONTENT), startegy, null);
     }
-
 
     protected void createExpressionViewer() {
         expressionViewer = new ExpressionViewer(mc, SWT.BORDER);
         expressionViewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
     }
 
-
-
     protected void createTextViewer() {
-        viewer = createViewer(mc) ;
+        viewer = createViewer(mc);
         viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         configureTextViewer();
 
-        helpDecoration = new ControlDecoration(viewer.getControl(), SWT.TOP | SWT.RIGHT,this);
+        helpDecoration = new ControlDecoration(viewer.getControl(), SWT.TOP | SWT.RIGHT, this);
         helpDecoration.setImage(JFaceResources.getImage(Dialog.DLG_IMG_HELP));
         helpDecoration.setDescriptionText(Messages.patternViewerHelp);
         helpDecoration.setMarginWidth(2);
         helpDecoration.hide();
 
-        hintDecoration = new ControlDecoration(viewer.getControl(), SWT.TOP | SWT.LEFT,this);
+        hintDecoration = new ControlDecoration(viewer.getControl(), SWT.TOP | SWT.LEFT, this);
         hintDecoration.setImage(Pics.getImage(PicsConstants.hint));
         hintDecoration.setMarginWidth(2);
         hintDecoration.setShowHover(true);
         hintDecoration.setShowOnlyOnFocus(true);
         hintDecoration.hide();
 
-
-
         viewer.addTextListener(new ITextListener() {
 
             @Override
             public void textChanged(final TextEvent event) {
-                viewer.getTextWidget().notifyListeners(SWT.Modify,new Event());
+                viewer.getTextWidget().notifyListeners(SWT.Modify, new Event());
             }
         });
 
-        contentAssisProcessor = new ExpressionContentAssistProcessor(viewer.getDocument()) ;
+        contentAssisProcessor = new ExpressionContentAssistProcessor(viewer.getDocument());
         final ContentAssistant assistant = new ContentAssistant();
-        assistant.setContentAssistProcessor(contentAssisProcessor,IDocument.DEFAULT_CONTENT_TYPE);
+        assistant.setContentAssistProcessor(contentAssisProcessor, IDocument.DEFAULT_CONTENT_TYPE);
         assistant.setShowEmptyList(true);
         assistant.enableAutoActivation(true);
         assistant.install(viewer);
 
         viewer.getTextWidget().addKeyListener(new KeyAdapter() {
+
             @Override
             public void keyPressed(final KeyEvent e) {
 
@@ -285,20 +278,18 @@ public class PatternExpressionViewer extends Composite {
 
             @Override
             public void keyReleased(final KeyEvent e) {
-                if((e.stateMask == SWT.CTRL || e.stateMask == SWT.COMMAND) && e.keyCode == SWT.SPACE){
+                if ((e.stateMask == SWT.CTRL || e.stateMask == SWT.COMMAND) && e.keyCode == SWT.SPACE) {
                     assistant.showPossibleCompletions();
                 }
             }
         });
-
-
 
         final ISWTObservableValue observable = SWTObservables.observeDelayedValue(400, SWTObservables.observeText(getTextControl(), SWT.Modify));
         observable.addValueChangeListener(new IValueChangeListener() {
 
             @Override
             public void handleValueChange(final ValueChangeEvent event) {
-                if(!expressionMode()){
+                if (!expressionMode()) {
                     updateExpressionDependencies();
                 }
             }
@@ -322,17 +313,16 @@ public class PatternExpressionViewer extends Composite {
     @Override
     public void dispose() {
         super.dispose();
-        if(dependencyJob != null){
+        if (dependencyJob != null) {
             dependencyJob.cancel();
         }
     }
 
-    public void setExpression(final Expression expression){
+    public void setExpression(final Expression expression) {
         this.expression = expression;
         manageNatureProviderAndAutocompletionProposal();
         initializeEditorType();
     }
-
 
     protected void manageNatureProviderAndAutocompletionProposal() {
         final ModelLocationFactory modelLocationFactory = new ModelLocationFactory();
@@ -340,81 +330,79 @@ public class PatternExpressionViewer extends Composite {
             this.modelLocation = modelLocationFactory.newLocation((ModelLocation) input, expression);
         } else if (input instanceof EObject) {
             this.modelLocation = modelLocationFactory.newLocation((EObject) input, expression);
-        }else{
+        } else {
             throw new IllegalStateException("PatternExpression input is not qn EObject nor a ModelLocation: " + input);
         }
-        filteredExpressions =  getFilteredExpressions() ;
+        filteredExpressions = getFilteredExpressions();
         final Set<Expression> expressionSet = new HashSet<Expression>(filteredExpressions);
         contentAssisProcessor.setExpressions(expressionSet);
-        if(patternLineStyle != null){
+        if (patternLineStyle != null) {
             patternLineStyle.setExpressions(expressionSet);
         }
-        dependencyJob = new ComputePatternDependenciesJob(viewer.getDocument(),filteredExpressions) ;
+        dependencyJob = new ComputePatternDependenciesJob(viewer.getDocument(), filteredExpressions);
         dependencyJob.addJobChangeListener(new IJobChangeListener() {
 
             @Override
-            public void aboutToRun(final IJobChangeEvent event) {}
+            public void aboutToRun(final IJobChangeEvent event) {
+            }
 
             @Override
-            public void awake(final IJobChangeEvent event) {}
+            public void awake(final IJobChangeEvent event) {
+            }
 
             @Override
             public void done(final IJobChangeEvent event) {
-                if(dependencyJob != null){
-                    final List<EObject> deps = dependencyJob.getDependencies(viewer.getDocument().get()) ;
-                    expression.getReferencedElements().clear() ;
-                    if(deps != null && !deps.isEmpty()){
-                        expression.getReferencedElements().addAll(deps) ;
+                if (dependencyJob != null) {
+                    final List<EObject> deps = dependencyJob.getDependencies(viewer.getDocument().get());
+                    expression.getReferencedElements().clear();
+                    if (deps != null && !deps.isEmpty()) {
+                        expression.getReferencedElements().addAll(deps);
                     }
                 }
             }
 
             @Override
-            public void running(final IJobChangeEvent event) {}
+            public void running(final IJobChangeEvent event) {
+            }
 
             @Override
-            public void scheduled(final IJobChangeEvent event) {}
+            public void scheduled(final IJobChangeEvent event) {
+            }
 
             @Override
-            public void sleeping(final IJobChangeEvent event) {}
+            public void sleeping(final IJobChangeEvent event) {
+            }
         });
     }
 
     private List<Expression> getFilteredExpressions() {
-        final List<Expression> filteredExpressions = new ArrayList<Expression>() ;
+        final List<Expression> filteredExpressions = new ArrayList<Expression>();
         final Expression[] expressions = expressionNatureProvider.getExpressions(modelLocation);
-        if(expressions != null){
-            filteredExpressions.addAll(Arrays.asList(expressions)) ;
-                for(final Expression exp : expressions) {
-                //                    for(final ViewerFilter filter : filters){
-                //                        if (filter != null && !filter.select(expressionViewer, input, exp)) {
-                //                            filteredExpressions.remove(exp) ;
-                //                        }
-                        if (!compatibleTypes.contains(exp.getReturnType())) {
-                            filteredExpressions.remove(exp);
-                        }
-                    }
-            //                }
+        if (expressions != null) {
+            filteredExpressions.addAll(Arrays.asList(expressions));
+            for (final Expression exp : expressions) {
+                if (!compatibleTypes.contains(exp.getReturnType())) {
+                    filteredExpressions.remove(exp);
+                }
+            }
         }
-        return filteredExpressions ;
+        return filteredExpressions;
     }
 
     public void addFilter(final ViewerFilter viewerFilter) {
-        filters.add(viewerFilter) ;
+        filters.add(viewerFilter);
         expressionViewer.addFilter(viewerFilter);
     }
 
-    public StyledText getTextControl(){
-        return viewer.getTextWidget() ;
+    public StyledText getTextControl() {
+        return viewer.getTextWidget();
     }
-
 
     public void setHint(final String hint) {
         hintDecoration.setDescriptionText(hint);
         hintDecoration.show();
         expressionViewer.setMessage(hint, IStatus.INFO);
     }
-
 
     public void setEMFBindingContext(final EMFDataBindingContext context) {
         this.context = context;

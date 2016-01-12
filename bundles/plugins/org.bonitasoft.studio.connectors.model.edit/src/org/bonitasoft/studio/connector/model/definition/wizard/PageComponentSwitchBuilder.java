@@ -103,21 +103,19 @@ public class PageComponentSwitchBuilder {
     private int labelWidth = DEFAULT_WITH_VALUE;
 
     public PageComponentSwitchBuilder(final ModelLocation location, final ConnectorDefinition definition,
-            final ConnectorConfiguration connectorConfiguration, final EMFDataBindingContext context, final DefinitionResourceProvider messageProvider,
-            final AvailableExpressionTypeFilter connectorExpressionContentTypeFilter) {
+            final ConnectorConfiguration connectorConfiguration, final EMFDataBindingContext context, final DefinitionResourceProvider messageProvider) {
         super();
         this.definition = definition;
         this.connectorConfiguration = connectorConfiguration;
         this.messageProvider = messageProvider;
         this.location = location;
         this.context = context;
-        this.connectorExpressionContentTypeFilter = connectorExpressionContentTypeFilter;
     }
 
     public PageComponentSwitchBuilder(final ModelLocation location, final ConnectorDefinition definition,
             final ConnectorConfiguration connectorConfiguration, final EMFDataBindingContext context, final DefinitionResourceProvider messageProvider,
-            final AvailableExpressionTypeFilter connectorExpressionContentTypeFilter, final int labelWidth) {
-        this(location, definition, connectorConfiguration, context, messageProvider, connectorExpressionContentTypeFilter);
+            final int labelWidth) {
+        this(location, definition, connectorConfiguration, context, messageProvider);
         this.labelWidth = labelWidth;
     }
 
@@ -146,7 +144,6 @@ public class PageComponentSwitchBuilder {
         }
         handleExpressionProvider(expressionProvider, viewer);
         handleMandatory(object, input, viewer);
-        handleDocumentsOption(object, viewer);
         viewer.setInput(location);
         handleDescription(object, viewer);
         context.bindValue(ViewersObservables.observeSingleSelection(viewer),
@@ -158,16 +155,6 @@ public class PageComponentSwitchBuilder {
         final String desc = messageProvider.getFieldDescription(definition, object.getId());
         if (desc != null && !desc.isEmpty()) {
             viewer.setMessage(desc, IStatus.INFO);
-        }
-    }
-
-    private void handleDocumentsOption(final Text object, final ExpressionViewer viewer) {
-        if (object.isShowDocuments()) {
-            final Set<String> contentTypes = new HashSet<String>(connectorExpressionContentTypeFilter.getContentTypes());
-            contentTypes.add(ExpressionConstants.DOCUMENT_REF_TYPE);
-            viewer.addFilter(new AvailableExpressionTypeFilter(contentTypes.toArray(new String[contentTypes.size()])));
-        } else {
-            viewer.addFilter(connectorExpressionContentTypeFilter);
         }
     }
 
@@ -321,7 +308,6 @@ public class PageComponentSwitchBuilder {
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
             }
-            viewer.addFilter(connectorExpressionContentTypeFilter);
             viewer.setInput(location);
             final String desc = getDescription(object.getId());
             if (desc != null && !desc.isEmpty()) {
@@ -444,7 +430,6 @@ public class PageComponentSwitchBuilder {
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
             }
-            viewer.addFilter(connectorExpressionContentTypeFilter);
             viewer.setInput(location);
             final String desc = getDescription(object.getId());
             if (desc != null && !desc.isEmpty()) {
@@ -617,7 +602,6 @@ public class PageComponentSwitchBuilder {
             if (input.isMandatory()) {
                 viewer.setMandatoryField(getLabel(object.getId()), context);
             }
-            viewer.addFilter(connectorExpressionContentTypeFilter);
             viewer.setInput(location);
             final String desc = getDescription(object.getId());
             if (desc != null && !desc.isEmpty()) {

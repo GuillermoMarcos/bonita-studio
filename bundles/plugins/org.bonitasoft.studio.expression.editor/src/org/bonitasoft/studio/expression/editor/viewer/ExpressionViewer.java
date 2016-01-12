@@ -1096,9 +1096,9 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
         return editControl;
     }
 
-    public void addFilter(final ViewerFilter viewerFilter) {
-        filters.add(viewerFilter);
-    }
+    //    public void addFilter(final ViewerFilter viewerFilter) {
+    //        filters.add(viewerFilter);
+    //    }
 
     public void removeFilter(final ViewerFilter viewerFilter) {
         filters.remove(viewerFilter);

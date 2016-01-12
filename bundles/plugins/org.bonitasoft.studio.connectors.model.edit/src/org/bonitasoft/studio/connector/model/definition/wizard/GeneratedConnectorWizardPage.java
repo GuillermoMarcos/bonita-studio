@@ -65,7 +65,7 @@ public class GeneratedConnectorWizardPage extends AbstractConnectorConfiguration
             final EMFDataBindingContext context, final Composite pageComposite) {
         if(componentSwitch == null){
             final PageComponentSwitchBuilder builder = new PageComponentSwitchBuilder(getModelLocation(), getDefinition(), getConfiguration(), context,
-                    getMessageProvider(), getExpressionTypeFilter());
+                    getMessageProvider());
             componentSwitch = new PageComponentSwitch(getContainer(), pageComposite, builder);
         }
         return componentSwitch;

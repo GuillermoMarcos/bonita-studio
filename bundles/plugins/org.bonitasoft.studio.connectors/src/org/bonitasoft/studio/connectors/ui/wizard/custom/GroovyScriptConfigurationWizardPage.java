@@ -63,7 +63,7 @@ public class GroovyScriptConfigurationWizardPage extends AbstractConnectorConfig
         pageComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
         final PageComponentSwitchBuilder builder = new PageComponentSwitchBuilder(getModelLocation(), getDefinition(), getConfiguration(), context,
-                getMessageProvider(), getExpressionTypeFilter());
+                getMessageProvider());
         createScriptEditorControl(pageComposite, context, builder);
 
 
@@ -77,7 +77,6 @@ public class GroovyScriptConfigurationWizardPage extends AbstractConnectorConfig
         viewer.getControl().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         final String fieldName = builder.getLabel("script");
         viewer.setMandatoryField(fieldName, context);
-        viewer.addFilter(getExpressionTypeFilter());
         viewer.setInput(getModelLocation());
         final String desc = builder.getDescription(SCRIPT_INPUT_NAME);
         if (desc != null && !desc.isEmpty()) {

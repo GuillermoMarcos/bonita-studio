@@ -178,10 +178,6 @@ public abstract class AbstractConnectorConfigurationWizardPage extends WizardPag
         return super.getPreviousPage();
     }
 
-	public AvailableExpressionTypeFilter getExpressionTypeFilter() {
-		return connectorExpressionContentTypeFilter;
-	}
-
 	public void setExpressionTypeFilter(final AvailableExpressionTypeFilter connectorExpressionContentTypeFilter) {
 		this.connectorExpressionContentTypeFilter = connectorExpressionContentTypeFilter;
 	}

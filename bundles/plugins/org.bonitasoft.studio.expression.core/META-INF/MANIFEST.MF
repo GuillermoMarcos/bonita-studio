@@ -22,4 +22,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Bonitasoft S.A.
 Export-Package: org.bonitasoft.studio.expression.core.provider,
  org.bonitasoft.studio.expression.core.scope
-Import-Package: org.bonitasoft.engine.expression
+Import-Package: org.bonitasoft.engine.bpm.connector,
+ org.bonitasoft.engine.expression
