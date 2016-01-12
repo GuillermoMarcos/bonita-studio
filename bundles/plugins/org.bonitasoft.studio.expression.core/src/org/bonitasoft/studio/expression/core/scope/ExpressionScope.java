@@ -23,6 +23,8 @@ import java.util.List;
 import org.bonitasoft.studio.expression.core.provider.ProvidedExpressionProvider;
 import org.bonitasoft.studio.model.expression.Expression;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.TransactionUtil;
 
 import com.google.common.collect.Iterables;
 
@@ -54,6 +56,14 @@ public class ExpressionScope {
 
     public EObject getContext() {
         return new ContextFinder(location).findExpressionContext();
+    }
+
+    public TransactionalEditingDomain getEditingDomain() {
+        ModelLocation current = getModelLocation();
+        while (current != null && TransactionUtil.getEditingDomain(current.getModelElement()) == null) {
+            current = current.getParent();
+        }
+        return current != null ? TransactionUtil.getEditingDomain(current.getModelElement()) : null;
     }
 
 }

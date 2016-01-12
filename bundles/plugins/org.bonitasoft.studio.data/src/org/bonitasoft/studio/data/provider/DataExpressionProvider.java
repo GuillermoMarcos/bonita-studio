@@ -69,7 +69,6 @@ public class DataExpressionProvider implements IExpressionProvider {
     @Override
     public Set<Expression> getExpressions(final EObject context) {
         final Set<Expression> result = new HashSet<Expression>();
-
         Form form = null;
         PageFlow pf = null;
         if (context instanceof Widget) {
@@ -125,7 +124,46 @@ public class DataExpressionProvider implements IExpressionProvider {
      */
     @Override
     public Set<Expression> getExpressions(ModelLocation location) {
-        return getExpressions(new ContextFinder(location).findExpressionContext());
+        final Set<Expression> result = new HashSet<Expression>();
+        final ContextFinder contextFinder = new ContextFinder(location);
+        final Form form = contextFinder.find(Form.class);
+        final PageFlow pf = contextFinder.find(PageFlow.class);
+        if (form != null) {
+            final EObject formContainer = form.eContainer();
+            if (formContainer != null) {
+                if (form.eContainmentFeature() != null && (formContainer instanceof PageFlow || formContainer instanceof ViewPageFlow)) {
+                    for (final Data d : getDataInForm(form, formContainer)) {
+                        result.add(createExpression(d));
+                    }
+                }
+            }
+        } else if (pf != null) {
+            for (final Data d : ModelHelper.getAccessibleData(pf)) {
+                result.add(createExpression(d));
+            }
+        } else {
+            for (final Data d : ModelHelper.getAccessibleData(contextFinder.findExpressionContext(), true)) {
+                result.add(createExpression(d));
+            }
+        }
+
+        final FlowElement parentFlowElement = contextFinder.find(FlowElement.class);
+        if (parentFlowElement instanceof MultiInstantiable) {
+            final MultiInstanceType type = ((MultiInstantiable) parentFlowElement).getType();
+            if (type == MultiInstanceType.PARALLEL || type == MultiInstanceType.SEQUENTIAL
+                    && !((MultiInstantiable) parentFlowElement).isUseCardinality()) {
+                final Expression iteratorExpression = ((MultiInstantiable) parentFlowElement).getIteratorExpression();
+                if (iteratorExpression != null
+                        && iteratorExpression.getName() != null
+                        && !iteratorExpression.getName().isEmpty()) {
+                    final Data d = ExpressionHelper.dataFromIteratorExpression((MultiInstantiable) parentFlowElement, iteratorExpression,
+                            mainProcess(parentFlowElement));
+                    result.add(createExpression(d));
+                }
+            }
+        }
+
+        return result;
     }
 
     /*

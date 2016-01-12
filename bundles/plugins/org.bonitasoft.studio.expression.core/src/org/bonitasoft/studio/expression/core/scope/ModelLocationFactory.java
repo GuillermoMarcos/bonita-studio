@@ -14,6 +14,8 @@
  */
 package org.bonitasoft.studio.expression.core.scope;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -21,6 +23,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 public class ModelLocationFactory {
 
     public ModelLocation newLocation(EObject modelElement) {
+        checkArgument(modelElement != null);
         final ModelLocation result = new ModelLocation(modelElement, modelElement.eContainingFeature());
         ModelLocation current = result;
         while (current.getModelElement().eContainer() != null) {

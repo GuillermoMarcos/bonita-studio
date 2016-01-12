@@ -100,7 +100,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
@@ -523,9 +522,9 @@ public class ExpressionViewer extends ContentViewer implements ExpressionConstan
     }
 
     protected EditingDomain getEditingDomain() {
-        final Expression selectedExpression = getSelectedExpression();
-        if (selectedExpression != null && selectedExpression.eResource() != null) {
-            return TransactionUtil.getEditingDomain(selectedExpression);
+        final ExpressionScope scope = getExpressionScope();
+        if (scope != null) {
+            return scope.getEditingDomain();
         }
         return null;
     }
