@@ -1,11 +1,11 @@
-project_identifier: bonitabpm-studio
+project_identifier: bonita-bpm-new-features
 api_key: @PROJECT_API_KEY@                         #can be found in your project settings page
 base_path: @PATH_ON_CI@
 
 files:
   -
     source: '/bundles/plugins/**/messages.properties'
-    translation: '/bundles/plugins/**/%file_name%_%two_letters_code%.properties'
+    translation: '/bundles/plugins/**/l10n/%file_name%_%two_letters_code%.properties'
     
   -
     source: '/bundles/plugins/**/plugin.properties'
