@@ -1,4 +1,4 @@
-project_identifier: bonita-bpm-new-features
+project_identifier: bonitabpm-studio
 api_key: @PROJECT_API_KEY@                         #can be found in your project settings page
 base_path: @PATH_ON_CI@
 
