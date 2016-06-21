@@ -9,3 +9,4 @@ screenshots
 *.orig
 *.tmp
 *.iml
+crowdin.yaml
