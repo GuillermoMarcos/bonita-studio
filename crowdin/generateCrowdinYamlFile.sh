@@ -5,9 +5,6 @@
 # 1 : project api key
 # 2 : path of the source to parse
 
-
-. ./utils/utils.sh
-
 if test ! $# -eq 2  
 then
 	echo "[ERROR] generateCrowdinYamlFile.sh scripts needs 2 parameters"
