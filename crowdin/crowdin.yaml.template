@@ -6,9 +6,9 @@ files:
   -
     source: '/bundles/plugins/**/messages.properties'
     translation: '/bundles/plugins/**/%file_name%_%two_letters_code%.properties'
- -
+  -
     source: '/bundles/plugins/**/plugin.properties'
     translation: '/bundles/plugins/**/%file_name%_%two_letters_code%.properties'
- -
+  -
     source: '/all-in-one/installer/i18n/messages.properties'
     translation: '/all-in-one/installer/i18n/%file_name%_%two_letters_code%.properties'
