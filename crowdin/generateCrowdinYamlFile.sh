@@ -14,7 +14,7 @@ fi
 projectAPIKey=$1
 sourcePath=$2
 
-crowdinFile=bonita-studio/crowdin.yaml
+crowdinFile=crowdin.yaml
 crowdinTemplateFile=bonita-studio/crowdin/crowdin.yaml.template
 
 echo "[INFO] Remove Crowdin configuration file if exists."
