@@ -4,13 +4,13 @@ base_path: @PATH_ON_CI@
 
 files:
   -
-    source: 'bonita-studio/bundles/plugins/**/messages.properties'
-    translation: 'bonita-studio/bundles/plugins/**/%file_name%_%two_letters_code%.properties'
+    source: '/bonita-studio/bundles/plugins/**/messages.properties'
+    translation: '/bonita-studio/bundles/plugins/**/%file_name%_%two_letters_code%.properties'
     
   -
-    source: 'bonita-studio/bundles/plugins/**/plugin.properties'
-    translation: 'bonita-studio/bundles/plugins/**/%file_name%_%two_letters_code%.properties'
+    source: '/bonita-studio/bundles/plugins/**/plugin.properties'
+    translation: '/bonita-studio/bundles/plugins/**/%file_name%_%two_letters_code%.properties'
     
   -
-    source: 'bonita-studio/all-in-one/installer/i18n/messages.properties'
-    translation: 'bonita-studio/all-in-one/installer/i18n/%file_name%_%two_letters_code%.properties'
+    source: '/bonita-studio/all-in-one/installer/i18n/messages.properties'
+    translation: '/bonita-studio/all-in-one/installer/i18n/%file_name%_%two_letters_code%.properties'
