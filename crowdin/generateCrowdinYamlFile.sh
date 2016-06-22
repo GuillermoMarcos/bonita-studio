@@ -14,7 +14,7 @@ fi
 projectAPIKey=$1
 sourcePath=$2
 
-crowdinFile=sourcePath/crowdin.yaml
+crowdinFile=$sourcePath/crowdin.yaml
 crowdinTemplateFile=crowdin.yaml.template
 
 echo "[INFO] Remove Crowdin configuration file if exists."
